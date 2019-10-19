@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Primary;
 import javax.sql.DataSource;
 
 /**
+ * c3p0连接池配置类
  * @program: hotel-springboot
  * @description
  * @author: chenyongxin

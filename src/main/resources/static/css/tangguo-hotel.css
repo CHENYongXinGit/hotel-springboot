@@ -1,0 +1,19 @@
+
+/*index*/
+.header{height: 59px; border-bottom: 1px solid #404553;  background-color: #393D49;}
+.header .layui-nav .layui-nav-item{margin: 0 2px; }
+.header .layui-nav{position: absolute;top: 0;right: 0;padding: 0;background: none;}
+.header .logo-font{font-size: 29px;color: #CCCCCC;font-family: "楷体";position:absolute;top: 12px;left: 35px;}
+.header .shrink{position: absolute;top:19px;left:0px;color: #CCCCCC;}
+.header .shrink:hover{color: #009E94}
+.header .shrink i{font-size: 18px;}
+.layui-footer{text-align: center;}
+.layui-footer span{float: right;padding-right: 30px}
+.layui-side-scroll .img{width: 100px;height: 100px;border-radius:50%;border: 1px solid #000000;margin-left: 52px;margin-top: 15px;}
+.layui-side-scroll .welcome-font{text-align: center;color: #CCCCCC;padding: 10px;}
+.layui-side-scroll .welcome-font a{color: #D0D0D0;}
+.layui-side-scroll .welcome-font a:hover{color: #FBFBFB;}
+.layui-side-scroll .layui-nav-item a{font-size: 16px;}
+.layui-side-scroll .layui-nav-item i{padding-right: 5px;}
+.weather{color:#fff; float:left; margin:15px 0 0 300px;}
+.bg-black{background-color:#393D49}

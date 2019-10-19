@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>error</title>
+    <link rel="stylesheet" type="text/css" href="/layui/css/layui.css"/>
+    <link rel="stylesheet" type="text/css" href="/css/error.css"/>
+</head>
+<body>
+<div class="center">
+    <div class="tang-left">
+        <h1>  404!</h1>
+        <h2 th:text="${message}">请求错误！！！</h2>
+        <a class="layui-btn layui-btn-lg layui-btn-radius" href="/" target="_parent">返回主页</a>
+    </div>
+    <div class="tang-right">
+        <a href="/" target="_parent"><img src="/images/error.gif" alt="error"></a>
+    </div>
+</div>
+</body>
+</html>

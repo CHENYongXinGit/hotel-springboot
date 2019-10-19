@@ -10,7 +10,7 @@ public enum CustomizeErrorCode implements ICustomizeErrorCode {
 
     USER_NOT_FOUND(2001,"账户不存在"),
     USER_PARAM_WRONG(2002,"用户未登录"),
-    PASSWORD_ERROR(2003,"密码错误"),
+    SYS_PARAM_WRONG(2003,"我勒个去，页面被外星人挟持了!"),
     SYS_ERROR(2004,"服务冒烟了，要不然换个试试！！！"),
     TYPE_PARAM_WRONG(2005,"评论类型错误或不存在"),
     COMMENT_NOT_FOUND(2006,"你操作的评论不存在了，要不换个试试？"),

@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>糖果管理系统-主页</title>
+    <link rel="stylesheet" type="text/css" href="/layui/css/layui.css"/>
+    <link rel="stylesheet" type="text/css" href="/css/tangguo-hotel.css"/>
+</head>
+<body class="layui-layout-body">
+<div class="layui-layout layui-layout-admin">
+    <!--头部导航-->
+    <div class="layui-header header header-demo">
+        <div class="layui-main">
+            <a class="shrink" href="javascript:;" id="navSorH"><i class="layui-icon layui-icon-shrink-right"></i></a>
+            <a class="logo-font" href="#">糖果酒店管理系统</a>
+            <!-- 天气信息 -->
+            <a href="javascript:;"><div class="weather" pc>
+                <div id="tp-weather-widget"></div>
+                <script>(function(T,h,i,n,k,P,a,g,e){g=function(){P=h.createElement(i);a=h.getElementsByTagName(i)[0];P.src=k;P.charset="utf-8";P.async=1;a.parentNode.insertBefore(P,a)};T["ThinkPageWeatherWidgetObject"]=n;T[n]||(T[n]=function(){(T[n].q=T[n].q||[]).push(arguments)});T[n].l=+new Date();if(T.attachEvent){T.attachEvent("onload",g)}else{T.addEventListener("load",g,false)}}(window,document,"script","tpwidget","//widget.seniverse.com/widget/chameleon.js"))</script>
+                <script>tpwidget("init", {
+                    "flavor": "slim",
+                    "location": "WT33C6J2C563",
+                    "geolocation": "enabled",
+                    "language": "zh-chs",
+                    "unit": "c",
+                    "theme": "chameleon",
+                    "container": "tp-weather-widget",
+                    "bubble": "enabled",
+                    "alarmType": "badge",
+                    "color": "#FFFFFF",
+                    "uid": "U78371FB98",
+                    "hash": "cd55c15865ecbe0f16ba78ca60ad51eb"
+                });tpwidget("show");
+                </script>
+            </div></a>
+            <ul class="layui-nav">
+                <li class="layui-nav-item" lay-unselect>
+                    <a href="javascript:;" id="notice"><i class="layui-icon layui-icon-notice">&nbsp;</i>系统公告<span class="layui-badge-dot"></span></a>
+                </li>
+                <li class="layui-nav-item" id="fu" lay-unselect>
+                    <a href="javascript:;"><i class="layui-icon layui-icon-theme">&nbsp;</i>换肤</a>
+                </li>
+                <li class="layui-nav-item" lay-unselect>
+                    <a href="javascript:;" id="lockScreen"><i class="layui-icon layui-icon-password">&nbsp;</i>锁屏</a>
+                </li>
+                <li class="layui-nav-item layui-hide-xs" lay-unselect>
+                    <a id="fullScreen" href="javascript:;">
+                        <i class="layui-icon layui-icon-screen-full"></i>
+                    </a>
+                </li>
+                <li class="layui-nav-item" lay-unselect>
+                    <a href="javascript:;"><img src="/images/default-admin.png" class="layui-nav-img">糖果</a>
+                    <dl class="layui-nav-child">
+                        <dd><a href="/Admin/ModifyInformation" target="demoAdmin">修改信息</a></dd>
+                        <dd><a href="/Admin/SecurityManagement" target="demoAdmin">安全管理</a></dd>
+                        <dd><a href="/Admin/out">退出</a></dd>
+                    </dl>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <!--侧边导航-->
+    <div class="layui-side bg-black">
+        <div class="layui-side-scroll">
+            <ul class="layui-nav layui-nav-tree" lay-shrink="all" lay-filter="test">
+                <!-- 侧边导航: <ul class="layui-nav layui-nav-tree layui-nav-side"> -->
+                <img src="/images/default-admin.png" class="img">
+                <div class="welcome-font"><em>欢迎：</em><a href="">糖果</a></div>
+                <li class="layui-nav-item">
+                    <a href="/Admin/lun" target="demoAdmin"><i class="layui-icon layui-icon-home"></i>首页</a>
+                </li>
+                <li class="layui-nav-item">
+                    <a href="/Room/map" target="demoAdmin"><i class="layui-icon layui-icon-chart-screen"></i>房间统计</a>
+                </li>
+                <li class="layui-nav-item layui-nav-itemed">
+                    <a href="javascript:;"><i class="layui-icon layui-icon-app"></i>客房管理</a>
+                    <dl class="layui-nav-child">
+                        <dd><a href="/Room/listRooms" target="demoAdmin">&nbsp;&nbsp;<i class="layui-icon layui-icon-table"></i>房间列表</a></dd>
+                        <dd><a href="/Room/state" target="demoAdmin">&nbsp;&nbsp;<i class="layui-icon layui-icon-chart"></i>客房状态</a></dd>
+                        <dd><a href="/Room/toAddRoom" target="demoAdmin">&nbsp;&nbsp;<i class="layui-icon layui-icon-add-circle-fine"></i>添加房间</a></dd>
+                    </dl>
+                </li>
+                <li class="layui-nav-item">
+                    <a href="javascript:;"><i class="layui-icon layui-icon-template-1"></i>顾客管理</a>
+                    <dl class="layui-nav-child">
+                        <dd><a href="/Tenant/tolistTenants2" target="demoAdmin">&nbsp;&nbsp;<i class="layui-icon layui-icon-table"></i>入住列表</a></dd>
+                        <dd><a href="/Tenant/tolistTenants1" target="demoAdmin">&nbsp;&nbsp;<i class="layui-icon layui-icon-table"></i>顾客历史信息</a></dd>
+                    </dl>
+                </li>
+                <li class="layui-nav-item">
+                    <a href="javascript:;"><i class="layui-icon layui-icon-user"></i>预约用户管理</a>
+                    <dl class="layui-nav-child">
+                        <dd><a href="/Tenant/tolistTenants3" target="demoAdmin">&nbsp;&nbsp;<i class="layui-icon layui-icon-table"></i>用户列表</a></dd>
+                        <dd><a href="/Tenant/tolistTenants4" target="demoAdmin">&nbsp;&nbsp;<i class="layui-icon layui-icon-table"></i>预约列表</a></dd>
+                    </dl>
+                </li>
+                <li class="layui-nav-item">
+                    <a href="javascript:;"><i class="layui-icon layui-icon-help"></i>帮助</a>
+                    <dl class="layui-nav-child">
+                        <dd><a href="/Admin/404" target="demoAdmin">&nbsp;&nbsp;<i class="layui-icon layui-icon-404"></i>404页面</a></dd>
+                        <dd><a href="/Admin/404" target="demoAdmin">&nbsp;&nbsp;<i class="layui-icon layui-icon-user"></i>管理员注册</a></dd>
+                    </dl>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <!-- 内容主体区域 -->
+    <div class="layui-body">
+        <iframe src="/Admin/lun" frameborder="0" name="demoAdmin" id="demoAdmin" style="width: 100%;"></iframe>
+    </div>
+    <!-- 底部固定区域 -->
+    <div class="layui-footer">
+        Copyright © 2019 · 糖果酒店管理系统 · 服务器赞助: UCloud · 网站程序: Spring Boot · ICP备888888号 <span id="time"></span>
+    </div>
+</div>
+<script src="/layui/layui.js" type="text/javascript" charset="utf-8"></script>
+<script src="/js/index.js" type="text/javascript"></script>
+</body>
+</html>

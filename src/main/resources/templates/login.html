@@ -5,6 +5,8 @@
     <title>糖果管理系统-登录</title>
     <link rel="stylesheet" type="text/css" href="/layui/css/layui.css"/>
     <link rel="stylesheet" type="text/css" href="/css/login.css"/>
+    <script src="/js/jquery-3.4.1.min.js"></script>
+    <script src="/js/moment.js"></script>
 </head>
 <body>
 <div class="kit-login">
@@ -74,6 +76,7 @@
                 }
                 if ($("#yzm").val().toUpperCase() != code) {
                     createCode();
+                    $("#yzm").val("");
                     return '验证码错误';
                 }
             }
@@ -116,12 +119,20 @@
                 success:function(res){//res为相应体,function为回调函数
                     console.log(res);
                     if(res.code == 200){
-                        setTimeout(function() {
-                            location.href = '/';
-                        }, 100);
+                        window.open("/", "_parent");
                     }else {
                         layer.close(layIndex);
-                        layer.msg(res.message, {icon: 5,anim: 6});
+                        createCode();
+                        $("#yzm").val("");
+                        if (res.data.flag == true) {
+                            var result = "因 <em style='color: #009688'>"+res.data.name+"</em> 用户超过了限制登录次数，已被禁止登录。还剩："
+                                +"<em style='color: red'>"+res.data.loginLockTime+"</em>";
+                            layer.msg(result, {icon: 5,anim: 6});
+                        } else {
+                            var result = "密码错误,在 "+"<em style='color: red'>"+res.data.loginInvalidTime+"</em>"+" 内还允许输入错误 "
+                                +"<em style='color: red'>"+res.data.allowNum+"</em>"+" 次";
+                            layer.msg(result, {icon: 5,anim: 6});
+                        }
                         return false;
                     }
                 },

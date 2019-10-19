@@ -12,6 +12,7 @@ import org.springframework.context.annotation.Configuration;
 import person.cyx.hotel.shiro.MyRealm;
 
 /**
+ * shiro配置类
  * @program: hotel-springboot
  * @description
  * @author: chenyongxin
@@ -59,9 +60,10 @@ public class ShiroConfig {
         definition.addPathDefinition("/Admin/**","anon");
         definition.addPathDefinition("/css/**","anon");
         definition.addPathDefinition("/js/**","anon");
-        definition.addPathDefinition("/image/**","anon");
+        definition.addPathDefinition("/images/**","anon");
         definition.addPathDefinition("/layui/**","anon");
         definition.addPathDefinition("/error","anon");
+        definition.addPathDefinition("/favicon.ico","anon");
         definition.addPathDefinition("/","user");
         definition.addPathDefinition("/**", "authc");
         return definition;
@@ -90,7 +92,6 @@ public class ShiroConfig {
         cookieRememberMeManager.setCookie(rememberMeCookie());
         // cookieRememberMeManager.setCipherKey用来设置加密的Key,参数类型byte[],字节数组长度要求16
         cookieRememberMeManager.setCipherKey(Base64.decode("3AvVhmFLUs0KTA3Kprsdag=="));
-//        cookieRememberMeManager.setCipherKey("CHENYONGXIN_GIT".getBytes());
         return cookieRememberMeManager;
     }
 

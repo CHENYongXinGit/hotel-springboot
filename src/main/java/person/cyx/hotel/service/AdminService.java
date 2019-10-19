@@ -1,5 +1,6 @@
 package person.cyx.hotel.service;
 
+import person.cyx.hotel.dto.LoginRedisDTO;
 import person.cyx.hotel.model.Admin;
 
 /**
@@ -12,4 +13,7 @@ public interface AdminService {
 
     Admin findAdminByUsername(String username);
 
+    LoginRedisDTO loginUserLock(String username);
+
+    LoginRedisDTO loginValdate(String username);
 }
