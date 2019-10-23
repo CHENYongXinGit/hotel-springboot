@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="/layui/css/layui.css"/>
+    <style type="text/css">
+        .cent{width: 50%;margin: 10px auto;}
+    </style>
+</head>
+<body>
+<div class="cent">
+    <fieldset class="layui-elem-field layui-field-title" style="margin-top: 30px;">
+        <legend>安全管理：修改登录密码</legend>
+    </fieldset>
+    <div style="margin-left: 10px;">
+        <form class="layui-form" method="post">
+            <div class="layui-form-item">
+                <label class="layui-form-label">用户名：</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="username" id="username" class="layui-input layui-disabled" th:value="${session.currentUser.username}" readonly>
+                </div>
+                <div class="layui-form-mid layui-word-aux">不能修改</div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">当前密码：</label>
+                <div class="layui-input-inline">
+                    <input type="password" name="rePassword" id="rePassword" lay-verify="required|rePass" placeholder="请输入当前密码" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">新密码：</label>
+                <div class="layui-input-inline">
+                    <input type="password" name="password" id="password" lay-verify="required|pass" placeholder="请输入新密码" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">验证码：</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="yzm" id="yzm" lay-verify="yzm" placeholder="请输入验证码" autocomplete="off" class="layui-input">
+                </div>
+                <div class="layui-form-mid" style="color: #009688;font-weight: 800;" id="yan"></div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <button class="layui-btn" lay-submit="submit" lay-filter="formDemo">修改</button>
+                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<script src="/layui/layui.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript">
+    layui.use(['layer','form','jquery'], function() {
+        var form = layui.form,
+            $ = layui.jquery;
+        form.verify({
+            pass: [
+                /^[\S]{6,12}$/
+                ,'密码必须6到12位，且不能出现空格'
+            ]
+            ,yzm: function (value, item) {
+                if ($("#yzm").val() == "") {
+                    return '验证码不能为空';
+                }
+                if ($("#yzm").val().toUpperCase() != code) {
+                    createCode();
+                    return '验证码错误';
+                }
+            }
+            ,rePass: function (value, item) {
+                var r = "";
+                $.ajax({
+                    type:"GET",
+                    url:"/Safety/rePassword",
+                    data:{password:value},
+                    dataType:"json",
+                    async:false,
+                    contentType: "application/json; charset=utf-8",
+                    success:function(res){
+                        if(res.code == 200){
+                            return true;
+                        }else{
+                            layer.tips(res.message, '#rePassword',{tips:[2,'red']});
+                            r = res.message;
+                        }
+                    },
+                    error:function(){//当访问时候，404，500 等非200的错误状态码
+                        r = "请求错误";
+                    }
+                });
+                return r;
+            }
+        });
+        //验证码
+        var code;
+        function createCode(){
+            code = '';//首先默认code为空字符串
+            var codeLength = 4;//设置长度，这里看需求，我这里设置了4
+            var codeV = $("#yan");
+            //设置随机字符
+            var random = new Array(0,1,2,3,4,5,6,7,8,9,'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R', 'S','T','U','V','W','X','Y','Z');
+            for(var i = 0; i < codeLength; i++){ //循环codeLength 我设置的4就是循环4次
+                var index = Math.floor(Math.random()*36); //设置随机数范围,这设置为0 ~ 36
+                code += random[index]; //字符串拼接 将每次随机的字符 进行拼接
+            }
+            codeV.text(code);//将拼接好的字符串赋值给展示的Value
+        }
+        //页面开始加载验证码
+        createCode();
+        //验证码Div加载点击事件
+        $("#yan").bind('click',function() {
+            createCode();
+        });
+
+        //监听提交
+        form.on('submit(formDemo)', function(data) {
+            var pass = $("#password").val();
+            $.ajax({
+                url:"/Safety/updatePwd",
+                type:'post',//method请求方式，get或者post
+                dataType:'json',//预期服务器返回的数据类型
+                data:JSON.stringify({password:pass}),
+                contentType: "application/json; charset=utf-8",
+                success:function(res){//res为相应体,function为回调函数
+                    if(res.code == 200){
+                        var layIndex = layer.load(2, {
+                            shade: [0.1, '#393D49']
+                        });
+                        setTimeout(function() {
+                            window.open("/Login/out","_parent");
+                        }, 500);
+                    }else{
+                        layer.msg(res.message, {icon: 5,anim: 6});
+                        return false;
+                    }
+                },
+                error:function(){
+                    layer.alert('操作失败！！！',{icon:5});
+                    return false;
+                }
+            });
+            return false;
+        });
+    });
+</script>
+</body>
+</html>
+

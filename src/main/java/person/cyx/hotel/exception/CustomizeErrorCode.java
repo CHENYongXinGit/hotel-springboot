@@ -18,6 +18,8 @@ public enum CustomizeErrorCode implements ICustomizeErrorCode {
     READ_NOTIFICATION_FAIL(2008,"兄弟你这是读别人的信息呢？"),
     NOTIFICATION_NOT_FOUND(2009,"信息莫非是不翼而飞？"),
     FILE_UPLOAD_FAIL(2010,"图片上传失败"),
+    UPDATE_FAIL(2011,"修改失败"),
+    USER_PASSWORD_FOUND(2012,"当前密码不正确"),
     ;
 
     private Integer code;

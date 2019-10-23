@@ -70,7 +70,7 @@
             }
             ,done: function(res){
                 //上传成功
-                if(res){
+                if(res.code == 200){
                     layer.msg('更改成功！', {
                         time: 1000 //1秒关闭（如果不配置，默认是3秒）
                     }, function(){
@@ -79,7 +79,7 @@
                 }
                 //如果上传失败
                 else{
-                    return layer.msg('上传失败', {icon: 5,anim: 6});
+                    return layer.msg(res.message, {icon: 5,anim: 6});
                 }
 
             }
@@ -120,14 +120,14 @@
                 dataType:"json",
                 contentType: "application/json; charset=utf-8",
                 success:function(res){
-                    if(res){
+                    if(res.code == 200){
                         layer.msg('修改成功！', {
                             time: 1000 //1秒关闭（如果不配置，默认是3秒）
                         }, function(){
                             parent.window.location.reload();
                         });
                     }else{
-                        layer.msg("修改失败", {icon: 5,anim: 6});
+                        layer.msg(res.message, {icon: 5,anim: 6});
                         return false;
                     }
                 },
