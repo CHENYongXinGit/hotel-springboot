@@ -21,7 +21,7 @@
     <div class="layui-upload photo">
         <button type="button" class="layui-btn layui-btn-sm" id="test">更改头像</button>
         <div class="layui-upload-list">
-            <img src="/images/default-admin.png" id="demo"/>
+            <img th:src="${session.currentUser.photo != null ? session.currentUser.photo : '/images/default-admin.png'}" id="demo"/>
             <p id="demoText"></p>
         </div>
     </div>
@@ -61,7 +61,7 @@
         var uploadInst = upload.render({
             elem: '#test'
             ,method:'post'
-            ,url: '/Admin/updateByPhoto'
+            ,url: '/Safety/upload'
             ,before: function(obj){
                 //预读本地文件示例，不支持ie8
                 obj.preview(function(index, file, result){
@@ -71,8 +71,11 @@
             ,done: function(res){
                 //上传成功
                 if(res){
-                    layer.tips("更改成功", '#demo');
-                    layer.msg('需要重新登录才能刷新', {icon: 1,anim: 5});
+                    layer.msg('更改成功！', {
+                        time: 1000 //1秒关闭（如果不配置，默认是3秒）
+                    }, function(){
+                        parent.window.location.reload();
+                    });
                 }
                 //如果上传失败
                 else{

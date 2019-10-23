@@ -50,7 +50,10 @@
                     </a>
                 </li>
                 <li class="layui-nav-item" lay-unselect>
-                    <a href="javascript:;"><img src="/images/default-admin.png" class="layui-nav-img"><span th:text="${session.currentUser.username}"></span></a>
+                    <a href="javascript:;">
+                        <img th:src="${session.currentUser.photo != null ? session.currentUser.photo : '/images/default-admin.png'}"
+                             class="layui-nav-img"><span th:text="${session.currentUser.username}"></span>
+                    </a>
                     <dl class="layui-nav-child">
                         <dd><a href="/Safety/ModifyInformation" target="demoAdmin">个人信息</a></dd>
                         <dd><a href="/Safety/SecurityManagement" target="demoAdmin">安全管理</a></dd>
@@ -65,7 +68,7 @@
         <div class="layui-side-scroll">
             <ul class="layui-nav layui-nav-tree" lay-shrink="all" lay-filter="test">
                 <!-- 侧边导航: <ul class="layui-nav layui-nav-tree layui-nav-side"> -->
-                <img src="/images/default-admin.png" class="img">
+                <img th:src="${session.currentUser.photo != null ? session.currentUser.photo : '/images/default-admin.png'}" class="img">
                 <div class="welcome-font"><em>欢迎：</em><a href="#" th:text="${session.currentUser.username}"></a></div>
                 <li class="layui-nav-item">
                     <a href="/Admin/lun" target="demoAdmin"><i class="layui-icon layui-icon-home"></i>首页</a>

@@ -3,9 +3,13 @@ package person.cyx.hotel.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 import person.cyx.hotel.model.Admin;
+import person.cyx.hotel.provider.UCloudProvider;
 import person.cyx.hotel.service.impl.AdminServiceImpl;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 /**
@@ -23,6 +27,8 @@ public class SafetyController {
 
     @Autowired
     private AdminServiceImpl adminService;
+    @Autowired
+    private UCloudProvider uCloudProvider;
 
     @GetMapping("/changePwd")
     public String changePwd(){
@@ -53,5 +59,30 @@ public class SafetyController {
         } else {
             return false;
         }
+    }
+
+    @ResponseBody
+    @PostMapping("/upload")
+    public boolean upload(HttpServletRequest request){
+
+        MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
+        MultipartFile file = multipartRequest.getFile("file");
+
+        try {
+            String fileName = uCloudProvider.upload(file.getInputStream(), file.getContentType(), file.getOriginalFilename());
+            System.out.println(fileName);
+            Admin currentUser = (Admin) request.getSession().getAttribute("currentUser");
+            currentUser.setPhoto(fileName);
+            int update = adminService.updateById(currentUser);
+            if (update >= 1){
+                request.getSession().setAttribute("currentUser",currentUser);
+                return true;
+            } else {
+                return false;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 }
