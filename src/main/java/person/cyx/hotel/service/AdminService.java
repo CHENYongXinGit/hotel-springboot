@@ -13,6 +13,8 @@ public interface AdminService {
 
     Admin findAdminByUsername(String username);
 
+    int updateById(Admin admin);
+
     LoginRedisDTO loginUserLock(String username);
 
     LoginRedisDTO loginValdate(String username);

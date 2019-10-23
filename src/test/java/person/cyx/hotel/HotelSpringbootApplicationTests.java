@@ -8,6 +8,7 @@ class HotelSpringbootApplicationTests {
 
     @Test
     void contextLoads() {
+
     }
 
 }

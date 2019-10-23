@@ -31,4 +31,8 @@ public class LoginRedisDTO {
      * 还允许登录输入错误次数
      */
     private Long allowNum;
+    /**
+     * token
+     */
+    private Object token;
 }

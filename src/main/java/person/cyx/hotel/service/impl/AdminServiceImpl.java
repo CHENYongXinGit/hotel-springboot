@@ -44,6 +44,12 @@ public class AdminServiceImpl implements AdminService {
         return adminMapper.findAdminByUsername(username);
     }
 
+    @Override
+    public int updateById(Admin admin) {
+        admin.setUpdated(System.currentTimeMillis());
+        return adminMapper.updateByPrimaryKeySelective(admin);
+    }
+
     /**
      * 1判断当前登录的用户是否被限制登录
      * 查询当前KEY是否存在，如果存在，就被限制注意:需要给用户做提示:您当前的用户已被限制，还剩多长时间

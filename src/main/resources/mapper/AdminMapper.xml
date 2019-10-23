@@ -7,13 +7,13 @@
     <result column="password" jdbcType="VARCHAR" property="password" />
     <result column="created" jdbcType="BIGINT" property="created" />
     <result column="updated" jdbcType="BIGINT" property="updated" />
-    <result column="token" jdbcType="CHAR" property="token" />
+    <result column="phone" jdbcType="VARCHAR" property="phone" />
     <result column="photo" jdbcType="VARCHAR" property="photo" />
     <result column="remarks" jdbcType="VARCHAR" property="remarks" />
   </resultMap>
 
   <sql id="Base_Column_List">
-    id, username, password, created, updated, token, photo, remarks
+    id, username, password, created, updated, phone, photo, remarks
   </sql>
 
   <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
@@ -37,10 +37,10 @@
 
   <insert id="insert" parameterType="person.cyx.hotel.model.Admin">
     insert into admin (id, username, password, 
-      created, updated, token, 
+      created, updated, phone,
       photo, remarks)
     values (#{id,jdbcType=BIGINT}, #{username,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR}, 
-      #{created,jdbcType=BIGINT}, #{updated,jdbcType=BIGINT}, #{token,jdbcType=CHAR}, 
+      #{created,jdbcType=BIGINT}, #{updated,jdbcType=BIGINT}, #{phone,jdbcType=VARCHAR},
       #{photo,jdbcType=VARCHAR}, #{remarks,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="person.cyx.hotel.model.Admin">
@@ -61,8 +61,8 @@
       <if test="updated != null">
         updated,
       </if>
-      <if test="token != null">
-        token,
+      <if test="phone != null">
+        phone,
       </if>
       <if test="photo != null">
         photo,
@@ -87,8 +87,8 @@
       <if test="updated != null">
         #{updated,jdbcType=BIGINT},
       </if>
-      <if test="token != null">
-        #{token,jdbcType=CHAR},
+      <if test="phone != null">
+        #{phone,jdbcType=VARCHAR},
       </if>
       <if test="photo != null">
         #{photo,jdbcType=VARCHAR},
@@ -113,8 +113,8 @@
       <if test="updated != null">
         updated = #{updated,jdbcType=BIGINT},
       </if>
-      <if test="token != null">
-        token = #{token,jdbcType=CHAR},
+      <if test="phone != null">
+        phone = #{phone,jdbcType=VARCHAR},
       </if>
       <if test="photo != null">
         photo = #{photo,jdbcType=VARCHAR},
@@ -131,7 +131,7 @@
       password = #{password,jdbcType=VARCHAR},
       created = #{created,jdbcType=BIGINT},
       updated = #{updated,jdbcType=BIGINT},
-      token = #{token,jdbcType=CHAR},
+      phone = #{phone,jdbcType=VARCHAR},
       photo = #{photo,jdbcType=VARCHAR},
       remarks = #{remarks,jdbcType=VARCHAR}
     where id = #{id,jdbcType=BIGINT}

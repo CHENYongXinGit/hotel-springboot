@@ -10,6 +10,8 @@ layui.use('layer', function(){
 
     setIframe();
     $(window).on('resize', setIframe);
+
+
 });
 layui.use(['layer','colorpicker'], function(){
     var layer = layui.layer

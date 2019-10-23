@@ -44,7 +44,7 @@ public class MyRealm extends AuthorizingRealm {
         String username = ((UsernamePasswordToken) token).getUsername();
 
         //2. 利用 username 查询数据库得到用户的信息.
-        Admin admin= adminService.findAdminByUsername(username);
+        Admin admin = adminService.findAdminByUsername(username);
         if (admin == null){
             return null;
         }

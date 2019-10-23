@@ -20,15 +20,18 @@ import person.cyx.hotel.service.impl.AdminServiceImpl;
 import person.cyx.hotel.util.RedisUtil;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpSession;
 
 /**
+ * 登录认证Controller
+ *
  * @program: hotel-springboot
  * @description
  * @author: chenyongxin
  * @create: 2019-10-17 14:34
  **/
 @Controller
-@RequestMapping("/Admin")
+@RequestMapping("/Login")
 public class LoginController {
 
     @Value("${redis.login.countFailKey}")
@@ -51,7 +54,7 @@ public class LoginController {
      * @return
      */
     @ResponseBody
-    @PostMapping("/doLogin")
+    @PostMapping("/login")
     public ResultDTO doLogin(@RequestBody LoginDTO loginDTO) {
         String username = loginDTO.getUsername();
         String password = loginDTO.getPassword();
@@ -75,6 +78,7 @@ public class LoginController {
             try {
                 //执行登录
                 currentUser.login(token);
+
             } catch (UnknownAccountException e) {
                 System.out.println("账户不存在");
                 return ResultDTO.errorOf(CustomizeErrorCode.USER_NOT_FOUND);
@@ -97,13 +101,24 @@ public class LoginController {
                 //把当前用户放入session
                 Session session = currentUser.getSession();
                 Admin admin = adminService.findAdminByUsername(username);
+                System.out.println("currentUser:"+admin.getUsername()+"登录成功！");
                 session.setAttribute("currentUser",admin);
-                return ResultDTO.okOf();
+                loginRedisDTO.setToken(currentUser.getSession().getId());
+                return ResultDTO.okOf(loginRedisDTO);
             }else{
                 token.clear();
                 return ResultDTO.errorOf(CustomizeErrorCode.USER_PARAM_WRONG);
             }
         }
+    }
+
+    /**
+     * 退出登录
+     * @param session
+     */
+    @GetMapping("/out")
+    public void out(HttpSession session){
+        session.invalidate();
     }
 
 }

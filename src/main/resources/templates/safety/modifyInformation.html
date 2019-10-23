@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>修改信息</title>
+    <link rel="stylesheet" type="text/css" href="/layui/css/layui.css"/>
+    <style type="text/css">
+        .photo{padding-left: 50px;}
+        .photo button{margin-left: 22px;}
+        .photo img{padding: 0px 5px 8px 5px;width: 100px;height: 100px;}
+        .photo p{margin-left: 9px;}
+        .cent{width: 50%;margin: 10px auto;}
+    </style>
+</head>
+<body>
+<div class="cent">
+    <fieldset class="layui-elem-field layui-field-title" style="margin-top: 30px;">
+        <legend>修改信息：更改用户头像</legend>
+    </fieldset>
+    <div class="layui-upload photo">
+        <button type="button" class="layui-btn layui-btn-sm" id="test">更改头像</button>
+        <div class="layui-upload-list">
+            <img src="/images/default-admin.png" id="demo"/>
+            <p id="demoText"></p>
+        </div>
+    </div>
+
+    <fieldset class="layui-elem-field layui-field-title" style="margin-top: 30px;">
+        <legend>修改信息：更改基本信息</legend>
+    </fieldset>
+    <form class="layui-form">
+        <div class="layui-form-item">
+            <label class="layui-form-label">用户名：</label>
+            <div class="layui-input-inline">
+                <input type="text" name="username" id="username" class="layui-input layui-disabled" readonly th:value="${session.currentUser.username}">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">手机号：</label>
+            <div class="layui-input-inline">
+                <input type="tel" name="phone" id="phone" lay-verify="required|phone" placeholder="请输入手机号"
+                       autocomplete="off" class="layui-input" th:value="${session.currentUser.phone}">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn" lay-submit="submit" lay-filter="formDemo">更改</button>
+                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+            </div>
+        </div>
+    </form>
+</div>
+<script src="/layui/layui.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript">
+    layui.use(['layer','upload'], function(){
+        var $ = layui.jquery
+            ,upload = layui.upload;
+
+        //普通图片上传
+        var uploadInst = upload.render({
+            elem: '#test'
+            ,method:'post'
+            ,url: '/Admin/updateByPhoto'
+            ,before: function(obj){
+                //预读本地文件示例，不支持ie8
+                obj.preview(function(index, file, result){
+                    $('#demo').attr('src', result); //图片链接（base64）
+                });
+            }
+            ,done: function(res){
+                //上传成功
+                if(res){
+                    layer.tips("更改成功", '#demo');
+                    layer.msg('需要重新登录才能刷新', {icon: 1,anim: 5});
+                }
+                //如果上传失败
+                else{
+                    return layer.msg('上传失败', {icon: 5,anim: 6});
+                }
+
+            }
+            ,error: function(){
+                //演示失败状态，并实现重传
+                var demoText = $('#demoText');
+                demoText.html('<span style="color: #FF5722;">上传失败</span> <a class="layui-btn layui-btn-xs demo-reload">重试</a>');
+                demoText.find('.demo-reload').on('click', function(){
+                    uploadInst.upload();
+                });
+            }
+        });
+    });
+    layui.use('form', function(){
+        var form = layui.form
+            ,$ = layui.jquery;
+
+        form.verify({
+            username: function(value, item){ //value：表单的值、item：表单的DOM对象
+                if(!new RegExp("^[a-zA-Z0-9_\u4e00-\u9fa5\\s·]+$").test(value)){
+                    return '用户名不能有特殊字符';
+                }
+                if(/(^\_)|(\__)|(\_+$)/.test(value)){
+                    return '用户名首尾不能出现下划线\'_\'';
+                }
+                if(/^\d+\d+\d$/.test(value)){
+                    return '用户名不能全为数字';
+                }
+            }
+        });
+        //监听提交
+        form.on('submit(formDemo)', function(){
+            var rephone = $("#phone").val();
+            $.ajax({
+                type:"GET",
+                url:"/Safety/doModifyInformation",
+                data:{phone:rephone},
+                dataType:"json",
+                contentType: "application/json; charset=utf-8",
+                success:function(res){
+                    if(res){
+                        layer.msg('修改成功！', {
+                            time: 1000 //1秒关闭（如果不配置，默认是3秒）
+                        }, function(){
+                            parent.window.location.reload();
+                        });
+                    }else{
+                        layer.msg("修改失败", {icon: 5,anim: 6});
+                        return false;
+                    }
+                },
+                error:function(){//当访问时候，404，500 等非200的错误状态码
+                    layer.msg('请求错误！', {icon: 5,anim: 6});
+                    return false;
+                }
+            });
+            return false;
+        });
+    });
+</script>
+</body>
+</html>

@@ -16,7 +16,7 @@ public class Admin implements Serializable {
 
     private Long updated;
 
-    private String token;
+    private String phone;
 
     private String photo;
 
@@ -62,12 +62,12 @@ public class Admin implements Serializable {
         this.updated = updated;
     }
 
-    public String getToken() {
-        return token;
+    public String getPhone() {
+        return phone;
     }
 
-    public void setToken(String token) {
-        this.token = token == null ? null : token.trim();
+    public void setPhone(String phone) {
+        this.phone = phone == null ? null : phone.trim();
     }
 
     public String getPhoto() {
