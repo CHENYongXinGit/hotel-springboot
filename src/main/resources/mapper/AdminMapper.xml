@@ -7,21 +7,14 @@
     <result column="password" jdbcType="VARCHAR" property="password" />
     <result column="created" jdbcType="BIGINT" property="created" />
     <result column="updated" jdbcType="BIGINT" property="updated" />
+    <result column="status" jdbcType="INTEGER" property="status" />
     <result column="phone" jdbcType="VARCHAR" property="phone" />
     <result column="photo" jdbcType="VARCHAR" property="photo" />
     <result column="remarks" jdbcType="VARCHAR" property="remarks" />
   </resultMap>
-
   <sql id="Base_Column_List">
-    id, username, password, created, updated, phone, photo, remarks
+    id, username, password, created, updated, status, phone, photo, remarks
   </sql>
-
-  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
-    select 
-    <include refid="Base_Column_List" />
-    from admin
-    where id = #{id,jdbcType=BIGINT}
-  </select>
 
   <select id="findAdminByUsername" parameterType="java.lang.String" resultMap="BaseResultMap">
     select
@@ -30,18 +23,60 @@
     where username = #{username,jdbcType=VARCHAR}
   </select>
 
+  <select id="checkByPhone" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from admin
+    where phone = #{phone,jdbcType=VARCHAR}
+  </select>
+
+  <select id="login" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from admin
+    where username = #{username,jdbcType=VARCHAR}
+    and password = #{password,jdbcType=VARCHAR}
+  </select>
+
+  <select id="list" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from admin
+  </select>
+
+  <select id="fuzzyQueryUsername" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from admin
+    where username like '%${username}%'
+  </select>
+
+  <select id="fuzzyQueryPhone" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from admin
+    where phone like '%${phone}%'
+  </select>
+
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from admin
+    where id = #{id,jdbcType=BIGINT}
+  </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
     delete from admin
     where id = #{id,jdbcType=BIGINT}
   </delete>
-
   <insert id="insert" parameterType="person.cyx.hotel.model.Admin">
     insert into admin (id, username, password, 
-      created, updated, phone,
-      photo, remarks)
+      created, updated, status, 
+      phone, photo, remarks
+      )
     values (#{id,jdbcType=BIGINT}, #{username,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR}, 
-      #{created,jdbcType=BIGINT}, #{updated,jdbcType=BIGINT}, #{phone,jdbcType=VARCHAR},
-      #{photo,jdbcType=VARCHAR}, #{remarks,jdbcType=VARCHAR})
+      #{created,jdbcType=BIGINT}, #{updated,jdbcType=BIGINT}, #{status,jdbcType=INTEGER}, 
+      #{phone,jdbcType=VARCHAR}, #{photo,jdbcType=VARCHAR}, #{remarks,jdbcType=VARCHAR}
+      )
   </insert>
   <insert id="insertSelective" parameterType="person.cyx.hotel.model.Admin">
     insert into admin
@@ -60,6 +95,9 @@
       </if>
       <if test="updated != null">
         updated,
+      </if>
+      <if test="status != null">
+        status,
       </if>
       <if test="phone != null">
         phone,
@@ -87,6 +125,9 @@
       <if test="updated != null">
         #{updated,jdbcType=BIGINT},
       </if>
+      <if test="status != null">
+        #{status,jdbcType=INTEGER},
+      </if>
       <if test="phone != null">
         #{phone,jdbcType=VARCHAR},
       </if>
@@ -113,6 +154,9 @@
       <if test="updated != null">
         updated = #{updated,jdbcType=BIGINT},
       </if>
+      <if test="status != null">
+        status = #{status,jdbcType=INTEGER},
+      </if>
       <if test="phone != null">
         phone = #{phone,jdbcType=VARCHAR},
       </if>
@@ -131,6 +175,7 @@
       password = #{password,jdbcType=VARCHAR},
       created = #{created,jdbcType=BIGINT},
       updated = #{updated,jdbcType=BIGINT},
+      status = #{status,jdbcType=INTEGER},
       phone = #{phone,jdbcType=VARCHAR},
       photo = #{photo,jdbcType=VARCHAR},
       remarks = #{remarks,jdbcType=VARCHAR}

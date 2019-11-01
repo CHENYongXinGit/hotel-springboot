@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>viewUser</title>
+    <link rel="stylesheet" type="text/css" href="/layui/css/layui.css"/>
+    <style type="text/css">
+        .cent{width: 90%;margin: 20px auto;padding-bottom:10px;}
+    </style>
+</head>
+<body>
+<div class="cent">
+    <form class="layui-form layui-form-pane">
+        <input type="text" id="id" name="id" hidden>
+        <div class="layui-form-item">
+            <label class="layui-form-label">房间类型名称：</label>
+            <div class="layui-input-block">
+                <input type="text" id="name" name="name" lay-verify="required" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item layui-form-text">
+            <label class="layui-form-label">备注：</label>
+            <div class="layui-input-block">
+                <textarea placeholder="请输入内容..." class="layui-textarea" id="remarks" name="remarks"></textarea>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn layui-btn-lg" style="width: 175px" lay-submit lay-filter="formDemo">确定</button>
+            </div>
+        </div>
+    </form>
+</div>
+<script src="/layui/layui.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript">
+    layui.use(['layer','form'], function() {
+        var form = layui.form,
+            $ = layui.jquery;
+
+        //监听提交
+        form.on('submit(formDemo)', function(data) {
+            console.log(JSON.stringify(data.field));
+            $.ajax({
+                type:"post",
+                url:"/Room/roomTypeOperate",
+                data:JSON.stringify(data.field),
+                dataType:"json",
+                contentType: "application/json; charset=utf-8",
+                success:function(res){
+                    if(res.code==200){
+                        layer.msg('操作成功！', {
+                            time: 1000 //1秒关闭（如果不配置，默认是3秒）
+                        }, function(){
+                            parent.window.location.reload();
+                        });
+                        return false;
+                    }else{
+                        layer.msg(res.message, {icon: 5,anim: 6});
+                        return false;
+                    }
+                },
+                error:function(data){//当访问时候，404，500 等非200的错误状态码
+                    layer.msg('请求错误！', {icon: 5,anim: 6});
+                    return false;
+                }
+            });
+            return false;
+        });
+    });
+</script>
+</body>
+</html>

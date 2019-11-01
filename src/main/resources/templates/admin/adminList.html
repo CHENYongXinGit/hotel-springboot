@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>list</title>
+    <link rel="stylesheet" type="text/css" href="/layui/css/layui.css"/>
+    <style type="text/css">
+        .layui-table-cell{height:40px;line-height: 40px;}
+    </style>
+    <script src="/js/moment.js"></script>
+</head>
+<body>
+<div style="padding: 15px;">
+    <div class="demoTable" style="display: inline">
+        搜索用户名：
+        <div class="layui-inline">
+            <input class="layui-input" name="username" id="demoReload" autocomplete="off">
+        </div>
+        <button class="layui-btn" data-type="reload"><i class="layui-icon layui-icon-search"></i></button>
+    </div>
+    <div class="demoTable2" style="display: inline;margin-left: 28px">
+        搜索手机号：
+        <div class="layui-inline">
+            <input class="layui-input" name="phone" id="demoReload2" autocomplete="off">
+        </div>
+        <button class="layui-btn"><i class="layui-icon layui-icon-search"></i></button>
+    </div>
+    <table id="demo" lay-filter="test"></table>
+    <script type="text/html" id="toolbarDemo">
+        <div class="layui-btn-container">
+            <button class="layui-btn layui-btn-sm layui-btn-radius" lay-event="reloadTabel"><i class="layui-icon layui-icon-refresh-3"></i>刷新表格</button>
+            <a class="layui-btn layui-btn-sm layui-btn-radius" href="/Admin/register"><i class="layui-icon layui-icon-add-1"></i>添加员工</a>
+        </div>
+    </script>
+    <script type="text/html" id="barDemo">
+        <a class="layui-btn layui-btn-xs" lay-event="detail"><i class="layui-icon layui-icon-survey"></i>查看</a>
+        <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del"><i class="layui-icon layui-icon-delete"></i>删除</a>
+    </script>
+    <script type="text/html" id="xuhao">
+        {{d.LAY_TABLE_INDEX+1}}
+    </script>
+</div>
+<script src="/layui/layui.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript">
+    layui.use(['table','form'], function(){
+        var table = layui.table;
+
+        //第一个实例
+        table.render({
+            elem: '#demo'
+            // ,even: true //开启隔行背景
+            ,id: 'listUsers'
+            ,title: '用户表'
+            ,url: '/Admin/list' //数据接口
+            ,toolbar: '#toolbarDemo'
+            ,height : 'full-90'
+            ,cols: [
+                [ //表头
+                {templet:'#xuhao', title: '序号', width:100, sort: true, fixed: 'left'}
+                ,{field: 'id', title: 'ID', hide: true}
+                ,{field: 'username', title: '用户名', width:160, align:'center'}
+                ,{field: 'phone', title: '手机号', width:200, align:'center'}
+                ,{title: '状态', align:'center', sort: true, width:160, templet:function (d) {
+                    return d.status == 1 ? '锁定' : '正常';}}
+                ,{title: '创建时间', align:'center', sort: true, templet:function (d) {
+                    return moment(d.created).format('YYYY-MM-DD HH:mm');}}
+                ,{title: '修改时间', align:'center', sort: true, templet:function (d) {
+                    return moment(d.updated).format('YYYY-MM-DD HH:mm');}}
+                ,{field: 'remarks', title: '备注', align:'center'}
+                ,{fixed: 'right', title: '操作', width: 230, align:'center', toolbar: '#barDemo'}
+                ]
+            ]
+            ,page: true //开启分页
+        });
+
+        //监听行工具事件
+        table.on('tool(test)', function(obj){ //注：tool 是工具条事件名，test 是 table 原始容器的属性 lay-filter="对应的值"
+            var data = obj.data //获得当前行数据
+                ,layEvent = obj.event; //获得 lay-event 对应的值
+            if(layEvent === 'detail'){
+                var username = data.username;
+                layer.open({
+                    type: 2,
+                    id:'edit1',
+                    area: ['430px', '590px'],
+                    anim: 2,
+                    resize:false,
+                    title: ['<i class="layui-icon layui-icon-survey"></i>查看', 'font-size:18px;'],
+                    skin:'layui-layer-molv',
+                    content: ['/Admin/view?username=' + username, 'no'],
+                    success: function (layero, index) {
+                        var body = layer.getChildFrame('body', index);
+                        var iframeWin = window[layero.find('iframe')[0]['name']]; //得到iframe页的窗口对象，执行iframe页的方法：iframeWin.method();
+                        //初始化表单数据的值
+                        body.find("#id").val(data.id); //要修改的每个td的值存为变量传进去
+                        body.find("#username").val(username);
+                        body.find("#remarks").val(data.remarks);
+                        body.find("#status").val(data.status);
+                        var formAdd = iframeWin.layui.form;
+                        formAdd.render('select'); //刷新select选择框渲染
+                    }
+                });
+            } else if(layEvent === 'del'){
+                layer.confirm('真的删除行么', function(index){
+                    var id = data.id;
+                    //向服务端发送删除指令
+                    $.ajax({
+                        type:"GET",
+                        url:"/Admin/delete",
+                        data:{id:id},
+                        dataType:"json",
+                        success:function(res){
+                            if(res.code == 200){
+                                obj.del(); //删除对应行（tr）的DOM结构
+                                layer.close(index);
+                                layer.msg('删除成功！', {icon: 1,anim: 5});
+                                return false;
+                            }else{
+                                layer.close(index);
+                                layer.msg(res.message, {icon: 5,anim: 6});
+                                return false;
+                            }
+                        },
+                        error:function(data){//当访问时候，404，500 等非200的错误状态码
+                            layer.msg('请求错误！', {icon: 5,anim: 6});
+                            return false;
+                        }
+                    });
+                });
+            }
+        });
+
+        //头工具栏事件
+        table.on('toolbar(test)', function(obj){
+            switch(obj.event){
+                case 'reloadTabel':
+                    //执行重载
+                    table.reload('listUsers', {
+                        url: '/Admin/list' //数据接口
+                    });
+                    break;
+            };
+        });
+
+        var $ = layui.$, active = {
+            reload: function(){
+                var demoReload = $('#demoReload');
+
+                //执行重载
+                table.reload('listUsers', {
+                    page: {
+                        curr: 1 //重新从第 1 页开始
+                    }
+                    ,where: {
+                        username: demoReload.val()
+                    }
+                    ,url: '/Admin/fuzzyQueryUsername' //数据接口
+                });
+            }
+        };
+
+        $('.demoTable .layui-btn').on('click', function(){
+            var type = $(this).data('type');
+            active[type] ? active[type].call(this) : '';
+        });
+
+        $('.demoTable2 .layui-btn').on('click', function(){
+            var demoReload2 = $('#demoReload2');
+            if (isNaN(demoReload2.val())) {
+                layer.msg("请输入数字", {icon: 5,anim: 6});
+                return;
+            }
+            //执行重载
+            table.reload('listUsers', {
+                page: {
+                    curr: 1 //重新从第 1 页开始
+                }
+                ,where: {
+                    phone: demoReload2.val()
+                }
+                ,url: '/Admin/fuzzyQueryPhone' //数据接口
+            });
+        });
+
+    });
+</script>
+</body>
+</html>

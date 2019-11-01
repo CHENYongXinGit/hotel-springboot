@@ -1,7 +1,10 @@
 package person.cyx.hotel.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import person.cyx.hotel.shiro.MyRealm;
 
 /**
  * @program: hotel-springboot
@@ -12,8 +15,18 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class IndexController {
 
+    @Autowired
+    private MyRealm myRealm;
+
     @GetMapping("/")
     public String index() {
         return "index";
+    }
+
+    @ResponseBody
+    @GetMapping("/refresh")
+    public boolean refresh(){
+        myRealm.clearCache();
+        return true;
     }
 }

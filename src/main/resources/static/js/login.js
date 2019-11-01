@@ -26,6 +26,11 @@ layui.use(['layer','form','jquery'], function() {
             /^[\S]{6,12}$/
             ,'密码必须6到12位，且不能出现空格'
         ]
+        ,rePass: function (value, item) {
+            if ($("#password").val() != value) {
+                return '两处密码不一致';
+            }
+        }
         ,yzm: function (value, item) {
             if ($("#yzm").val() == "") {
                 return '验证码不能为空';
@@ -81,6 +86,44 @@ layui.use(['layer','form','jquery'], function() {
         }
     });
 
+    //检查手机号
+    var $checkPhone = "手机号不能为空";
+    $("#checkPhone").blur(function CheckPhone() {
+        var phonereg = /^1\d{10}$/;
+        var phonestring = $(this).val();
+        if ($("#phone").val() == "") {
+            layer.tips($checkPhone, '#checkPhone',{tips:[2,'red'],time:0});
+            return false;
+        }
+        if (phonereg.test(phonestring)) {
+            $.ajax({
+                type:"GET",
+                url:"/Admin/checkByPhone",
+                data:{phone:phonestring},
+                dataType:"json",
+                success:function(res){
+                    if(res.code == 200){//账号可用，正确提示
+                        $checkPhone = "手机号可用";
+                        layer.tips($checkPhone, '#checkPhone');
+                        return true;
+                    }else{//账号不可用，错误提示
+                        $checkPhone = res.message;
+                        layer.tips($checkPhone, '#checkPhone',{tips:[2,'red'],time:0});
+                        return false;
+                    }
+                },
+                error:function(data){//当访问时候，404，500 等非200的错误状态码
+                    layer.msg('请求错误！', {icon: 5,anim: 6});
+                    return false;
+                }
+            });
+        }else{
+            $checkPhone = "请输入正确的手机号";
+            layer.tips($checkPhone, '#checkPhone',{tips:[2,'red'],time:0});
+            return false;
+        }
+    });
+
     //验证码
     var code;
     function createCode(){
@@ -119,7 +162,11 @@ layui.use(['layer','form','jquery'], function() {
                 console.log(res);
                 if(res.code == 200){
                     window.open("/", "_parent");
-                }else {
+                } else if (res.code == 2004 || res.code == 2005 || res.code == 2001){
+                    layer.close(layIndex);
+                    layer.msg(res.message, {icon: 5,anim: 6});
+                    return false;
+                } else {
                     layer.close(layIndex);
                     createCode();
                     $("#yzm").val("");
@@ -166,6 +213,46 @@ layui.use(['layer','form','jquery'], function() {
                 }else {
                     layer.close(layIndex);
 
+                    return false;
+                }
+            },
+            error:function(){
+                layer.close(layIndex);
+                layer.alert('操作失败！！！',{icon:5});
+                return false;
+            }
+        });
+        return false;
+    });
+
+    //注册
+    form.on('submit(register)', function(data) {
+        if ($checkPhone != "手机号可用") {
+            $("#checkPhone").trigger("blur");
+            return false;
+        }
+        var param=data.field;//定义临时变量获取表单提交过来的数据，非json格式
+        console.log(JSON.stringify(param));//测试是否获取到表单数据，调试模式下在页面控制台查看
+        var layIndex = layer.load(2, {
+            shade: [0.1, '#393D49']
+        });
+        $.ajax({
+            url:"/Admin/register",
+            type:'post',//method请求方式，get或者post
+            dataType:'json',//预期服务器返回的数据类型
+            data:JSON.stringify(param),//表格数据序列化
+            contentType: "application/json; charset=utf-8",
+            success:function(res){//res为相应体,function为回调函数
+                console.log(res);
+                if(res.code == 200){
+                    layer.close(layIndex);
+                    layer.msg("注册成功");
+                    return false;
+                } else {
+                    layer.close(layIndex);
+                    createCode();
+                    $("#yzm").val("");
+                    layer.msg(res.message, {icon: 5,anim: 6});
                     return false;
                 }
             },

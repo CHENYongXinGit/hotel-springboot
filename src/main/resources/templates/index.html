@@ -38,6 +38,9 @@
                 <li class="layui-nav-item" lay-unselect>
                     <a href="javascript:;" id="notice"><i class="layui-icon layui-icon-notice">&nbsp;</i>系统公告<span class="layui-badge-dot"></span></a>
                 </li>
+                <li class="layui-nav-item" id="refresh" lay-unselect>
+                    <a href="javascript:;"><i class="layui-icon layui-icon-refresh">&nbsp;</i>刷新权限</a>
+                </li>
                 <li class="layui-nav-item" id="fu" lay-unselect>
                     <a href="javascript:;"><i class="layui-icon layui-icon-theme">&nbsp;</i>换肤</a>
                 </li>
@@ -79,9 +82,10 @@
                 <li class="layui-nav-item layui-nav-itemed">
                     <a href="javascript:;"><i class="layui-icon layui-icon-app"></i>客房管理</a>
                     <dl class="layui-nav-child">
-                        <dd><a href="/Room/listRooms" target="demoAdmin">&nbsp;&nbsp;<i class="layui-icon layui-icon-table"></i>房间列表</a></dd>
+                        <dd><a href="/Room/list" target="demoAdmin">&nbsp;&nbsp;<i class="layui-icon layui-icon-table"></i>房间列表</a></dd>
                         <dd><a href="/Room/state" target="demoAdmin">&nbsp;&nbsp;<i class="layui-icon layui-icon-chart"></i>客房状态</a></dd>
-                        <dd><a href="/Room/toAddRoom" target="demoAdmin">&nbsp;&nbsp;<i class="layui-icon layui-icon-add-circle-fine"></i>添加房间</a></dd>
+                        <dd><a href="/Room/add" target="demoAdmin">&nbsp;&nbsp;<i class="layui-icon layui-icon-add-circle-fine"></i>添加房间</a></dd>
+                        <dd><a href="/Room/toRoomTypeList" target="demoAdmin">&nbsp;&nbsp;<i class="layui-icon layui-icon-add-circle-fine"></i>房间类型</a></dd>
                     </dl>
                 </li>
                 <li class="layui-nav-item">
@@ -99,10 +103,10 @@
                     </dl>
                 </li>
                 <li class="layui-nav-item">
-                    <a href="javascript:;"><i class="layui-icon layui-icon-help"></i>帮助</a>
+                    <a href="javascript:;"><i class="layui-icon layui-icon-set"></i>设置管理</a>
                     <dl class="layui-nav-child">
-                        <dd><a href="/Admin/404" target="demoAdmin">&nbsp;&nbsp;<i class="layui-icon layui-icon-404"></i>404页面</a></dd>
-                        <dd><a href="/Admin/404" target="demoAdmin">&nbsp;&nbsp;<i class="layui-icon layui-icon-user"></i>管理员注册</a></dd>
+                        <dd><a href="/Admin/toList" target="demoAdmin">&nbsp;&nbsp;<i class="layui-icon layui-icon-set-sm"></i>员工信息</a></dd>
+                        <dd><a href="/Admin/register" target="demoAdmin" id="res">&nbsp;&nbsp;<i class="layui-icon layui-icon-friends"></i>员工注册</a></dd>
                     </dl>
                 </li>
             </ul>
@@ -110,7 +114,7 @@
     </div>
     <!-- 内容主体区域 -->
     <div class="layui-body">
-        <iframe src="/Admin/lun" frameborder="0" name="demoAdmin" id="demoAdmin" style="width: 100%;"></iframe>
+        <iframe src="/Safety/ModifyInformation" frameborder="0" name="demoAdmin" id="demoAdmin" style="width: 100%;"></iframe>
     </div>
     <!-- 底部固定区域 -->
     <div class="layui-footer">
@@ -119,5 +123,29 @@
 </div>
 <script src="/layui/layui.js" type="text/javascript" charset="utf-8"></script>
 <script src="/js/index.js" type="text/javascript"></script>
+<script type="text/javascript">
+    layui.use(['layer','jquery'], function() {
+        var layer = layui.layer,
+            $ = layui.jquery;
+
+        if ("[[${session.lock}]]" != "lock") {
+            layer.msg("Hello [[${session.currentUser.username}]]");
+        }
+
+        if ("[[${session.lock}]]" == "lock") {
+            layer.open({
+                type: 2,
+                id:'edit',
+                anim: 6,
+                area: ['348px', '208px'],
+                resize:false,
+                title: false,
+                closeBtn: false,
+                shade: 0.9,
+                content: ['/Safety/lockScreen', 'no']
+            });
+        }
+    });
+</script>
 </body>
 </html>

@@ -36,7 +36,7 @@ public class SafetyController {
     private UCloudProvider uCloudProvider;
 
     @GetMapping("/changePwd")
-    public String changePwd(){
+    public String toChangePwd(){
         return "safety/updatePassword";
     }
 
@@ -53,6 +53,31 @@ public class SafetyController {
     @GetMapping("/SecurityManagement")
     public String SecurityManagement(){
         return "safety/securityManagement";
+    }
+
+    @GetMapping("/lockScreen")
+    public String lockScreen(HttpSession session){
+        session.setAttribute("lock","lock");
+        return "lockScreen";
+    }
+
+    @ResponseBody
+    @PostMapping("/unlock")
+    public ResultDTO unlock(@RequestBody Admin admin,HttpSession session){
+        if (StringUtils.isBlank(admin.getPassword())||StringUtils.isBlank(admin.getUsername())){
+            return ResultDTO.errorOf(CustomizeErrorCode.USER_IS_EMPTY);
+        }
+        SimpleHash simpleHash = new SimpleHash("md5", admin.getPassword(), admin.getUsername(), 1024);
+        String password = simpleHash.toString();
+        Admin login = adminService.login(admin.getUsername(),password);
+        if (login==null){
+            System.out.println("密码错误");
+            return ResultDTO.errorOf(CustomizeErrorCode.PASSWORD_WRONG);
+        } else {
+            System.out.println("解锁成功");
+            session.setAttribute("lock",null);
+            return ResultDTO.okOf();
+        }
     }
 
     /**
@@ -89,6 +114,10 @@ public class SafetyController {
         if(StringUtils.isBlank(phone)){
             return ResultDTO.errorOf(CustomizeErrorCode.USER_IS_EMPTY);
         }
+        Admin admin = adminService.checkByPhone(phone);
+        if (admin != null) {
+            return ResultDTO.errorOf(CustomizeErrorCode.PHONE_FOUND);
+        }
         Admin currentUser = (Admin) session.getAttribute("currentUser");
         currentUser.setPhone(phone);
         int update = adminService.updateById(currentUser);
@@ -121,7 +150,7 @@ public class SafetyController {
             return ResultDTO.okOf();
         }
         System.out.println("当前密码不正确");
-        return ResultDTO.errorOf(CustomizeErrorCode.USER_PASSWORD_FOUND);
+        return ResultDTO.errorOf(CustomizeErrorCode.PASSWORD_WRONG);
     }
 
     /**

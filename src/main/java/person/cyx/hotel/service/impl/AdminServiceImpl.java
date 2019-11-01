@@ -1,5 +1,6 @@
 package person.cyx.hotel.service.impl;
 
+import org.apache.shiro.crypto.hash.SimpleHash;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -11,6 +12,7 @@ import person.cyx.hotel.util.RedisUtil;
 import person.cyx.hotel.util.TimeSwitchUtil;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * @program: hotel-springboot
@@ -121,5 +123,45 @@ public class AdminServiceImpl implements AdminService {
                 return loginRedisDTO;
             }
         }
+    }
+
+    @Override
+    public Admin checkByPhone(String phone) {
+        return adminMapper.checkByPhone(phone);
+    }
+
+    @Override
+    public int insertSelective(Admin admin) {
+        SimpleHash simpleHash = new SimpleHash("md5", admin.getPassword(), admin.getUsername(), 1024);
+        String md5 = simpleHash.toString();
+        admin.setPassword(md5);
+        admin.setCreated(System.currentTimeMillis());
+        admin.setUpdated(System.currentTimeMillis());
+        return adminMapper.insertSelective(admin);
+    }
+
+    @Override
+    public Admin login(String username, String password) {
+        return adminMapper.login(username,password);
+    }
+
+    @Override
+    public List<Admin> list() {
+        return adminMapper.list();
+    }
+
+    @Override
+    public List<Admin> fuzzyQueryUsername(String username) {
+        return adminMapper.fuzzyQueryUsername(username);
+    }
+
+    @Override
+    public List<Admin> fuzzyQueryPhone(String phone) {
+        return adminMapper.fuzzyQueryPhone(phone);
+    }
+
+    @Override
+    public int delete(Long id) {
+        return adminMapper.deleteByPrimaryKey(id);
     }
 }

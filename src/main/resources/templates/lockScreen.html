@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="/layui/css/layui.css"/>
+    <style type="text/css">
+        .cent{width:330px;padding:10px;}
+        .cent .img{width: 90px;height: 90px;border-radius: 50%;margin-left: 120px;margin-top: 10px;margin-bottom: 5px;}
+        .cent p{text-align: center;font-size: 16px;color: #009F95;}
+        .cent .zho{margin-left: 38px;margin-top: 9px;margin-bottom: 9px;}
+    </style>
+</head>
+<body>
+<div class="cent">
+    <img th:src="${session.currentUser.photo != null ? session.currentUser.photo : '/images/default-admin.png'}"
+         class="img">
+    <p th:text="${session.currentUser.username}"></p>
+    <form class="layui-form zho">
+        <div class="layui-input-inline">
+            <input type="hidden" name="username" th:value="${session.currentUser.username}">
+            <input type="password" name="password" id="password" placeholder="请输入密码..." class="layui-input">
+        </div>
+        <div class="layui-input-inline">
+            <button class="layui-btn" lay-submit lay-filter="formDemo">解锁</button>
+        </div>
+    </form>
+</div>
+<script src="/layui/layui.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript">
+    layui.use(['layer','form'], function() {
+        var form = layui.form,
+            $ = layui.jquery;
+        //监听提交
+        form.on('submit(formDemo)', function(data) {
+            $.ajax({
+                type:"post",
+                url:"/Safety/unlock",
+                data:JSON.stringify(data.field),
+                dataType:"json",
+                contentType: "application/json; charset=utf-8",
+                success:function(res){
+                    if(res.code == 200){
+                        layer.msg('Hello [[${session.currentUser.username}]]', {
+                            time: 1000 //1秒关闭（如果不配置，默认是3秒）
+                        }, function(){
+                            var index = parent.layer.getFrameIndex(window.name);
+                            parent.layer.close(index);//关闭当前页
+                        });
+                        return false;
+                    }else{
+                        layer.msg(res.message, {icon: 5,anim: 6});
+                        return false;
+                    }
+                },
+                error:function(data){//当访问时候，404，500 等非200的错误状态码
+                    layer.msg('请求错误！', {icon: 5,anim: 6});
+                    return false;
+                }
+            });
+            return false;
+        });
+    });
+</script>
+</body>
+</html>

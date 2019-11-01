@@ -167,3 +167,6 @@
 .kit-login-wapper .kit-login-row .kit-login-col .kit-login-input .jym:hover{
 	color: #999999;
 }
+.layui-textarea{
+	height: 30px;
+}

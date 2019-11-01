@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>viewUser</title>
+    <link rel="stylesheet" type="text/css" href="/layui/css/layui.css"/>
+    <style type="text/css">
+        .cent{width: 90%;margin: 20px auto;padding-bottom:10px;}
+        .btn-offline{position: absolute;top: 77px;right: 28px;}
+    </style>
+</head>
+<body>
+<div class="cent">
+    <form class="layui-form layui-form-pane">
+        <input type="text" id="id" name="id" hidden>
+        <div class="layui-form-item">
+            <label class="layui-form-label">用户名：</label>
+            <div class="layui-input-block">
+                <input type="text" id="username" th:name="${getHost!=null}?username:null" readonly class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item" pane>
+            <label class="layui-form-label">是否在线：</label>
+            <div class="layui-input-block">
+                <input type="checkbox" id="online" lay-skin="switch" th:checked="${getHost!=null}?true:false" lay-text="在线|离线" >
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">登录ip：</label>
+            <div class="layui-input-block">
+                <input type="text" th:value="${getHost}" readonly class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">登录日期：</label>
+            <div class="layui-input-block">
+                <input type="text" th:value="${getStartTimestamp}" readonly class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">最后操作：</label>
+            <div class="layui-input-block">
+                <input type="text" th:value="${getLastAccessTime}" readonly class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">状态：</label>
+            <div class="layui-input-block">
+                <select name="status" id="status" lay-filter>
+                    <option value="0">正常</option>
+                    <option value="1">锁定</option>
+                </select>
+            </div>
+        </div>
+        <div class="layui-form-item layui-form-text">
+            <label class="layui-form-label">备注：</label>
+            <div class="layui-input-block">
+                <textarea placeholder="请输入内容..." class="layui-textarea" id="remarks" name="remarks"></textarea>
+            </div>
+        </div>
+        <button th:class="${getHost==null}?'layui-btn-disabled layui-btn layui-btn-sm layui-btn-danger btn-offline':'layui-btn layui-btn-sm layui-btn-danger btn-offline'"
+                th:disabled="${getHost==null?true:false}" type="button" id="offline">下线</button>
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn layui-btn-lg" style="width: 175px" lay-submit lay-filter="formDemo">确定更改</button>
+            </div>
+        </div>
+    </form>
+</div>
+<script src="/layui/layui.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript">
+    layui.use(['layer','form'], function() {
+        var form = layui.form,
+            $ = layui.jquery;
+
+        $("#offline").on('click', function () {
+            var username = $("#username").val();
+            //向服务端发送删除指令
+            $.ajax({
+                type:"GET",
+                url:"/Admin/offline",
+                data:{username:username},
+                dataType:"json",
+                success:function(res){
+                    if(res.code == 200){
+                        layer.msg('成功下线', {
+                            time: 500, //0.5秒关闭（如果不配置，默认是3秒）
+                            icon: 1,anim: 5
+                        }, function(){
+                            window.location.reload();
+                        });
+                        return false;
+                    }else{
+                        layer.msg(res.message, {icon: 5,anim: 6});
+                        return false;
+                    }
+                },
+                error:function(data){//当访问时候，404，500 等非200的错误状态码
+                    layer.msg('请求错误！', {icon: 5,anim: 6});
+                    return false;
+                }
+            });
+        });
+
+        //监听提交
+        form.on('submit(formDemo)', function(data) {
+            console.log(JSON.stringify(data.field));
+            $.ajax({
+                type:"post",
+                url:"/Admin/updateUser",
+                data:JSON.stringify(data.field),
+                dataType:"json",
+                contentType: "application/json; charset=utf-8",
+                success:function(res){
+                    if(res.code==200){
+                        layer.msg('修改成功！', {
+                            time: 1000 //1秒关闭（如果不配置，默认是3秒）
+                        }, function(){
+                            parent.window.location.reload();
+                        });
+                        return false;
+                    }else{
+                        layer.msg(res.message, {icon: 5,anim: 6});
+                        return false;
+                    }
+                },
+                error:function(data){//当访问时候，404，500 等非200的错误状态码
+                    layer.msg('请求错误！', {icon: 5,anim: 6});
+                    return false;
+                }
+            });
+            return false;
+        });
+    });
+</script>
+</body>
+</html>

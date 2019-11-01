@@ -1,26 +1,16 @@
-layui.use('element', function(){
-    var element = layui.element; //导航的hover效果、二级菜单等功能，需要依赖element模块
-});
-layui.use('layer', function(){
-    var $ = layui.$
+
+layui.use(['layer','colorpicker','element','jquery'], function(){
+    var layer = layui.layer
+        ,$ = layui.jquery
+        ,colorpicker = layui.colorpicker
+        ,element = layui.element//导航的hover效果、二级菜单等功能，需要依赖element模块
         ,setIframe = function(){
-        var height = $(window).height() - 107;
-        $('#demoAdmin').height(height);
-    };
+            var height = $(window).height() - 107;
+            $('#demoAdmin').height(height);
+        };
 
     setIframe();
     $(window).on('resize', setIframe);
-
-
-});
-layui.use(['layer','colorpicker'], function(){
-    var layer = layui.layer
-        ,$ = layui.$
-        ,colorpicker = layui.colorpicker;
-
-    /*if ("<%=session.getAttribute("lock")%>" != "lock") {
-        layer.msg('Hello <%=session.getAttribute("name")%>');
-    }*/
 
     $("#fu").click(function () {
         layer.open({
@@ -55,10 +45,8 @@ layui.use(['layer','colorpicker'], function(){
             }
         });
     });
-});
-layui.use(['layer','jquery'],function () {
-    var layer = layui.layer,
-        $ = layui.jquery;
+
+    //锁屏
     $("#lockScreen").on('click',function () {
         layer.open({
             type: 2,
@@ -68,22 +56,9 @@ layui.use(['layer','jquery'],function () {
             title: false,
             closeBtn: false,
             shade: 0.9,
-            content: ['/Admin/lockScreen', 'no']
+            content: ['/Safety/lockScreen', 'no']
         });
     });
-    /*if ("<%=session.getAttribute("lock")%>" == "lock"){
-        layer.open({
-            type: 2,
-            id:'edit',
-            anim: 6,
-            area: ['348px', '208px'],
-            resize:false,
-            title: false,
-            closeBtn: false,
-            shade: 0.9,
-            content: ['/Admin/lockScreen', 'no']
-        });
-    }*/
 
     //时钟
     function changeTitle () {
@@ -197,4 +172,29 @@ layui.use(['layer','jquery'],function () {
         });
     }
 
+    //刷新权限
+    $(document).on("click","#refresh",function () {
+        var layIndex = layer.load(2, {
+            shade: [0.1, '#393D49']
+        });
+        $.ajax({
+            url:"/refresh",
+            type:'get',//method请求方式，get或者post
+            dataType:"json",
+            success:function(res){//res为相应体,function为回调函数
+                if(res){
+                    setTimeout(function() {
+                        layer.close(layIndex);
+                        layer.msg("刷新完成");
+                    }, 500);
+                }
+            },
+            error:function(){
+                layer.close(layIndex);
+                layer.alert('操作失败！！！',{icon:5});
+            }
+        });
+    });
+
 });
+

@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>房间类型</title>
+    <link rel="stylesheet" type="text/css" href="/layui/css/layui.css"/>
+    <style type="text/css">
+        .layui-table-cell{height:40px;line-height: 40px;}
+    </style>
+    <script src="/js/moment.js"></script>
+</head>
+<body>
+<div style="padding: 15px;">
+    <fieldset class="layui-elem-field">
+        <legend>房间类型检索</legend>
+        <div class="layui-field-box">
+            <div class="demoTable" style="display: inline">
+                房间类型名称：
+                <div class="layui-inline">
+                    <input class="layui-input" name="name" id="demoReload" autocomplete="off">
+                </div>
+                <button class="layui-btn" data-type="reload"><i class="layui-icon layui-icon-search"></i></button>
+            </div>
+        </div>
+    </fieldset>
+    <table id="demo" lay-filter="test"></table>
+    <script type="text/html" id="toolbarDemo">
+        <div class="layui-btn-container">
+            <button class="layui-btn layui-btn-sm layui-btn-radius" lay-event="reloadTabel1"><i class="layui-icon layui-icon-refresh-3"></i>刷新</button>
+            <button class="layui-btn layui-btn-sm layui-btn-radius" lay-event="reloadTabel2"><i class="layui-icon layui-icon-add-1"></i>添加</button>
+        </div>
+    </script>
+    <script type="text/html" id="barDemo">
+        <a class="layui-btn layui-btn-xs" lay-event="edit"><i class="layui-icon layui-icon-edit"></i>编辑</a>
+        <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del"><i class="layui-icon layui-icon-delete"></i>删除</a>
+    </script>
+    <script type="text/html" id="xuhao">
+        {{d.LAY_TABLE_INDEX+1}}
+    </script>
+</div>
+<script src="/layui/layui.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript">
+    layui.use(['table','form','jquery'], function(){
+        var table = layui.table,
+        $ = layui.jquery;
+
+        //第一个实例
+        table.render({
+            elem: '#demo'
+            // ,even: true //开启隔行背景
+            ,id: 'roomTypeList'
+            ,title: '用户表'
+            ,url: '/Room/roomTypeList' //数据接口
+            ,toolbar: '#toolbarDemo'
+            ,height : 'full-150'
+            ,cols: [
+                [ //表头
+                    {templet:'#xuhao', title: '序号', width:100, sort: true, fixed: 'left'}
+                    ,{field: 'id', title: 'ID', hide: true}
+                    ,{field: 'name', title: '房间类型名称', align:'center'}
+                    ,{title: '创建时间', align:'center', sort: true, templet:function (d) {
+                        return moment(d.created).format('YYYY-MM-DD HH:mm:SS');}}
+                    ,{field: 'remarks', title: '备注', align:'center'}
+                    ,{fixed: 'right', title: '操作', width: 230, align:'center', toolbar: '#barDemo'}
+                ]
+            ]
+            ,page: true //开启分页
+        });
+
+        //监听行工具事件
+        table.on('tool(test)', function(obj){ //注：tool 是工具条事件名，test 是 table 原始容器的属性 lay-filter="对应的值"
+            var data = obj.data //获得当前行数据
+                ,layEvent = obj.event; //获得 lay-event 对应的值
+            if(layEvent === 'edit'){
+                layer.open({
+                    type: 2,
+                    id:'edit1',
+                    area: ['430px', '335px'],
+                    anim: 2,
+                    resize:false,
+                    title: ['<i class="layui-icon layui-icon-edit"></i>编辑', 'font-size:18px;'],
+                    skin:'layui-layer-molv',
+                    content: ['/Room/toRoomType', 'no'],
+                    success: function (layero, index) {
+                        var body = layer.getChildFrame('body', index);
+                        var iframeWin = window[layero.find('iframe')[0]['name']]; //得到iframe页的窗口对象，执行iframe页的方法：iframeWin.method();
+                        //初始化表单数据的值
+                        body.find("#id").val(data.id); //要修改的每个td的值存为变量传进去
+                        body.find("#name").val(data.name);
+                        body.find("#remarks").val(data.remarks);
+                    }
+                });
+            } else if(layEvent === 'del'){
+                layer.confirm('真的删除行么', function(index){
+                    var id = data.id;
+                    //向服务端发送删除指令
+                    $.ajax({
+                        type:"GET",
+                        url:"/Room/delRoomType",
+                        data:{id:id},
+                        dataType:"json",
+                        success:function(res){
+                            if(res.code == 200){
+                                obj.del(); //删除对应行（tr）的DOM结构
+                                layer.close(index);
+                                layer.msg('删除成功！', {icon: 1,anim: 5});
+                                return false;
+                            }else{
+                                layer.close(index);
+                                layer.msg(res.message, {icon: 5,anim: 6});
+                                return false;
+                            }
+                        },
+                        error:function(data){//当访问时候，404，500 等非200的错误状态码
+                            layer.msg('请求错误！', {icon: 5,anim: 6});
+                            return false;
+                        }
+                    });
+                });
+            }
+        });
+
+        //头工具栏事件
+        table.on('toolbar(test)', function(obj){
+            switch(obj.event){
+                case 'reloadTabel1':
+                    //执行重载
+                    table.reload('roomTypeList', {
+                        url: '/Room/roomTypeList' //数据接口
+                    });
+                    break;
+                case 'reloadTabel2':
+                    //执行添加
+                    layer.open({
+                        type: 2,
+                        id:'edit1',
+                        area: ['430px', '335px'],
+                        anim: 2,
+                        resize:false,
+                        title: ['<i class="layui-icon layui-icon-add-1"></i>添加', 'font-size:18px;'],
+                        skin:'layui-layer-molv',
+                        content: ['/Room/toRoomType', 'no']
+                    });
+                    break;
+            };
+        });
+
+        $('.demoTable .layui-btn').on('click', function(){
+            var demoReload = $('#demoReload');
+            //执行重载
+            table.reload('roomTypeList', {
+                page: {
+                    curr: 1 //重新从第 1 页开始
+                }
+                ,where: {
+                    name: demoReload.val()
+                }
+                ,url: '/Room/fuzzyQueryRoomType' //数据接口
+            });
+        });
+
+    });
+</script>
+</body>
+</html>

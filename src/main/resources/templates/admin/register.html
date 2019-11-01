@@ -2,9 +2,11 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>糖果管理系统-登录</title>
+    <title>糖果管理系统-注册</title>
     <link rel="stylesheet" type="text/css" href="/layui/css/layui.css"/>
     <link rel="stylesheet" type="text/css" href="/css/login.css"/>
+    <script src="/js/jquery-3.4.1.min.js"></script>
+    <script src="/js/moment.js"></script>
 </head>
 <body>
 <div class="kit-login">
@@ -12,14 +14,23 @@
     <div class="kit-login-wapper">
         <h2 class="kit-login-slogan"><span>欢迎使用</span><br>糖果酒店后台管理系统</h2>
         <div class="kit-login-form">
-            <h4 class="kit-login-title">登录</h4>
+            <h4 class="kit-login-title">员工注册</h4>
             <form class="layui-form">
                 <div class="kit-login-row">
                     <div class="kit-login-col">
                         <i class="layui-icon">&#xe66f;</i>&nbsp;
                         <span class="kit-login-input">
-                    <input type="text" name="username" id="username" autocomplete="off" lay-verify="required" placeholder="用户名" />
-                  </span>
+                            <input type="text" name="username" id="username" autocomplete="off" lay-verify="required|username" placeholder="用户名" />
+                        </span>
+                    </div>
+                    <div class="kit-login-col"></div>
+                </div>
+                <div class="kit-login-row">
+                    <div class="kit-login-col">
+                        <i class="layui-icon">&#xe678;</i>&nbsp;
+                        <span class="kit-login-input">
+                            <input type="text" name="phone" id="checkPhone" autocomplete="off" lay-verify="required" placeholder="手机号" />
+                        </span>
                     </div>
                     <div class="kit-login-col"></div>
                 </div>
@@ -27,8 +38,8 @@
                     <div class="kit-login-col">
                         <i class="layui-icon">&#xe673;</i>&nbsp;
                         <span class="kit-login-input">
-	                  <input type="password" name="password" id="password" lay-verify="required" placeholder="密码" />
-	              </span>
+	                        <input type="password" name="password" id="password" lay-verify="required|pass" placeholder="密码" />
+	                    </span>
                     </div>
                     <div class="kit-login-col"></div>
                 </div>
@@ -36,22 +47,19 @@
                     <div class="kit-login-col">
                         <i class="layui-icon">&#xe679;</i>&nbsp;
                         <span class="kit-login-input">
-	                  <input type="text" id="yzm" lay-verify="yzm" autocomplete="off" placeholder="验证码" />
+	                        <input type="text" id="yzm" lay-verify="yzm" autocomplete="off" placeholder="验证码" />
                             <a href="javascript:;" class="yzm" id="yan"></a>
-	              </span>
+	                    </span>
                     </div>
                     <div class="kit-login-col"></div>
                 </div>
                 <div class="kit-login-row">
                     <div class="kit-login-col">
-                        <input type="checkbox" id="rememberMe" name="rememberMe" title="记住我" lay-skin="primary"/>
+                        <textarea name="remarks" placeholder="备注" class="layui-textarea"></textarea>
                     </div>
                 </div>
                 <div class="kit-login-row">
-                    <button class="layui-btn kit-login-btn" lay-submit="submit" lay-filter="login_hash">登录</button>
-                </div>
-                <div class="kit-login-row" style="margin-bottom:0;">
-                    <a href="javascript:;" style="color: rgb(153, 153, 153); text-decoration: none; font-size: 13px;" id="forget">忘记密码</a>
+                    <button class="layui-btn kit-login-btn" lay-submit="submit" lay-filter="register">注册</button>
                 </div>
             </form>
         </div>

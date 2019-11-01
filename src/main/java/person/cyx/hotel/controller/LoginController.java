@@ -3,6 +3,7 @@ package person.cyx.hotel.controller;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.IncorrectCredentialsException;
+import org.apache.shiro.authc.LockedAccountException;
 import org.apache.shiro.authc.UnknownAccountException;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.session.Session;
@@ -63,22 +64,24 @@ public class LoginController {
             System.out.println("用户名或密码为空!");
             return ResultDTO.errorOf(CustomizeErrorCode.USER_IS_EMPTY);
         }
+        //创建Subject实例对象
+        Subject currentUser = SecurityUtils.getSubject();
         //判断当前用户是否被限制登录
         LoginRedisDTO loginRedisDTO = adminService.loginUserLock(username);
         loginRedisDTO.setName(username);
         if (loginRedisDTO.getFlag()){
             System.out.println("因 "+loginRedisDTO.getName()+" 用户超过了限制登录次数，已被禁止登录。还剩："+loginRedisDTO.getLoginLockTime());
+            if (currentUser.isRemembered()){
+                currentUser.logout();
+            }
             return ResultDTO.errorOf(loginRedisDTO);
         } else {
-            //创建Subject实例对象
-            Subject currentUser = SecurityUtils.getSubject();
             UsernamePasswordToken token = new UsernamePasswordToken(username, password);
             //rememberMe
             token.setRememberMe(rememberMe);
             try {
                 //执行登录
                 currentUser.login(token);
-
             } catch (UnknownAccountException e) {
                 System.out.println("账户不存在");
                 return ResultDTO.errorOf(CustomizeErrorCode.USER_NOT_FOUND);
@@ -86,9 +89,10 @@ public class LoginController {
                 loginRedisDTO = adminService.loginValdate(username);
                 System.out.println("密码错误,在"+loginRedisDTO.getLoginInvalidTime()+"内还允许输入错误" + loginRedisDTO.getAllowNum() + "次");
                 return ResultDTO.errorOf(loginRedisDTO);
+            } catch (LockedAccountException e){
+                return ResultDTO.errorOf(CustomizeErrorCode.USER_LOCK);
             } catch (Exception e){
                 System.out.println("其他异常信息");
-                e.printStackTrace();
                 return ResultDTO.errorOf(CustomizeErrorCode.SYS_ERROR);
             }
             //验证是否登录成功
@@ -103,6 +107,7 @@ public class LoginController {
                 Admin admin = adminService.findAdminByUsername(username);
                 System.out.println("currentUser:"+admin.getUsername()+"登录成功！");
                 session.setAttribute("currentUser",admin);
+                session.setAttribute("lock",null);
                 loginRedisDTO.setToken(currentUser.getSession().getId());
                 return ResultDTO.okOf(loginRedisDTO);
             }else{

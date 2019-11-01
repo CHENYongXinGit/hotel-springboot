@@ -16,6 +16,8 @@ public class Admin implements Serializable {
 
     private Long updated;
 
+    private Integer status;
+
     private String phone;
 
     private String photo;
@@ -60,6 +62,14 @@ public class Admin implements Serializable {
 
     public void setUpdated(Long updated) {
         this.updated = updated;
+    }
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
     }
 
     public String getPhone() {
