@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>房间列表</title>
+    <link rel="stylesheet" type="text/css" href="/layui/css/layui.css"/>
+    <style type="text/css">
+        .layui-table-cell{height:60px;line-height: 60px;}
+        .layui-form-label{padding: 9px 0px !important;}
+        .layui-form-item{margin-bottom: 0px !important;}
+    </style>
+    <script src="/js/moment.js"></script>
+</head>
+<body>
+<div style="padding: 15px;">
+    <fieldset class="layui-elem-field">
+        <legend>房间检索</legend>
+        <div class="layui-field-box">
+            <form class="layui-form" action="">
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label">房间号：</label>
+                        <div class="layui-input-inline">
+                            <input class="layui-input" name="roomNumber" id="roomNumber" autocomplete="off">
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">房间名称：</label>
+                        <div class="layui-input-inline">
+                            <input class="layui-input" name="roomName" id="roomName" autocomplete="off">
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">房间状态：</label>
+                        <div class="layui-input-inline">
+                            <select name="roomStatus" id="roomStatus">
+                                <option value="">选择房间状态</option>
+                                <option value="空闲">空闲</option>
+                                <option value="预订">预订</option>
+                                <option value="入住">入住</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">房间类型：</label>
+                        <div class="layui-input-inline">
+                            <select name="roomType" id="roomType">
+                                <option value="">选择房间类型</option>
+                                <option th:each="roomType : ${roomTypes}" th:text="${roomType.name}" th:value="${roomType.id}"></option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <div class="layui-input-inline">
+                            <button class="layui-btn" lay-submit lay-filter="searchForm">查询</button>
+                            <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </fieldset>
+    <table id="demo" lay-filter="test"></table>
+    <script type="text/html" id="toolbarDemo">
+        <div class="layui-btn-container">
+            <button class="layui-btn layui-btn-sm layui-btn-radius" lay-event="reloadTabel1"><i class="layui-icon layui-icon-refresh-3"></i>刷新</button>
+            <button class="layui-btn layui-btn-sm layui-btn-radius" lay-event="reloadTabel2"><i class="layui-icon layui-icon-add-1"></i>添加</button>
+        </div>
+    </script>
+    <script type="text/html" id="barDemo">
+        <a class="layui-btn layui-btn-xs" lay-event="edit"><i class="layui-icon layui-icon-edit"></i>编辑</a>
+        <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del"><i class="layui-icon layui-icon-delete"></i>删除</a>
+    </script>
+    <script type="text/html" id="xuhao">
+        {{d.LAY_TABLE_INDEX+1}}
+    </script>
+    <script type="text/html" id="photoTpl">
+        <img src="{{ d.photo }}" width="90" height="60" />
+    </script>
+    <script type="text/html" id="stateTpl">
+        {{#  if(d.roomStatus === '预订'){ }}
+        <span style="color: #F581B1;">{{ d.roomStatus }}</span>
+        {{#  } else if(d.roomStatus === '入住') { }}
+        <span style="color: #FF5722;">{{ d.roomStatus }}</span>
+        {{#  } else { }}
+        <span style="color: #009F95;">{{ d.roomStatus }}</span>
+        {{#  } }}
+    </script>
+</div>
+<script src="/layui/layui.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript">
+    layui.use(['table','form','jquery'], function(){
+        var table = layui.table,
+            form = layui.form,
+            $ = layui.jquery;
+
+        //第一个实例
+        table.render({
+            elem: '#demo'
+            // ,even: true //开启隔行背景
+            ,id: 'roomList'
+            ,title: '用户表'
+            ,url: '/Room/roomList' //数据接口
+            ,toolbar: '#toolbarDemo'
+            ,height : 'full-150'
+            ,cols: [
+                [ //表头
+                    {title: '序号', width:75, sort: true, fixed: 'left', templet:'#xuhao'}
+                    ,{field: 'id', title: 'ID', hide: true}
+                    ,{field: 'roomName', title: '房间名称', sort: true, align:'center'}
+                    ,{field: 'roomNumber', title: '房间号', width:100, sort: true, align:'center'}
+                    ,{field: 'bedType', title: '床型', align:'center'}
+                    ,{field: 'broadband', title: '宽带', align:'center'}
+                    ,{field: 'roomWindow', title: '窗户', width:80, align:'center', sort: true, templet:function (d) {
+                        return d.roomWindow==1?'有':'无';}}
+                    ,{field: 'standardPrice', title: '标准价', width:100, sort: true, align:'center'}
+                    ,{field: 'memberPrice', title: '会员价', width:100, sort: true, align:'center'}
+                    ,{field: 'roomArea', title: '面积', width:100, sort: true, align:'center'}
+                    ,{title: '房间状态', sort: true, align:'center', templet:'#stateTpl'}
+                    ,{title: '房间类型', sort: true, align:'center', templet:function (d) {
+                        return d.type.name;}}
+                    ,{title: '房间照片', align:'center', templet:"#photoTpl"}
+                    ,{title: '创建时间', align:'center', sort: true, templet:function (d) {
+                        return moment(d.created).format('YYYY-MM-DD HH:mm:SS');}}
+                    ,{title: '修改时间', align:'center', sort: true, templet:function (d) {
+                        return moment(d.updated).format('YYYY-MM-DD HH:mm:SS');}}
+                    ,{title: '操作', width: 150, align:'center', toolbar: '#barDemo', fixed: 'right'}
+                ]
+            ]
+            ,page: true //开启分页
+        });
+
+        //监听行工具事件
+        table.on('tool(test)', function(obj){ //注：tool 是工具条事件名，test 是 table 原始容器的属性 lay-filter="对应的值"
+            var data = obj.data //获得当前行数据
+                ,layEvent = obj.event; //获得 lay-event 对应的值
+            if(layEvent === 'edit'){
+                layer.open({
+                    type: 2,
+                    id:'edit1',
+                    area: ['100%', '100%'],
+                    anim: 2,
+                    resize:false,
+                    title: ['<i class="layui-icon layui-icon-edit"></i>编辑', 'font-size:18px;'],
+                    skin:'layui-layer-molv',
+                    content: ['/Room/toEditRoom', 'no'],
+                    success: function (layero, index) {
+                        var body = layer.getChildFrame('body', index);
+                        var iframeWin = window[layero.find('iframe')[0]['name']]; //得到iframe页的窗口对象，执行iframe页的方法：iframeWin.method();
+                        //初始化表单数据的值
+                        body.find("#id").val(data.id); //要修改的每个td的值存为变量传进去
+                        body.find("#roomNumber").val(data.roomNumber);
+                        body.find("#defaultRoom").val(data.roomNumber);
+                        body.find("#roomName").val(data.roomName);
+                        body.find("#bedType").val(data.bedType);
+                        body.find("#broadband").val(data.broadband);
+                        body.find("#standardPrice").val(data.standardPrice);
+                        body.find("#memberPrice").val(data.memberPrice);
+                        body.find("#roomStatus").val(data.roomStatus);
+                        body.find("#roomArea").val(data.roomArea);
+                        body.find("#roomType").val(data.roomType);
+                        body.find("#demo").attr("src",data.photo);
+                        if (data.roomWindow==1){
+                            body.find("#roomWindow").attr("checked",true);
+                        }
+                        var formAdd = iframeWin.layui.form;
+                        formAdd.render('select'); //刷新select选择框渲染
+                        formAdd.render();
+                    }
+                });
+            } else if(layEvent === 'del'){
+                layer.confirm('真的删除行么', function(index){
+                    var id = data.id;
+                    //向服务端发送删除指令
+                    $.ajax({
+                        type:"GET",
+                        url:"/Room/delRoom",
+                        data:{id:id},
+                        dataType:"json",
+                        success:function(res){
+                            if(res.code == 200){
+                                obj.del(); //删除对应行（tr）的DOM结构
+                                layer.close(index);
+                                layer.msg('删除成功！', {icon: 1,anim: 5});
+                                return false;
+                            }else{
+                                layer.close(index);
+                                layer.msg(res.message, {icon: 5,anim: 6});
+                                return false;
+                            }
+                        },
+                        error:function(data){//当访问时候，404，500 等非200的错误状态码
+                            layer.msg('请求错误！', {icon: 5,anim: 6});
+                            return false;
+                        }
+                    });
+                });
+            }
+        });
+
+        //头工具栏事件
+        table.on('toolbar(test)', function(obj){
+            switch(obj.event){
+                case 'reloadTabel1':
+                    //执行重载
+                    table.reload('roomList', {
+                        url: '/Room/roomList' //数据接口
+                    });
+                    break;
+                case 'reloadTabel2':
+                    //执行添加
+                    window.open("/Room/toAddRoom", "demoAdmin");
+                    break;
+            };
+        });
+
+        form.on('submit(searchForm)', function(data) {
+            var value = data.field;
+            if (isNaN(value.roomNumber)) {
+                layer.msg("请输入数字", {icon: 5,anim: 6});
+                return false;
+            }
+            //执行重载
+            table.reload('roomList', {
+                page: {
+                    curr: 1 //重新从第 1 页开始
+                }
+                ,where: {
+                    roomNumber: value.roomNumber,
+                    roomName: value.roomName,
+                    roomStatus: value.roomStatus,
+                    roomType: value.roomType
+                }
+                ,url: '/Room/queryRoom' //数据接口
+            });
+            return false;
+        });
+
+    });
+</script>
+</body>
+</html>

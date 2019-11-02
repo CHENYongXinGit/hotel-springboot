@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>客房添加</title>
+    <meta http-equiv="Content-Type" content="multipart/form-data; charset=utf-8" />
+    <link rel="stylesheet" type="text/css" href="/layui/css/layui.css"/>
+    <style type="text/css">
+        .cent{width: 40%;margin: 50px auto;padding-bottom:10px;}
+        .photo{padding-top: 6px;border: none;color: #999;}
+        .input-btn{margin: 0px auto;width: 183px;}
+    </style>
+</head>
+<body>
+<div class="cent">
+    <fieldset class="layui-elem-field" style="margin-top: 15px;">
+        <legend>添加房间：增加客房信息</legend>
+        <div class="layui-field-box">
+            <form class="layui-form layui-form-pane" id="addForm" method="post" enctype="multipart/form-data">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">房间号：</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="roomNumber" id="roomNumber" lay-verify="required|shu|roomNumber" placeholder="101" autocomplete="off" class="layui-input">
+                    </div>
+                    <div class="layui-form-mid layui-word-aux">必须是数字</div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">房间名称：</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="roomName" id="roomName" lay-verify="required" placeholder="经济舒适单人间" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">床型：</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="bedType" id="bedType" lay-verify="required" placeholder="一张单人床" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">宽带：</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="broadband" id="broadband" lay-verify="required" placeholder="免费wifi" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">标准价：</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="standardPrice" id="standardPrice" lay-verify="required|shu" placeholder="199" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">会员价：</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="memberPrice" id="memberPrice" lay-verify="required|shu" placeholder="188" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">房间状态：</label>
+                    <div class="layui-input-block">
+                        <select name="roomStatus" id="roomStatus">
+                            <option value="空闲">空闲</option>
+                            <option value="预订">预订</option>
+                            <option value="入住">入住</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-form-item" pane>
+                    <label class="layui-form-label">是否有窗：</label>
+                    <div class="layui-input-block">
+                        <input type="checkbox" name="roomWindow" lay-skin="switch" value="1" lay-text="有|无" checked="checked">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">房间面积：</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="roomArea" id="roomArea" lay-verify="required" placeholder="60平方" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">房间类型：</label>
+                    <div class="layui-input-block">
+                        <select name="roomType" id="roomType">
+                            <option th:each="roomType : ${roomTypes}" th:text="${roomType.name}" th:value="${roomType.id}"></option>
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-form-item" pane>
+                    <label class="layui-form-label">房间图片：</label>
+                    <div class="layui-input-block">
+                        <input type="file" name="file" id="file" lay-verify="photo" autocomplete="off" class="layui-input photo">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="input-btn">
+                        <button class="layui-btn layui-btn-lg" lay-submit lay-filter="formDemo">添加</button>
+                        <button type="reset" class="layui-btn layui-btn-lg layui-btn-primary">重置</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </fieldset>
+</div>
+<script src="/layui/layui.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript">
+    layui.use(['layer','form'], function() {
+        var form = layui.form,
+            $ = layui.jquery;
+
+        form.verify({
+            shu: function(value, item){ //value：表单的值、item：表单的DOM对象
+                if(/[^0-9]/g.test(value)){
+                    return '必须全为数字';
+                }
+            }
+            ,photo: function (value, item) {
+                if ($("#photo").val() == "") {
+                    return '请选择房间图片';
+                }
+            }
+            ,roomNumber: function () {
+                var r = "";
+                var roomNumber = $("#roomNumber").val();
+                $.ajax({
+                    type:"GET",
+                    url:"/Room/roomNumber",
+                    data:{roomNumber:roomNumber},
+                    dataType:"json",
+                    async:false,
+                    contentType: "application/json; charset=utf-8",
+                    success:function(res){
+                        if(res.code == 200){//可用
+                            return true;
+                        }else{
+                            layer.tips(res.message, '#roomNumber',{tips:[2,'red']});
+                            r = res.message;
+                        }
+                    },
+                    error:function(){//当访问时候，404，500 等非200的错误状态码
+                        r = "请求错误";
+                    }
+                });
+                return r;
+            }
+        });
+
+        //监听提交
+        form.on('submit(formDemo)', function() {
+            var formData = new FormData($("#addForm")[0]);
+            console.log(formData);
+            $.ajax({
+                type:"post",
+                url:"/Room/addRoom",
+                data:formData,
+                cache: false,
+                async: false,
+                processData : false,  //必须false才会避开jQuery对 formdata 的默认处理
+                contentType : false,  //必须false才会自动加上正确的Content-Type
+                success:function(res){
+                    if(res.code==200){
+                        layer.msg('添加成功！');
+                        return false;
+                    }else{
+                        layer.msg(res.message, {icon: 5,anim: 6});
+                        return false;
+                    }
+                },
+                error:function(){//当访问时候，404，500 等非200的错误状态码
+                    layer.msg('请求错误！', {icon: 5,anim: 6});
+                    return false;
+                }
+            });
+            return false;
+        });
+    });
+</script>
+</body>
+</html>

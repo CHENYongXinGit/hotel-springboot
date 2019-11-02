@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="person.cyx.hotel.mapper.RoomMapper">
+  <resultMap id="BaseResultMap" type="person.cyx.hotel.model.Room">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="room_name" jdbcType="VARCHAR" property="roomName" />
+    <result column="room_number" jdbcType="BIGINT" property="roomNumber" />
+    <result column="bed_type" jdbcType="VARCHAR" property="bedType" />
+    <result column="broadband" jdbcType="VARCHAR" property="broadband" />
+    <result column="standard_price" jdbcType="DOUBLE" property="standardPrice" />
+    <result column="member_price" jdbcType="DOUBLE" property="memberPrice" />
+    <result column="room_window" jdbcType="INTEGER" property="roomWindow" />
+    <result column="room_area" jdbcType="VARCHAR" property="roomArea" />
+    <result column="room_status" jdbcType="VARCHAR" property="roomStatus" />
+    <result column="room_type" jdbcType="BIGINT" property="roomType" />
+    <result column="photo" jdbcType="VARCHAR" property="photo" />
+    <result column="created" jdbcType="BIGINT" property="created" />
+    <result column="updated" jdbcType="BIGINT" property="updated" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, room_name, room_number, bed_type, broadband, standard_price, member_price, room_window, 
+    room_area, room_status, room_type, photo, created, updated
+  </sql>
+
+  <select id="checkRoomNumber" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from hotel_room
+    where room_number = #{roomNumber,jdbcType=BIGINT}
+  </select>
+
+  <select id="roomList" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from hotel_room
+  </select>
+
+  <select id="queryRoom" parameterType="person.cyx.hotel.model.Room" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from hotel_room
+    <where>
+      <if test="roomName != null and roomName != ''">
+        and room_name like '%${roomName}%'
+      </if>
+      <if test="roomNumber != null and roomNumber != ''">
+        and room_number like '%${roomNumber}%'
+      </if>
+      <if test="roomStatus != null and roomStatus != ''">
+        and room_status like #{roomStatus,jdbcType=VARCHAR}
+      </if>
+      <if test="roomType != null">
+        and room_type like #{roomType,jdbcType=BIGINT}
+      </if>
+    </where>
+  </select>
+
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from hotel_room
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from hotel_room
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="person.cyx.hotel.model.Room">
+    insert into hotel_room (id, room_name, room_number, 
+      bed_type, broadband, standard_price, 
+      member_price, room_window, room_area, 
+      room_status, room_type, photo, 
+      created, updated)
+    values (#{id,jdbcType=BIGINT}, #{roomName,jdbcType=VARCHAR}, #{roomNumber,jdbcType=BIGINT}, 
+      #{bedType,jdbcType=VARCHAR}, #{broadband,jdbcType=VARCHAR}, #{standardPrice,jdbcType=DOUBLE}, 
+      #{memberPrice,jdbcType=DOUBLE}, #{roomWindow,jdbcType=INTEGER}, #{roomArea,jdbcType=VARCHAR}, 
+      #{roomStatus,jdbcType=VARCHAR}, #{roomType,jdbcType=BIGINT}, #{photo,jdbcType=VARCHAR}, 
+      #{created,jdbcType=BIGINT}, #{updated,jdbcType=BIGINT})
+  </insert>
+  <insert id="insertSelective" parameterType="person.cyx.hotel.model.Room">
+    insert into hotel_room
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="roomName != null">
+        room_name,
+      </if>
+      <if test="roomNumber != null">
+        room_number,
+      </if>
+      <if test="bedType != null">
+        bed_type,
+      </if>
+      <if test="broadband != null">
+        broadband,
+      </if>
+      <if test="standardPrice != null">
+        standard_price,
+      </if>
+      <if test="memberPrice != null">
+        member_price,
+      </if>
+      <if test="roomWindow != null">
+        room_window,
+      </if>
+      <if test="roomArea != null">
+        room_area,
+      </if>
+      <if test="roomStatus != null">
+        room_status,
+      </if>
+      <if test="roomType != null">
+        room_type,
+      </if>
+      <if test="photo != null">
+        photo,
+      </if>
+      <if test="created != null">
+        created,
+      </if>
+      <if test="updated != null">
+        updated,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="roomName != null">
+        #{roomName,jdbcType=VARCHAR},
+      </if>
+      <if test="roomNumber != null">
+        #{roomNumber,jdbcType=BIGINT},
+      </if>
+      <if test="bedType != null">
+        #{bedType,jdbcType=VARCHAR},
+      </if>
+      <if test="broadband != null">
+        #{broadband,jdbcType=VARCHAR},
+      </if>
+      <if test="standardPrice != null">
+        #{standardPrice,jdbcType=DOUBLE},
+      </if>
+      <if test="memberPrice != null">
+        #{memberPrice,jdbcType=DOUBLE},
+      </if>
+      <if test="roomWindow != null">
+        #{roomWindow,jdbcType=INTEGER},
+      </if>
+      <if test="roomArea != null">
+        #{roomArea,jdbcType=VARCHAR},
+      </if>
+      <if test="roomStatus != null">
+        #{roomStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="roomType != null">
+        #{roomType,jdbcType=BIGINT},
+      </if>
+      <if test="photo != null">
+        #{photo,jdbcType=VARCHAR},
+      </if>
+      <if test="created != null">
+        #{created,jdbcType=BIGINT},
+      </if>
+      <if test="updated != null">
+        #{updated,jdbcType=BIGINT},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="person.cyx.hotel.model.Room">
+    update hotel_room
+    <set>
+      <if test="roomName != null">
+        room_name = #{roomName,jdbcType=VARCHAR},
+      </if>
+      <if test="roomNumber != null">
+        room_number = #{roomNumber,jdbcType=BIGINT},
+      </if>
+      <if test="bedType != null">
+        bed_type = #{bedType,jdbcType=VARCHAR},
+      </if>
+      <if test="broadband != null">
+        broadband = #{broadband,jdbcType=VARCHAR},
+      </if>
+      <if test="standardPrice != null">
+        standard_price = #{standardPrice,jdbcType=DOUBLE},
+      </if>
+      <if test="memberPrice != null">
+        member_price = #{memberPrice,jdbcType=DOUBLE},
+      </if>
+      <if test="roomWindow != null">
+        room_window = #{roomWindow,jdbcType=INTEGER},
+      </if>
+      <if test="roomArea != null">
+        room_area = #{roomArea,jdbcType=VARCHAR},
+      </if>
+      <if test="roomStatus != null">
+        room_status = #{roomStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="roomType != null">
+        room_type = #{roomType,jdbcType=BIGINT},
+      </if>
+      <if test="photo != null">
+        photo = #{photo,jdbcType=VARCHAR},
+      </if>
+      <if test="created != null">
+        created = #{created,jdbcType=BIGINT},
+      </if>
+      <if test="updated != null">
+        updated = #{updated,jdbcType=BIGINT},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="person.cyx.hotel.model.Room">
+    update hotel_room
+    set room_name = #{roomName,jdbcType=VARCHAR},
+      room_number = #{roomNumber,jdbcType=BIGINT},
+      bed_type = #{bedType,jdbcType=VARCHAR},
+      broadband = #{broadband,jdbcType=VARCHAR},
+      standard_price = #{standardPrice,jdbcType=DOUBLE},
+      member_price = #{memberPrice,jdbcType=DOUBLE},
+      room_window = #{roomWindow,jdbcType=INTEGER},
+      room_area = #{roomArea,jdbcType=VARCHAR},
+      room_status = #{roomStatus,jdbcType=VARCHAR},
+      room_type = #{roomType,jdbcType=BIGINT},
+      photo = #{photo,jdbcType=VARCHAR},
+      created = #{created,jdbcType=BIGINT},
+      updated = #{updated,jdbcType=BIGINT}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

@@ -26,6 +26,7 @@ public enum CustomizeErrorCode implements ICustomizeErrorCode {
     DELETE_FAIL(2016,"删除失败"),
     OFFLINE_FAIL(2017,"下线失败"),
     ADD_FAIL(2018,"添加失败"),
+    ROOMNUMBER_FOUND(2019,"房间号已存在"),
     ;
 
     private Integer code;

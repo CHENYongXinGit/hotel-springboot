@@ -35,7 +35,7 @@
         </javaClientGenerator>
 
         <!-- 指定数据库表 -->
-        <table tableName="hotel_room_type" domainObjectName="RoomType" enableCountByExample="false" enableUpdateByExample="false"
+        <table tableName="hotel_room" domainObjectName="Room" enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false"
                selectByExampleQueryId="false">
         </table>
