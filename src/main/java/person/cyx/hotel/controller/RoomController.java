@@ -17,6 +17,7 @@ import person.cyx.hotel.model.Room;
 import person.cyx.hotel.model.RoomType;
 import person.cyx.hotel.provider.UCloudProvider;
 import person.cyx.hotel.service.impl.RoomServiceImpl;
+import person.cyx.hotel.util.ToolUtil;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -39,7 +40,6 @@ public class RoomController {
     private RoomServiceImpl roomService;
 
     private LayuiResult<RoomType> resultRoomType = new LayuiResult<RoomType>();
-    private LayuiResult<RoomDTO> resultRoomDTO = new LayuiResult<RoomDTO>();
 
     @GetMapping("/toRoomTypeList")
     public String toRoomTypeList(){
@@ -207,12 +207,9 @@ public class RoomController {
     @GetMapping("/roomList")
     public LayuiResult<RoomDTO> roomList(@RequestParam(value = "page", defaultValue = "1")Integer page,
                                           @RequestParam(value = "limit", defaultValue = "10")Integer limit){
-        PageHelper.startPage(page, limit);
-        List<RoomDTO> rooms = roomService.roomList();
-        PageInfo pageInfo = new PageInfo(rooms, 5);
-        resultRoomDTO.setData(rooms);
-        resultRoomDTO.setCount(pageInfo.getTotal());
-        return resultRoomDTO;
+
+        LayuiResult<RoomDTO> roomDTOLayuiResult = roomService.roomList(page, limit);
+        return roomDTOLayuiResult;
     }
 
     /**
@@ -282,6 +279,16 @@ public class RoomController {
         }
     }
 
+    /**
+     * 模糊查询房间
+     * @param page
+     * @param limit
+     * @param roomNumber
+     * @param roomName
+     * @param roomStatus
+     * @param roomType
+     * @return
+     */
     @ResponseBody
     @GetMapping("/queryRoom")
     public LayuiResult<RoomDTO> queryRoom(@RequestParam(value = "page", defaultValue = "1")Integer page,
@@ -297,12 +304,21 @@ public class RoomController {
         room.setRoomStatus(roomStatus);
         room.setRoomType(roomType);
 
-        PageHelper.startPage(page, limit);
-        List<RoomDTO> roomDTOS = roomService.queryRoom(room);
-        PageInfo pageInfo = new PageInfo(roomDTOS, 5);
-        resultRoomDTO.setData(roomDTOS);
-        resultRoomDTO.setCount(pageInfo.getTotal());
-        return resultRoomDTO;
+        LayuiResult<RoomDTO> roomDTOLayuiResult = roomService.queryRoom(page, limit, room);
+        return roomDTOLayuiResult;
+    }
+
+    @ResponseBody
+    @GetMapping("/sortRoom")
+    public LayuiResult<RoomDTO> sortRoom(@RequestParam(value = "page", defaultValue = "1")Integer page,
+                                         @RequestParam(value = "limit", defaultValue = "10")Integer limit,
+                                         @RequestParam("field") String field,
+                                         @RequestParam("order") String order){
+
+        String hump = ToolUtil.humpToLine2(field);
+        String orderBy = hump+" "+order;
+        LayuiResult<RoomDTO> roomDTOLayuiResult = roomService.roomList(page, limit, orderBy);
+        return roomDTOLayuiResult;
     }
 
 }

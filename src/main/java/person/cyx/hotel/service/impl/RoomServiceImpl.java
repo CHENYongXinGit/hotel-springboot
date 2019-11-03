@@ -1,8 +1,11 @@
 package person.cyx.hotel.service.impl;
 
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import person.cyx.hotel.dto.LayuiResult;
 import person.cyx.hotel.dto.RoomDTO;
 import person.cyx.hotel.mapper.RoomMapper;
 import person.cyx.hotel.mapper.RoomTypeMapper;
@@ -28,6 +31,8 @@ public class RoomServiceImpl implements RoomService {
     @Autowired
     private RoomTypeMapper roomTypeMapper;
 
+    private LayuiResult<RoomDTO> resultRoomDTO = new LayuiResult();
+
     @Override
     public int insert(Room room) {
         if (room.getRoomWindow()==null){
@@ -44,9 +49,15 @@ public class RoomServiceImpl implements RoomService {
     }
 
     @Override
-    public List<RoomDTO> roomList() {
-        List<Room> rooms = roomMapper.roomList();
-        return getRoomDTOS(rooms);
+    public LayuiResult<RoomDTO> roomList(Integer page, Integer limit) {
+        PageHelper.startPage(page, limit);
+        return getRoomDTOLayuiResult();
+    }
+
+    @Override
+    public LayuiResult<RoomDTO> roomList(Integer page, Integer limit, String orderBy) {
+        PageHelper.startPage(page, limit, orderBy);
+        return getRoomDTOLayuiResult();
     }
 
     @Override
@@ -64,11 +75,22 @@ public class RoomServiceImpl implements RoomService {
     }
 
     @Override
-    public List<RoomDTO> queryRoom(Room queryRoom) {
-        List<Room> rooms = roomMapper.queryRoom(queryRoom);
-        return getRoomDTOS(rooms);
+    public LayuiResult<RoomDTO> queryRoom(Integer page, Integer limit, Room room) {
+        PageHelper.startPage(page, limit);
+        List<Room> rooms = roomMapper.queryRoom(room);
+        PageInfo pageInfo = new PageInfo(rooms, 5);
+        List<RoomDTO> roomDTOS = getRoomDTOS(rooms);
+        pageInfo.setList(roomDTOS);
+        resultRoomDTO.setData(roomDTOS);
+        resultRoomDTO.setCount(pageInfo.getTotal());
+        return resultRoomDTO;
     }
 
+    /**
+     * 添加房间类型字段
+     * @param rooms
+     * @return
+     */
     private List<RoomDTO> getRoomDTOS(List<Room> rooms) {
         List<RoomType> roomTypes = roomTypeMapper.roomTypeList();
 
@@ -82,5 +104,19 @@ public class RoomServiceImpl implements RoomService {
         }).collect(Collectors.toList());
 
         return roomDTOS;
+    }
+
+    /**
+     * 房间列表分页
+     * @return
+     */
+    private LayuiResult<RoomDTO> getRoomDTOLayuiResult() {
+        List<Room> rooms = roomMapper.roomList();
+        PageInfo pageInfo = new PageInfo(rooms, 5);
+        List<RoomDTO> roomDTOS = getRoomDTOS(rooms);
+        pageInfo.setList(roomDTOS);
+        resultRoomDTO.setData(roomDTOS);
+        resultRoomDTO.setCount(pageInfo.getTotal());
+        return resultRoomDTO;
     }
 }

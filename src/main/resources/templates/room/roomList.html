@@ -72,9 +72,6 @@
         <a class="layui-btn layui-btn-xs" lay-event="edit"><i class="layui-icon layui-icon-edit"></i>编辑</a>
         <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del"><i class="layui-icon layui-icon-delete"></i>删除</a>
     </script>
-    <script type="text/html" id="xuhao">
-        {{d.LAY_TABLE_INDEX+1}}
-    </script>
     <script type="text/html" id="photoTpl">
         <img src="{{ d.photo }}" width="90" height="60" />
     </script>
@@ -104,9 +101,10 @@
             ,url: '/Room/roomList' //数据接口
             ,toolbar: '#toolbarDemo'
             ,height : 'full-150'
+            ,autoSort: false //禁用前端自动排序。
             ,cols: [
                 [ //表头
-                    {title: '序号', width:75, sort: true, fixed: 'left', templet:'#xuhao'}
+                    {title: '序号', width:75, fixed: 'left', type:'numbers'}
                     ,{field: 'id', title: 'ID', hide: true}
                     ,{field: 'roomName', title: '房间名称', sort: true, align:'center'}
                     ,{field: 'roomNumber', title: '房间号', width:100, sort: true, align:'center'}
@@ -117,18 +115,37 @@
                     ,{field: 'standardPrice', title: '标准价', width:100, sort: true, align:'center'}
                     ,{field: 'memberPrice', title: '会员价', width:100, sort: true, align:'center'}
                     ,{field: 'roomArea', title: '面积', width:100, sort: true, align:'center'}
-                    ,{title: '房间状态', sort: true, align:'center', templet:'#stateTpl'}
-                    ,{title: '房间类型', sort: true, align:'center', templet:function (d) {
+                    ,{field: 'roomStatus', title: '房间状态', sort: true, align:'center', templet:'#stateTpl'}
+                    ,{field: 'roomType', title: '房间类型', sort: true, align:'center', templet:function (d) {
                         return d.type.name;}}
-                    ,{title: '房间照片', align:'center', templet:"#photoTpl"}
-                    ,{title: '创建时间', align:'center', sort: true, templet:function (d) {
+                    ,{field: 'photo', title: '房间照片', align:'center', templet:"#photoTpl"}
+                    ,{field: 'created', title: '创建时间', align:'center', sort: true, templet:function (d) {
                         return moment(d.created).format('YYYY-MM-DD HH:mm:SS');}}
-                    ,{title: '修改时间', align:'center', sort: true, templet:function (d) {
+                    ,{field: 'updated', title: '修改时间', align:'center', sort: true, templet:function (d) {
                         return moment(d.updated).format('YYYY-MM-DD HH:mm:SS');}}
                     ,{title: '操作', width: 150, align:'center', toolbar: '#barDemo', fixed: 'right'}
                 ]
             ]
             ,page: true //开启分页
+        });
+
+        //监听排序事件
+        table.on('sort(test)', function(obj){ //注：sort 是工具条事件名，test 是 table 原始容器的属性 lay-filter="对应的值"
+            // console.log(obj.field); //当前排序的字段名
+            // console.log(obj.type); //当前排序类型：desc（降序）、asc（升序）、null（空对象，默认排序）
+            // console.log(this); //当前排序的 th 对象
+
+            //尽管我们的 table 自带排序功能，但并没有请求服务端。
+            //有些时候，你可能需要根据当前排序的字段，重新向服务端发送请求，从而实现服务端排序，如：
+            table.reload('roomList', {
+                initSort: obj //记录初始排序，如果不设的话，将无法标记表头的排序状态。
+                ,where: { //请求参数（注意：这里面的参数可任意定义，并非下面固定的格式）
+                    field: obj.field //排序字段
+                    ,order: obj.type //排序方式
+                }
+                ,url: '/Room/sortRoom' //数据接口
+            });
+            return false;
         });
 
         //监听行工具事件

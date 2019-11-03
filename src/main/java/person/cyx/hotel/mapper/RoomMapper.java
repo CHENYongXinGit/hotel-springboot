@@ -23,4 +23,5 @@ public interface RoomMapper {
     List<Room> roomList();
 
     List<Room> queryRoom(Room record);
+
 }
