@@ -55,6 +55,12 @@
     </where>
   </select>
 
+  <update id="updateRoomStatus">
+    update hotel_room
+    set room_status = #{roomStatus}
+    where room_number = #{roomNumber}
+  </update>
+
   <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
     select
     <include refid="Base_Column_List" />

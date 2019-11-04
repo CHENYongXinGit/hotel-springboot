@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="person.cyx.hotel.mapper.CustomerOrderMapper">
+  <resultMap id="BaseResultMap" type="person.cyx.hotel.model.CustomerOrder">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="room_number" jdbcType="BIGINT" property="roomNumber" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="sex" jdbcType="INTEGER" property="sex" />
+    <result column="member" jdbcType="INTEGER" property="member" />
+    <result column="identity" jdbcType="VARCHAR" property="identity" />
+    <result column="days" jdbcType="INTEGER" property="days" />
+    <result column="price" jdbcType="DOUBLE" property="price" />
+    <result column="state" jdbcType="VARCHAR" property="state" />
+    <result column="start_time" jdbcType="VARCHAR" property="startTime" />
+    <result column="end_time" jdbcType="VARCHAR" property="endTime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, room_number, name, sex, member, identity, days, price, state, start_time, end_time
+  </sql>
+
+  <select id="orderList" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from customer_order
+    where state != '已完成'
+  </select>
+
+  <select id="orderCompletedList" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from customer_order
+    where state == '已完成'
+  </select>
+
+  <select id="queryOrder" parameterType="person.cyx.hotel.model.CustomerOrder" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from customer_order
+    <where>
+      <if test="name != null and name != ''">
+        and name like '%${name}%'
+      </if>
+      <if test="roomNumber != null and roomNumber != ''">
+        and room_number like '%${roomNumber}%'
+      </if>
+      <if test="state != null and state != ''">
+        and state like #{state,jdbcType=VARCHAR}
+      </if>
+        and state != '已完成'
+    </where>
+  </select>
+
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from customer_order
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from customer_order
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="person.cyx.hotel.model.CustomerOrder">
+    insert into customer_order (id, room_number, name, 
+      sex, member, identity, 
+      days, price, state, 
+      start_time, end_time)
+    values (#{id,jdbcType=BIGINT}, #{roomNumber,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, 
+      #{sex,jdbcType=INTEGER}, #{member,jdbcType=INTEGER}, #{identity,jdbcType=VARCHAR}, 
+      #{days,jdbcType=INTEGER}, #{price,jdbcType=DOUBLE}, #{state,jdbcType=VARCHAR}, 
+      #{startTime,jdbcType=VARCHAR}, #{endTime,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="person.cyx.hotel.model.CustomerOrder">
+    insert into customer_order
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="roomNumber != null">
+        room_number,
+      </if>
+      <if test="name != null">
+        name,
+      </if>
+      <if test="sex != null">
+        sex,
+      </if>
+      <if test="member != null">
+        member,
+      </if>
+      <if test="identity != null">
+        identity,
+      </if>
+      <if test="days != null">
+        days,
+      </if>
+      <if test="price != null">
+        price,
+      </if>
+      <if test="state != null">
+        state,
+      </if>
+      <if test="startTime != null">
+        start_time,
+      </if>
+      <if test="endTime != null">
+        end_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="roomNumber != null">
+        #{roomNumber,jdbcType=BIGINT},
+      </if>
+      <if test="name != null">
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="sex != null">
+        #{sex,jdbcType=INTEGER},
+      </if>
+      <if test="member != null">
+        #{member,jdbcType=INTEGER},
+      </if>
+      <if test="identity != null">
+        #{identity,jdbcType=VARCHAR},
+      </if>
+      <if test="days != null">
+        #{days,jdbcType=INTEGER},
+      </if>
+      <if test="price != null">
+        #{price,jdbcType=DOUBLE},
+      </if>
+      <if test="state != null">
+        #{state,jdbcType=VARCHAR},
+      </if>
+      <if test="startTime != null">
+        #{startTime,jdbcType=VARCHAR},
+      </if>
+      <if test="endTime != null">
+        #{endTime,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="person.cyx.hotel.model.CustomerOrder">
+    update customer_order
+    <set>
+      <if test="roomNumber != null">
+        room_number = #{roomNumber,jdbcType=BIGINT},
+      </if>
+      <if test="name != null">
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="sex != null">
+        sex = #{sex,jdbcType=INTEGER},
+      </if>
+      <if test="member != null">
+        member = #{member,jdbcType=INTEGER},
+      </if>
+      <if test="identity != null">
+        identity = #{identity,jdbcType=VARCHAR},
+      </if>
+      <if test="days != null">
+        days = #{days,jdbcType=INTEGER},
+      </if>
+      <if test="price != null">
+        price = #{price,jdbcType=DOUBLE},
+      </if>
+      <if test="state != null">
+        state = #{state,jdbcType=VARCHAR},
+      </if>
+      <if test="startTime != null">
+        start_time = #{startTime,jdbcType=VARCHAR},
+      </if>
+      <if test="endTime != null">
+        end_time = #{endTime,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="person.cyx.hotel.model.CustomerOrder">
+    update customer_order
+    set room_number = #{roomNumber,jdbcType=BIGINT},
+      name = #{name,jdbcType=VARCHAR},
+      sex = #{sex,jdbcType=INTEGER},
+      member = #{member,jdbcType=INTEGER},
+      identity = #{identity,jdbcType=VARCHAR},
+      days = #{days,jdbcType=INTEGER},
+      price = #{price,jdbcType=DOUBLE},
+      state = #{state,jdbcType=VARCHAR},
+      start_time = #{startTime,jdbcType=VARCHAR},
+      end_time = #{endTime,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

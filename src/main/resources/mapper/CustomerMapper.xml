@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="person.cyx.hotel.mapper.CustomerMapper">
+  <resultMap id="BaseResultMap" type="person.cyx.hotel.model.Customer">
+    <id column="c_id" jdbcType="BIGINT" property="cId" />
+    <result column="c_name" jdbcType="VARCHAR" property="cName" />
+    <result column="c_sex" jdbcType="INTEGER" property="cSex" />
+    <result column="c_phone" jdbcType="VARCHAR" property="cPhone" />
+    <result column="c_identity" jdbcType="VARCHAR" property="cIdentity" />
+    <result column="c_member" jdbcType="INTEGER" property="cMember" />
+    <result column="c_password" jdbcType="VARCHAR" property="cPassword" />
+    <result column="c_created" jdbcType="BIGINT" property="cCreated" />
+    <result column="c_updated" jdbcType="BIGINT" property="cUpdated" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    c_id, c_name, c_sex, c_phone, c_identity, c_member, c_password, c_created, c_updated
+  </sql>
+
+  <select id="checkCName" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from customer
+    where c_name = #{cName,jdbcType=VARCHAR}
+  </select>
+
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from customer
+    where c_id = #{cId,jdbcType=BIGINT}
+  </select>
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from customer
+    where c_id = #{cId,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="person.cyx.hotel.model.Customer">
+    insert into customer (c_id, c_name, c_sex, 
+      c_phone, c_identity, c_member, 
+      c_password, c_created, c_updated
+      )
+    values (#{cId,jdbcType=BIGINT}, #{cName,jdbcType=VARCHAR}, #{cSex,jdbcType=INTEGER}, 
+      #{cPhone,jdbcType=VARCHAR}, #{cIdentity,jdbcType=VARCHAR}, #{cMember,jdbcType=INTEGER}, 
+      #{cPassword,jdbcType=VARCHAR}, #{cCreated,jdbcType=BIGINT}, #{cUpdated,jdbcType=BIGINT}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="person.cyx.hotel.model.Customer">
+    insert into customer
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="cId != null">
+        c_id,
+      </if>
+      <if test="cName != null">
+        c_name,
+      </if>
+      <if test="cSex != null">
+        c_sex,
+      </if>
+      <if test="cPhone != null">
+        c_phone,
+      </if>
+      <if test="cIdentity != null">
+        c_identity,
+      </if>
+      <if test="cMember != null">
+        c_member,
+      </if>
+      <if test="cPassword != null">
+        c_password,
+      </if>
+      <if test="cCreated != null">
+        c_created,
+      </if>
+      <if test="cUpdated != null">
+        c_updated,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="cId != null">
+        #{cId,jdbcType=BIGINT},
+      </if>
+      <if test="cName != null">
+        #{cName,jdbcType=VARCHAR},
+      </if>
+      <if test="cSex != null">
+        #{cSex,jdbcType=INTEGER},
+      </if>
+      <if test="cPhone != null">
+        #{cPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="cIdentity != null">
+        #{cIdentity,jdbcType=VARCHAR},
+      </if>
+      <if test="cMember != null">
+        #{cMember,jdbcType=INTEGER},
+      </if>
+      <if test="cPassword != null">
+        #{cPassword,jdbcType=VARCHAR},
+      </if>
+      <if test="cCreated != null">
+        #{cCreated,jdbcType=BIGINT},
+      </if>
+      <if test="cUpdated != null">
+        #{cUpdated,jdbcType=BIGINT},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="person.cyx.hotel.model.Customer">
+    update customer
+    <set>
+      <if test="cName != null">
+        c_name = #{cName,jdbcType=VARCHAR},
+      </if>
+      <if test="cSex != null">
+        c_sex = #{cSex,jdbcType=INTEGER},
+      </if>
+      <if test="cPhone != null">
+        c_phone = #{cPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="cIdentity != null">
+        c_identity = #{cIdentity,jdbcType=VARCHAR},
+      </if>
+      <if test="cMember != null">
+        c_member = #{cMember,jdbcType=INTEGER},
+      </if>
+      <if test="cPassword != null">
+        c_password = #{cPassword,jdbcType=VARCHAR},
+      </if>
+      <if test="cCreated != null">
+        c_created = #{cCreated,jdbcType=BIGINT},
+      </if>
+      <if test="cUpdated != null">
+        c_updated = #{cUpdated,jdbcType=BIGINT},
+      </if>
+    </set>
+    where c_id = #{cId,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="person.cyx.hotel.model.Customer">
+    update customer
+    set c_name = #{cName,jdbcType=VARCHAR},
+      c_sex = #{cSex,jdbcType=INTEGER},
+      c_phone = #{cPhone,jdbcType=VARCHAR},
+      c_identity = #{cIdentity,jdbcType=VARCHAR},
+      c_member = #{cMember,jdbcType=INTEGER},
+      c_password = #{cPassword,jdbcType=VARCHAR},
+      c_created = #{cCreated,jdbcType=BIGINT},
+      c_updated = #{cUpdated,jdbcType=BIGINT}
+    where c_id = #{cId,jdbcType=BIGINT}
+  </update>
+</mapper>

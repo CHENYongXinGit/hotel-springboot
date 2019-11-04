@@ -1,23 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
-<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>房间列表</title>
+    <title>预订列表</title>
     <link rel="stylesheet" type="text/css" href="/layui/css/layui.css"/>
     <style type="text/css">
-        .layui-table-cell{height:60px;line-height: 60px;}
+        .layui-table-cell{height:40px;line-height: 40px;}
         .layui-form-label{padding: 9px 0px !important;}
         .layui-form-item{margin-bottom: 0px !important;}
     </style>
-    <script src="/js/moment.js"></script>
 </head>
 <body>
 <div style="padding: 15px;">
     <fieldset class="layui-elem-field">
-        <legend>房间检索</legend>
+        <legend>预订检索</legend>
         <div class="layui-field-box">
-            <form class="layui-form" action="">
+            <form class="layui-form">
                 <div class="layui-form-item">
                     <div class="layui-inline">
                         <label class="layui-form-label">房间号：</label>
@@ -26,28 +24,19 @@
                         </div>
                     </div>
                     <div class="layui-inline">
-                        <label class="layui-form-label">房间名称：</label>
+                        <label class="layui-form-label">顾客名：</label>
                         <div class="layui-input-inline">
-                            <input class="layui-input" name="roomName" id="roomName" autocomplete="off">
+                            <input class="layui-input" name="name" id="name" autocomplete="off">
                         </div>
                     </div>
                     <div class="layui-inline">
-                        <label class="layui-form-label">房间状态：</label>
+                        <label class="layui-form-label">订单状态：</label>
                         <div class="layui-input-inline">
-                            <select name="roomStatus" id="roomStatus">
-                                <option value="">选择房间状态</option>
-                                <option value="空闲">空闲</option>
-                                <option value="预订">预订</option>
-                                <option value="入住">入住</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="layui-inline">
-                        <label class="layui-form-label">房间类型：</label>
-                        <div class="layui-input-inline">
-                            <select name="roomType" id="roomType">
-                                <option value="">选择房间类型</option>
-                                <option th:each="roomType : ${roomTypes}" th:text="${roomType.name}" th:value="${roomType.id}"></option>
+                            <select name="state" id="state">
+                                <option value="">选择订单状态</option>
+                                <option value="已入住">已入住</option>
+                                <option value="已预订">已预订</option>
+                                <option value="已退订">已退订</option>
                             </select>
                         </div>
                     </div>
@@ -65,24 +54,20 @@
     <script type="text/html" id="toolbarDemo">
         <div class="layui-btn-container">
             <button class="layui-btn layui-btn-sm layui-btn-radius" lay-event="reloadTabel1"><i class="layui-icon layui-icon-refresh-3"></i>刷新</button>
-            <button class="layui-btn layui-btn-sm layui-btn-radius" lay-event="reloadTabel2"><i class="layui-icon layui-icon-add-1"></i>添加</button>
         </div>
     </script>
     <script type="text/html" id="barDemo">
-        <a class="layui-btn layui-btn-xs" lay-event="detail"><i class="layui-icon layui-icon-add-circle"></i>入住</a>
-        <a class="layui-btn layui-btn-warm layui-btn-xs" lay-event="edit"><i class="layui-icon layui-icon-edit"></i>编辑</a>
-        <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del"><i class="layui-icon layui-icon-delete"></i>删除</a>
-    </script>
-    <script type="text/html" id="photoTpl">
-        <img src="{{ d.photo }}" width="90" height="60" />
+        <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="del">退订</a>
+        <a class="layui-btn layui-btn-xs" lay-event="detail">入住</a>
+        <a class="layui-btn layui-btn-warm layui-btn-xs" lay-event="edit">退房</a>
     </script>
     <script type="text/html" id="stateTpl">
-        {{#  if(d.roomStatus === '预订'){ }}
-        <span style="color: #F581B1;">{{ d.roomStatus }}</span>
-        {{#  } else if(d.roomStatus === '入住') { }}
-        <span style="color: #FF5722;">{{ d.roomStatus }}</span>
+        {{#  if(d.state === '已预订'){ }}
+        <span style="color: #F581B1;">{{ d.state }}</span>
+        {{#  } else if(d.state === '已入住') { }}
+        <span style="color: #FF5722;">{{ d.state }}</span>
         {{#  } else { }}
-        <span style="color: #009F95;">{{ d.roomStatus }}</span>
+        <span style="color: #009F95;">{{ d.state }}</span>
         {{#  } }}
     </script>
 </div>
@@ -97,9 +82,9 @@
         table.render({
             elem: '#demo'
             // ,even: true //开启隔行背景
-            ,id: 'roomList'
+            ,id: 'orderList'
             ,title: '用户表'
-            ,url: '/Room/roomList' //数据接口
+            ,url: '/Customer/orderList' //数据接口
             ,toolbar: '#toolbarDemo'
             ,height : 'full-150'
             ,autoSort: false //禁用前端自动排序。
@@ -107,23 +92,15 @@
                 [ //表头
                     {title: '序号', width:75, fixed: 'left', type:'numbers'}
                     ,{field: 'id', title: 'ID', hide: true}
-                    ,{field: 'roomName', title: '房间名称', sort: true, align:'center'}
                     ,{field: 'roomNumber', title: '房间号', width:100, sort: true, align:'center'}
-                    ,{field: 'bedType', title: '床型', align:'center'}
-                    ,{field: 'broadband', title: '宽带', width: 105, align:'center'}
-                    ,{field: 'roomWindow', title: '窗户', width:80, align:'center', sort: true, templet:function (d) {
-                        return d.roomWindow==1?'有':'无';}}
-                    ,{field: 'standardPrice', title: '标准价', width:100, sort: true, align:'center'}
-                    ,{field: 'memberPrice', title: '会员价', width:100, sort: true, align:'center'}
-                    ,{field: 'roomArea', title: '面积', width:100, sort: true, align:'center'}
-                    ,{field: 'roomStatus', title: '房间状态', width: 105, sort: true, align:'center', templet:'#stateTpl'}
-                    ,{field: 'roomType', title: '房间类型', width: 105, sort: true, align:'center', templet:function (d) {
-                        return d.type.name;}}
-                    ,{field: 'photo', title: '房间照片', width: 120, align:'center', templet:"#photoTpl"}
-                    ,{field: 'created', title: '创建时间', align:'center', sort: true, templet:function (d) {
-                        return moment(d.created).format('YYYY-MM-DD HH:mm:SS');}}
-                    ,{field: 'updated', title: '修改时间', align:'center', sort: true, templet:function (d) {
-                        return moment(d.updated).format('YYYY-MM-DD HH:mm:SS');}}
+                    ,{field: 'name', title: '顾客名', align:'center'}
+                    ,{field: 'member', title: '会员', width:80, align:'center', sort: true, templet:function (d) {
+                        return d.member==1?'是':'否';}}
+                    ,{field: 'days', title: '天数', width:100, sort: true, align:'center'}
+                    ,{field: 'price', title: '总价钱', width:100, sort: true, align:'center'}
+                    ,{field: 'state', title: '订单状态', width:120, sort: true, align:'center', templet:'#stateTpl'}
+                    ,{field: 'startTime', title: '开始时间', align:'center', sort: true}
+                    ,{field: 'endTime', title: '退订时间', align:'center', sort: true}
                     ,{title: '操作', width: 210, align:'center', toolbar: '#barDemo', fixed: 'right'}
                 ]
             ]
@@ -138,13 +115,13 @@
 
             //尽管我们的 table 自带排序功能，但并没有请求服务端。
             //有些时候，你可能需要根据当前排序的字段，重新向服务端发送请求，从而实现服务端排序，如：
-            table.reload('roomList', {
+            table.reload('orderList', {
                 initSort: obj //记录初始排序，如果不设的话，将无法标记表头的排序状态。
                 ,where: { //请求参数（注意：这里面的参数可任意定义，并非下面固定的格式）
                     field: obj.field //排序字段
                     ,order: obj.type //排序方式
                 }
-                ,url: '/Room/sortRoom' //数据接口
+                ,url: '/Customer/sortOrderList' //数据接口
             });
             return false;
         });
@@ -249,13 +226,9 @@
             switch(obj.event){
                 case 'reloadTabel1':
                     //执行重载
-                    table.reload('roomList', {
-                        url: '/Room/roomList' //数据接口
+                    table.reload('orderList', {
+                        url: '/Customer/orderList' //数据接口
                     });
-                    break;
-                case 'reloadTabel2':
-                    //执行添加
-                    window.open("/Room/toAddRoom", "demoAdmin");
                     break;
             };
         });
@@ -267,17 +240,16 @@
                 return false;
             }
             //执行重载
-            table.reload('roomList', {
+            table.reload('orderList', {
                 page: {
                     curr: 1 //重新从第 1 页开始
                 }
                 ,where: {
                     roomNumber: value.roomNumber,
-                    roomName: value.roomName,
-                    roomStatus: value.roomStatus,
-                    roomType: value.roomType
+                    name: value.name,
+                    state: value.state
                 }
-                ,url: '/Room/queryRoom' //数据接口
+                ,url: '/Customer/queryOrder' //数据接口
             });
             return false;
         });

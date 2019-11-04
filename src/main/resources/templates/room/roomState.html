@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>房间状态</title>
+    <link rel="stylesheet" type="text/css" href="/layui/css/layui.css"/>
+    <style type="text/css">
+        .tab .bg{width: 100%;height: 160px;background-color: #009F95;text-align: center;font-size: 60px;line-height: 160px;}
+        .tab{width: 90%;margin: 0 auto;display: flex;flex-wrap: wrap;justify-content: space-between;align-content: space-between;}
+        .tab .tu{width: 15%;border: 1px solid #D4D4D4;color: #EB9316;margin-bottom: 25px;line-height: 26px;box-shadow: 1px 1px 5px 1px #D4D4D4;}
+        .tab .tu .z{padding-left: 8px;color: #222222;font-size: 18px;}
+        .tab .tu span{padding-left: 8px;}
+        .tab .tu:hover{border: 1px solid #EB9316;box-shadow: 1px 1px 5px 1px #EB9316;}
+        .st{width: 90%;margin: 5px auto;padding-bottom: 10px;}
+        .st ul,li{display: inline;margin-right: 20px;padding-left: 5px;}
+        .st .fan{width: 15px;height: 15px;display: inline-flex;position: relative;top: 3px;}
+        .fanbg1{background-color: #F581B1;}
+        .fanbg2{background-color: #FF5722;}
+        .fanbg3{background-color: #009F95;}
+        #newsPage{margin-left: 5%;}
+    </style>
+</head>
+<body>
+<div style="padding: 15px;">
+    <div class="st">
+        <ul>
+            <div class="fan fanbg1"></div><li>已预约</li>
+            <div class="fan fanbg2"></div><li>已入住</li>
+            <div class="fan fanbg3"></div><li>空房</li>
+        </ul>
+    </div>
+    <div class="tab">
+        <div th:each="room : ${rooms}" class="tu" onclick="cha(this)"
+             th:data-number="${room.roomNumber}" th:data-standardPrice="${room.standardPrice}" th:data-memberPrice="${room.memberPrice}" >
+            <div>
+                <div th:text="${room.roomNumber}" th:if="${room.roomStatus=='预订'}" style="background-color: #F581B1" class="bg"></div>
+                <div th:text="${room.roomNumber}" th:if="${room.roomStatus=='入住'}" style="background-color: #FF5722" class="bg"></div>
+                <div th:text="${room.roomNumber}" th:if="${room.roomStatus=='空闲'}" class="bg"></div>
+            </div>
+            <div class="z" th:text="${room.roomName}"></div>
+            <span>标准价：<strong th:text="'¥'+${room.standardPrice}"></strong></span>
+            <span>会员价：<strong th:text="'¥'+${room.memberPrice}"></strong></span>
+        </div>
+    </div>
+    <div id="newsPage"></div>
+</div>
+<script src="/layui/layui.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript">
+layui.use(['layer', 'laypage'], function() {
+    var $ = layui.$,
+        layer = layui.layer,
+        laypage = layui.laypage;
+
+    //分页
+    laypage.render({
+        elem: 'newsPage'
+        ,count: [[${total}]]
+        ,limit: [[${limit}]]
+        ,curr: [[${page}]]
+        ,theme: '#2db5a3'
+        ,first: '首页'
+        ,last: '尾页'
+        ,layout: ['prev','page','next']
+        , jump: function (obj, first) {
+            //首次不执行
+            if (!first) {
+                //do something
+                var href = '/Room/roomState?page=' + obj.curr + '&limit=' + obj.limit;
+                location.href = href;
+            }
+
+        }
+    });
+});
+function cha(e){
+    var roomNumber = e.getAttribute("data-number");
+    var standardPrice = e.getAttribute("data-standardPrice");
+    var memberPrice = e.getAttribute("data-memberPrice");
+    layer.open({
+        type: 2,
+        id:'edit1',
+        area: ['480px', '590px'],
+        anim: 2,
+        resize:false,
+        title: ['<i class="layui-icon layui-icon-survey"></i>查看', 'font-size:18px;'],
+        skin:'layui-layer-molv',
+        content: ['/Room/view','no'],
+        success: function (layero, index) {
+            var body = layer.getChildFrame('body', index);
+            var iframeWin = window[layero.find('iframe')[0]['name']]; //得到iframe页的窗口对象，执行iframe页的方法：iframeWin.method();
+            //初始化表单数据的值
+            body.find("#roomNumber").val(roomNumber); //要修改的每个td的值存为变量传进去
+            body.find("#standardPrice").val(standardPrice);
+            body.find("#memberPrice").val(memberPrice);
+        }
+    });
+}
+</script>
+</body>
+</html>

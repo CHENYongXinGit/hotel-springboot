@@ -4,6 +4,8 @@ import person.cyx.hotel.dto.LayuiResult;
 import person.cyx.hotel.dto.RoomDTO;
 import person.cyx.hotel.model.Room;
 
+import java.util.List;
+
 /**
  * @program: hotel-springboot
  * @description
@@ -15,6 +17,8 @@ public interface RoomService {
     int insert(Room room);
 
     Room checkRoomNumber(Long roomNumber);
+
+    List<Room> roomList();
 
     LayuiResult<RoomDTO> roomList(Integer page, Integer limit);
 

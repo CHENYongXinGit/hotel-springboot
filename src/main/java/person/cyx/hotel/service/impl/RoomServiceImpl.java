@@ -49,6 +49,11 @@ public class RoomServiceImpl implements RoomService {
     }
 
     @Override
+    public List<Room> roomList() {
+        return roomMapper.roomList();
+    }
+
+    @Override
     public LayuiResult<RoomDTO> roomList(Integer page, Integer limit) {
         PageHelper.startPage(page, limit);
         return getRoomDTOLayuiResult();

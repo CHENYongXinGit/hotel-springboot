@@ -72,6 +72,32 @@ public class RoomController {
         return "room/editRoom";
     }
 
+    @GetMapping("/view")
+    public String view(){
+        return "room/roomState3";
+    }
+
+    /**
+     * 显示房间状态
+     * @param page
+     * @param limit
+     * @param model
+     * @return
+     */
+    @GetMapping("/roomState")
+    public String toRoomState(@RequestParam(value = "page", defaultValue = "1") Integer page,
+                              @RequestParam(value = "limit", defaultValue = "12") Integer limit,
+                              Model model){
+        PageHelper.startPage(page, limit);
+        List<Room> rooms = roomService.roomList();
+        PageInfo pageInfo = new PageInfo(rooms, 5);
+        model.addAttribute("rooms",rooms);
+        model.addAttribute("total",pageInfo.getTotal());
+        model.addAttribute("page",page);
+        model.addAttribute("limit",limit);
+        return "room/roomState";
+    }
+
     /**
      * 房间类型列表
      * @param page
@@ -168,7 +194,7 @@ public class RoomController {
         if (room == null || room.getRoomNumber() == defaultRoom) {
             return ResultDTO.okOf();
         }
-        return ResultDTO.errorOf(CustomizeErrorCode.ROOMNUMBER_FOUND);
+        return ResultDTO.errorOf(CustomizeErrorCode.ROOM_NUMBER_FOUND);
     }
 
     /**
@@ -308,6 +334,14 @@ public class RoomController {
         return roomDTOLayuiResult;
     }
 
+    /**
+     * 房间列表排序
+     * @param page
+     * @param limit
+     * @param field
+     * @param order
+     * @return
+     */
     @ResponseBody
     @GetMapping("/sortRoom")
     public LayuiResult<RoomDTO> sortRoom(@RequestParam(value = "page", defaultValue = "1")Integer page,
