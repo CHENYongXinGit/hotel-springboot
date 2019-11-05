@@ -13,7 +13,7 @@ public enum CustomizeErrorCode implements ICustomizeErrorCode {
     SYS_PARAM_WRONG(2003,"我勒个去，页面被外星人挟持了!"),
     SYS_ERROR(2004,"服务冒烟了，要不然换个试试！！！"),
     USER_LOCK(2005,"账号已被锁定,请联系管理员！"),
-    COMMENT_NOT_FOUND(2006,"你操作的评论不存在了，要不换个试试？"),
+    ORDER_NOT_FOUND(2006,"你操作的订单不存在了，要不换个试试？"),
     USER_IS_EMPTY(2007,"输入的内容不能为空"),
     USER_NOT_PERMISSION(2008,"你没有权限访问"),
     USER_PERMISSION_REFRESH(2009,"权限刷新，请重新登录"),
@@ -29,6 +29,8 @@ public enum CustomizeErrorCode implements ICustomizeErrorCode {
     ROOM_NUMBER_FOUND(2019,"房间号已存在"),
     CUSTOMER_NOT_FOUND(2020,"没有该顾客"),
     CHECKIN_FAIL(2021,"入住失败"),
+    UNSUBSCRIBE_FAIL(2022,"退订失败"),
+    CHECKOUT_FAIL(2023,"退房失败"),
     ;
 
     private Integer code;

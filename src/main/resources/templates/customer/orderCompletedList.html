@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>预订列表</title>
+    <title>完成列表</title>
     <link rel="stylesheet" type="text/css" href="/layui/css/layui.css"/>
     <style type="text/css">
         .layui-table-cell{height:40px;line-height: 40px;}
@@ -14,7 +14,7 @@
 <body>
 <div style="padding: 15px;">
     <fieldset class="layui-elem-field">
-        <legend>预订检索</legend>
+        <legend>完成检索</legend>
         <div class="layui-field-box">
             <form class="layui-form">
                 <div class="layui-form-item">
@@ -35,8 +35,7 @@
                         <div class="layui-input-inline">
                             <select name="state" id="state">
                                 <option value="">选择订单状态</option>
-                                <option value="已入住">已入住</option>
-                                <option value="已预订">已预订</option>
+                                <option value="已完成">已完成</option>
                                 <option value="已退订">已退订</option>
                             </select>
                         </div>
@@ -54,18 +53,15 @@
     <table id="demo" lay-filter="test"></table>
     <script type="text/html" id="toolbarDemo">
         <div class="layui-btn-container">
+            <button class="layui-btn layui-btn-sm layui-btn-radius" lay-event="getCheckData" id="batchDel"><i class="layui-icon layui-icon-delete"></i>选中删除</button>
             <button class="layui-btn layui-btn-sm layui-btn-radius" lay-event="reloadTabel1"><i class="layui-icon layui-icon-refresh-3"></i>刷新</button>
         </div>
     </script>
     <script type="text/html" id="barDemo">
-        <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="edit">退订</a>
-        <a class="layui-btn layui-btn-xs" lay-event="detail">入住</a>
-        <a class="layui-btn layui-btn-warm layui-btn-xs" lay-event="del">退房</a>
+        <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del"><i class="layui-icon layui-icon-delete"></i>删除</a>
     </script>
     <script type="text/html" id="stateTpl">
-        {{#  if(d.state === '已预订'){ }}
-        <span style="color: #F581B1;">{{ d.state }}</span>
-        {{#  } else if(d.state === '已入住') { }}
+        {{#  if(d.state === '已退订'){ }}
         <span style="color: #FF5722;">{{ d.state }}</span>
         {{#  } else { }}
         <span style="color: #009F95;">{{ d.state }}</span>
@@ -83,15 +79,16 @@
         table.render({
             elem: '#demo'
             // ,even: true //开启隔行背景
-            ,id: 'orderList'
+            ,id: 'orderCompletedList'
             ,title: '用户表'
-            ,url: '/Customer/orderList' //数据接口
+            ,url: '/Customer/orderCompletedList' //数据接口
             ,toolbar: '#toolbarDemo'
             ,height : 'full-150'
             ,autoSort: false //禁用前端自动排序。
             ,cols: [
                 [ //表头
-                    {title: '序号', width:75, fixed: 'left', type:'numbers'}
+                    {type: 'checkbox', fixed: 'left'}
+                    ,{title: '序号', width:75, fixed: 'left', type:'numbers'}
                     ,{field: 'id', title: 'ID', hide: true}
                     ,{field: 'roomNumber', title: '房间号', width:100, sort: true, align:'center'}
                     ,{field: 'name', title: '顾客名', align:'center'}
@@ -101,8 +98,8 @@
                     ,{field: 'price', title: '总价钱', width:100, sort: true, align:'center'}
                     ,{field: 'state', title: '订单状态', width:120, sort: true, align:'center', templet:'#stateTpl'}
                     ,{field: 'startTime', title: '开始时间', align:'center', sort: true}
-                    ,{field: 'endTime', title: '退订时间', align:'center', sort: true}
-                    ,{title: '操作', width: 210, align:'center', toolbar: '#barDemo', fixed: 'right'}
+                    ,{field: 'endTime', title: '完成时间', align:'center', sort: true}
+                    ,{title: '操作', width: 150, align:'center', toolbar: '#barDemo', fixed: 'right'}
                 ]
             ]
             ,page: true //开启分页
@@ -116,13 +113,13 @@
 
             //尽管我们的 table 自带排序功能，但并没有请求服务端。
             //有些时候，你可能需要根据当前排序的字段，重新向服务端发送请求，从而实现服务端排序，如：
-            table.reload('orderList', {
+            table.reload('orderCompletedList', {
                 initSort: obj //记录初始排序，如果不设的话，将无法标记表头的排序状态。
                 ,where: { //请求参数（注意：这里面的参数可任意定义，并非下面固定的格式）
                     field: obj.field //排序字段
                     ,order: obj.type //排序方式
                 }
-                ,url: '/Customer/sortOrderList' //数据接口
+                ,url: '/Customer/sortOrderCompletedList' //数据接口
             });
             return false;
         });
@@ -131,72 +128,20 @@
         table.on('tool(test)', function(obj){ //注：tool 是工具条事件名，test 是 table 原始容器的属性 lay-filter="对应的值"
             var data = obj.data //获得当前行数据
                 ,layEvent = obj.event; //获得 lay-event 对应的值
-            if(layEvent === 'edit'){
-                var state = data.state;
-                if (state == '已入住'){
-                    layer.msg("该房间已有顾客入住", {icon: 5,anim: 6});
-                    return;
-                }
-                if (state == '已退订'){
-                    layer.msg("该房间已被顾客退订", {icon: 5,anim: 6});
-                    return;
-                }
-                layer.confirm('真的要退订么', function(index){
-                    var id = data.id;
-                    var roomNumber = data.roomNumber;
-                    //向服务端发送删除指令
-                    $.ajax({
-                        type:"GET",
-                        url:"/Customer/customerUnsubscribe",
-                        data:{id:id,roomNumber:roomNumber},
-                        dataType:"json",
-                        success:function(res){
-                            if(res.code == 200){
-                                var date = new Date();
-                                //同步更新表格和缓存对应的值
-                                obj.update({
-                                    state: '已退订',
-                                    endTime: moment(date).format('YYYY-MM-DD HH:mm:SS')
-                                });
-                                layer.close(index);
-                                layer.msg('退订成功！', {icon: 1,anim: 5});
-                                return false;
-                            }else{
-                                layer.close(index);
-                                layer.msg(res.message, {icon: 5,anim: 6});
-                                return false;
-                            }
-                        },
-                        error:function(data){//当访问时候，404，500 等非200的错误状态码
-                            layer.msg('请求错误！', {icon: 5,anim: 6});
-                            return false;
-                        }
-                    });
-                });
-            } else if(layEvent === 'del'){
-                var state = data.state;
-                if (state == '已预订'){
-                    layer.msg("该房间顾客还没入住", {icon: 5,anim: 6});
-                    return;
-                }
-                if (state == '已退订'){
-                    layer.msg("该房间已被顾客退订", {icon: 5,anim: 6});
-                    return;
-                }
+            if(layEvent === 'del'){
                 layer.confirm('真的退房么', function(index){
                     var id = data.id;
-                    var roomNumber = data.roomNumber;
                     //向服务端发送删除指令
                     $.ajax({
                         type:"GET",
-                        url:"/Customer/customerCheckout",
-                        data:{id:id,roomNumber:roomNumber},
+                        url:"/Customer/delOrder",
+                        data:{id:id},
                         dataType:"json",
                         success:function(res){
                             if(res.code == 200){
                                 obj.del(); //删除对应行（tr）的DOM结构
                                 layer.close(index);
-                                layer.msg('退房成功！', {icon: 1,anim: 5});
+                                layer.msg('删除成功！', {icon: 1,anim: 5});
                                 return false;
                             }else{
                                 layer.close(index);
@@ -209,51 +154,54 @@
                             return false;
                         }
                     });
-                });
-            }else if(layEvent === 'detail'){
-                var state = data.state;
-                if (state == '已入住'){
-                    layer.msg("该房间已有顾客入住", {icon: 5,anim: 6});
-                    return;
-                }
-                if (state == '已退订'){
-                    layer.msg("该房间已被顾客退订", {icon: 5,anim: 6});
-                    return;
-                }
-                var id = data.id;
-                var roomNumber = data.roomNumber;
-                var name = data.name;
-                var identity = data.identity;
-                layer.open({
-                    type: 2,
-                    id:'edit1',
-                    area: ['480px', '330px'],
-                    anim: 2,
-                    resize:false,
-                    title: ['<i class="layui-icon layui-icon-survey"></i>入住房间', 'font-size:18px;'],
-                    skin:'layui-layer-molv',
-                    content: ['/Customer/toCustomerCheckin?id='+id,'no'],
-                    success: function (layero, index) {
-                        var body = layer.getChildFrame('body', index);
-                        var iframeWin = window[layero.find('iframe')[0]['name']]; //得到iframe页的窗口对象，执行iframe页的方法：iframeWin.method();
-                        //初始化表单数据的值
-                        body.find("#roomNumber").val(roomNumber); //要修改的每个td的值存为变量传进去
-                        body.find("#id").val(id);
-                        body.find("#name").val(name);
-                        body.find("#identity").val(identity);
-                    }
                 });
             }
         });
 
         //头工具栏事件
         table.on('toolbar(test)', function(obj){
+            var checkStatus = table.checkStatus(obj.config.id);
             switch(obj.event){
                 case 'reloadTabel1':
                     //执行重载
-                    table.reload('orderList', {
-                        url: '/Customer/orderList' //数据接口
+                    table.reload('orderCompletedList', {
+                        url: '/Customer/orderCompletedList' //数据接口
                     });
+                    break;
+                case 'getCheckData':
+                    var data = checkStatus.data;
+                    var delList = [];
+                    data.forEach(function(n,i){
+                        delList.push(n.id);
+                    });
+                    if(delList != ''){
+                        layer.confirm('确定删除所选项吗？',function (index) {
+                            $.ajax({
+                                url: '/Customer/batchDel',
+                                type:'post',
+                                dataType:'json',
+                                data:"ids="+delList,
+                                success:function (res) {
+                                    if(res.code==200){
+                                        layer.msg('删除成功！', {
+                                            time: 500 //0.5秒关闭（如果不配置，默认是3秒）
+                                        }, function(){
+                                            window.location.reload();
+                                        });
+                                    }else{
+                                        layer.msg(res.message);
+                                    }
+                                },
+                                'error':function () {
+                                    layer.msg('系统错误');
+                                }
+                            })
+                        })
+                    }else{
+                        layer.tips('请选择需要删除的行',$('#batchDel'),{
+                            tips:[3,'#5fb878']
+                        })
+                    }
                     break;
             };
         });
@@ -265,7 +213,7 @@
                 return false;
             }
             //执行重载
-            table.reload('orderList', {
+            table.reload('orderCompletedList', {
                 page: {
                     curr: 1 //重新从第 1 页开始
                 }
@@ -274,7 +222,7 @@
                     name: value.name,
                     state: value.state
                 }
-                ,url: '/Customer/queryOrder' //数据接口
+                ,url: '/Customer/queryOrderCompleted' //数据接口
             });
             return false;
         });

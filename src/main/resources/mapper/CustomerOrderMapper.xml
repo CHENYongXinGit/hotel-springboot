@@ -29,7 +29,8 @@
     select
     <include refid="Base_Column_List" />
     from customer_order
-    where state == '已完成'
+    where state = '已完成'
+    or state = '已退订'
   </select>
 
   <select id="queryOrder" parameterType="person.cyx.hotel.model.CustomerOrder" resultMap="BaseResultMap">
@@ -48,6 +49,33 @@
       </if>
         and state != '已完成'
     </where>
+  </select>
+
+  <select id="queryOrderCompleted" parameterType="person.cyx.hotel.model.CustomerOrder" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from customer_order
+    <where>
+      <if test="name != null and name != ''">
+        and name like '%${name}%'
+      </if>
+      <if test="roomNumber != null and roomNumber != ''">
+        and room_number like '%${roomNumber}%'
+      </if>
+      <if test="state != null and state != ''">
+        and state like #{state,jdbcType=VARCHAR}
+      </if>
+        and state != '已入住'
+        and state != '已预订'
+    </where>
+  </select>
+
+  <select id="viewCustomerRoom" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from customer_order
+    where room_number = #{roomNumber}
+    and state = #{state}
   </select>
 
   <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">

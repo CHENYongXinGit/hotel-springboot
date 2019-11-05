@@ -21,4 +21,22 @@ public interface CustomerService {
     LayuiResult<CustomerOrder> orderList(Integer page, Integer limit, String orderBy);
 
     LayuiResult<CustomerOrder> queryOrder(Integer page, Integer limit, CustomerOrder customerOrder);
+
+    int customerUnsubscribe(Long id, Long roomNumber);
+
+    int customerCheckout(Long id, Long roomNumber);
+
+    CustomerOrder viewCustomerRoom(Long roomNumber, String state);
+
+    int changeCustomerCheckin(CustomerOrder customerOrder);
+
+    LayuiResult<CustomerOrder> orderCompletedList(Integer page, Integer limit);
+
+    LayuiResult<CustomerOrder> orderCompletedList(Integer page, Integer limit, String orderBy);
+
+    LayuiResult<CustomerOrder> queryOrderCompleted(Integer page, Integer limit, CustomerOrder customerOrder);
+
+    int delOrder(Long id);
+
+    int batchDel(Long[] ids);
 }

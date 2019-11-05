@@ -72,11 +72,6 @@ public class RoomController {
         return "room/editRoom";
     }
 
-    @GetMapping("/view")
-    public String view(){
-        return "room/roomState3";
-    }
-
     /**
      * 显示房间状态
      * @param page
@@ -88,7 +83,7 @@ public class RoomController {
     public String toRoomState(@RequestParam(value = "page", defaultValue = "1") Integer page,
                               @RequestParam(value = "limit", defaultValue = "12") Integer limit,
                               Model model){
-        PageHelper.startPage(page, limit);
+        PageHelper.startPage(page, limit, "room_number asc");
         List<Room> rooms = roomService.roomList();
         PageInfo pageInfo = new PageInfo(rooms, 5);
         model.addAttribute("rooms",rooms);

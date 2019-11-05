@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>顾客入住</title>
+    <link rel="stylesheet" type="text/css" href="/layui/css/layui.css"/>
+    <style type="text/css">
+        .cent{width: 90%;margin: 5px auto;}
+    </style>
+</head>
+<body>
+<div class="cent">
+    <fieldset class="layui-elem-field">
+        <legend>查看房间：顾客入住</legend>
+        <div class="layui-field-box">
+            <form class="layui-form layui-form-pane">
+                <input type="text" id="id" name="id" hidden/>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">房间号：</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="roomNumber" id="roomNumber" readonly class="layui-input layui-disabled">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">顾客姓名：</label>
+                    <div class="layui-input-block">
+                        <input type="text" class="layui-input" autocomplete="off" lay-verify="required" name="name" id="name" readonly />
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">身份证号：</label>
+                    <div class="layui-input-block">
+                        <input type="text" class="layui-input" autocomplete="off" lay-verify="identity" name="identity" id="identity" readonly />
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-input-block">
+                        <button class="layui-btn layui-btn-lg" style="width: 164px;" lay-submit lay-filter="formDemo">确认入住</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </fieldset>
+</div>
+<script src="/layui/layui.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript">
+    layui.use(['layer','form'], function() {
+        var form = layui.form,
+            $ = layui.jquery;
+
+        //监听提交
+        form.on('submit(formDemo)', function(data) {
+            console.log(JSON.stringify(data.field));
+            var layIndex = layer.load(2, {
+                shade: [0.1, '#393D49']
+            });
+            $.ajax({
+                url:"/Customer/customerCheckin",
+                type:'post',//method请求方式，get或者post
+                dataType:'json',//预期服务器返回的数据类型
+                data:JSON.stringify(data.field),//表格数据序列化
+                contentType: "application/json; charset=utf-8",
+                success:function(res){//res为相应体,function为回调函数
+                    if(res){
+                        layer.close(layIndex);
+                        layer.msg('入住房间成功！', {
+                            time: 500 //0.5秒关闭（如果不配置，默认是3秒）
+                        }, function(){
+                            parent.window.location.reload();
+                        });
+                        return false;
+                    }else{
+                        layer.close(layIndex);
+                        layer.msg(res.message, {icon: 5,anim: 6});
+                        return false;
+                    }
+                },
+                error:function(){
+                    layer.close(layIndex);
+                    layer.alert('操作失败！！！',{icon:5});
+                    return false;
+                }
+            });
+            return false;
+        });
+    });
+</script>
+</body>
+</html>

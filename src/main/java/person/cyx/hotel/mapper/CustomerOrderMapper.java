@@ -1,5 +1,6 @@
 package person.cyx.hotel.mapper;
 
+import org.apache.ibatis.annotations.Param;
 import person.cyx.hotel.model.CustomerOrder;
 
 import java.util.List;
@@ -22,4 +23,8 @@ public interface CustomerOrderMapper {
     List<CustomerOrder> orderCompletedList();
 
     List<CustomerOrder> queryOrder(CustomerOrder customerOrder);
+
+    List<CustomerOrder> queryOrderCompleted(CustomerOrder customerOrder);
+
+    CustomerOrder viewCustomerRoom(@Param("roomNumber") Long roomNumber, @Param("state") String state);
 }
