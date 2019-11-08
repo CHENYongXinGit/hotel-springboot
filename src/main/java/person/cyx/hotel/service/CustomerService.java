@@ -4,6 +4,8 @@ import person.cyx.hotel.dto.LayuiResult;
 import person.cyx.hotel.model.Customer;
 import person.cyx.hotel.model.CustomerOrder;
 
+import java.util.List;
+
 /**
  * @program: hotel-springboot
  * @description
@@ -39,4 +41,14 @@ public interface CustomerService {
     int delOrder(Long id);
 
     int batchDel(Long[] ids);
+
+    Customer checkByPhone(String phone);
+
+    int insert(Customer customer);
+
+    Customer login(String phone, String password);
+
+    List<CustomerOrder> selectByCPhone(String phone);
+
+    int customerBooking(Customer customer, CustomerOrder customerOrder);
 }

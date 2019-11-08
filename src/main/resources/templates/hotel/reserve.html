@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,user-scalable=no,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0">
+    <title>糖果酒店-预约列表</title>
+    <link rel="stylesheet" href="/layui/css/layui.css">
+    <link rel="stylesheet" href="/css/tangguo-hotel-index.css">
+</head>
+<body>
+<!-- nav部分 -->
+<div th:insert="~{hotel/navigation :: nav}"></div>
+<!-- banner部分 -->
+<div class="banner about">
+    <div class="title">
+        <p>预约列表</p>
+        <p class="en">Reservation list</p>
+    </div>
+</div>
+<!-- main部分 -->
+<div class="layui-container m">
+    <table class="layui-table">
+        <thead>
+        <tr class="trh">
+            <th>订单号</th>
+            <th>房间号</th>
+            <th>预约时间</th>
+            <th>状态</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="order : ${customerOrders}">
+            <td th:text="${order.id}"></td>
+            <td th:text="${order.roomNumber}"></td>
+            <td th:text="${order.startTime}"></td>
+            <td th:text="${order.state}"></td>
+            <td align="center">
+                <a class="layui-btn layui-btn-danger layui-btn-xs" onclick="Del(this)" th:data-id="${order.id}" th:data-state="${order.state}" th:data-roomNumber="${order.roomNumber}">
+                    <i class="layui-icon layui-icon-tips"></i>取消预约
+                </a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+<div style="height: 180px"></div>
+<!-- footer部分 -->
+<div th:insert="~{hotel/footer :: foot}"></div>
+
+<script src="/layui/layui.js"></script>
+<!--[if lt IE 9]>
+<script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+<script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+<![endif]-->
+<script src="/js/jquery-3.4.1.min.js"></script>
+<script>
+layui.config({
+    base: '/js/'
+}).use('firm');
+layui.use(['layer','jquery'],function () {
+    var layer = layui.layer,
+        $ = layui.jquery;
+});
+function Del(e) {
+    var id = e.getAttribute("data-id");
+    var roomNumber = e.getAttribute("data-roomNumber");
+    var state = e.getAttribute("data-state");
+    if (state == '已入住'){
+        layer.msg("你已经入住房间了", {icon: 5,anim: 6});
+        return;
+    }
+    if (state == '已退订'){
+        layer.msg("房间已被你退订了", {icon: 5,anim: 6});
+        return;
+    }
+    if (state == '已完成'){
+        layer.msg("订单已完成", {icon: 5,anim: 6});
+        return;
+    }
+    layer.confirm('确定要取消么', {icon: 3, title:'提示'}, function(index){
+        $.ajax({
+            type:"GET",
+            url:"/hotel/customerUnsubscribe",
+            data:{id:id,roomNumber:roomNumber},
+            dataType:"json",
+            success:function(res){
+                if(res.code == 200){
+                    layer.close(index);
+                    layer.msg('退订成功！', {
+                        time: 1000 //1秒关闭（如果不配置，默认是3秒）
+                    }, function(){
+                        window.location.reload();
+                    });
+                    return false;
+                }else{
+                    layer.close(index);
+                    layer.msg(res.message, {icon: 5,anim: 6});
+                    return false;
+                }
+            },
+            error:function(data){//当访问时候，404，500 等非200的错误状态码
+                layer.msg('请求错误！', {icon: 5,anim: 6});
+                return false;
+            }
+        });
+    });
+}
+</script>
+</body>
+</html>

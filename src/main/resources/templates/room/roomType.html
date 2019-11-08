@@ -6,16 +6,23 @@
     <link rel="stylesheet" type="text/css" href="/layui/css/layui.css"/>
     <style type="text/css">
         .cent{width: 90%;margin: 20px auto;padding-bottom:10px;}
+        .photo{padding-top: 6px;border: none;color: #999;}
     </style>
 </head>
 <body>
 <div class="cent">
-    <form class="layui-form layui-form-pane">
+    <form class="layui-form layui-form-pane" id="addForm" method="post" enctype="multipart/form-data">
         <input type="text" id="id" name="id" hidden>
         <div class="layui-form-item">
-            <label class="layui-form-label">房间类型名称：</label>
+            <label class="layui-form-label">类型名称：</label>
             <div class="layui-input-block">
                 <input type="text" id="name" name="name" lay-verify="required" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item" pane>
+            <label class="layui-form-label">房间图片：</label>
+            <div class="layui-input-block">
+                <input type="file" name="file" id="file" class="layui-input photo">
             </div>
         </div>
         <div class="layui-form-item layui-form-text">
@@ -38,18 +45,21 @@
             $ = layui.jquery;
 
         //监听提交
-        form.on('submit(formDemo)', function(data) {
-            console.log(JSON.stringify(data.field));
+        form.on('submit(formDemo)', function() {
+            var formData = new FormData($("#addForm")[0]);
+            console.log(formData);
             $.ajax({
                 type:"post",
                 url:"/Room/roomTypeOperate",
-                data:JSON.stringify(data.field),
-                dataType:"json",
-                contentType: "application/json; charset=utf-8",
+                data:formData,
+                cache: false,
+                async: false,
+                processData : false,  //必须false才会避开jQuery对 formdata 的默认处理
+                contentType : false,  //必须false才会自动加上正确的Content-Type
                 success:function(res){
                     if(res.code==200){
                         layer.msg('操作成功！', {
-                            time: 1000 //1秒关闭（如果不配置，默认是3秒）
+                            time: 500 //0.5秒关闭（如果不配置，默认是3秒）
                         }, function(){
                             parent.window.location.reload();
                         });
@@ -59,7 +69,7 @@
                         return false;
                     }
                 },
-                error:function(data){//当访问时候，404，500 等非200的错误状态码
+                error:function(){//当访问时候，404，500 等非200的错误状态码
                     layer.msg('请求错误！', {icon: 5,anim: 6});
                     return false;
                 }

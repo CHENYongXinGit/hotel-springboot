@@ -91,6 +91,16 @@ public class RoomServiceImpl implements RoomService {
         return resultRoomDTO;
     }
 
+    @Override
+    public List<Room> selectByRoomType(Long roomType) {
+        return roomMapper.selectByRoomType(roomType);
+    }
+
+    @Override
+    public Room selectByRoomId(Long id) {
+        return roomMapper.selectByPrimaryKey(id);
+    }
+
     /**
      * 添加房间类型字段
      * @param rooms

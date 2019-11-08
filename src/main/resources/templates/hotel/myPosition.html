@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,user-scalable=no,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0">
+    <title>糖果酒店-分类</title>
+    <link rel="stylesheet" href="/layui/css/layui.css">
+    <link rel="stylesheet" href="/css/tangguo-hotel-index.css">
+    <!--引用百度地图API-->
+    <style type="text/css">
+        html,body{margin:0;padding:0;}
+        .iw_poi_title {color:#CC5522;font-size:14px;font-weight:bold;overflow:hidden;padding-right:13px;white-space:nowrap}
+        .iw_poi_content {font:12px arial,sans-serif;overflow:visible;padding-top:4px;white-space:-moz-pre-wrap;word-wrap:break-word}
+    </style>
+    <script type="text/javascript" src="http://api.map.baidu.com/api?key=&v=1.1&services=true"></script>
+</head>
+<body>
+<!-- nav部分 -->
+<div th:insert="~{hotel/navigation :: nav}"></div>
+<!-- banner部分 -->
+<div class="banner about">
+    <div class="title">
+        <p>我的位置</p>
+        <p class="en">My location</p>
+    </div>
+</div>
+<!-- main部分 -->
+<!--百度地图容器-->
+<div class="layui-container" style="height:500px;border:#ccc solid 1px;margin: 30px auto;" id="dituContent"></div>
+<!-- footer部分 -->
+<div th:insert="~{hotel/footer :: foot}"></div>
+
+<script src="/layui/layui.js"></script>
+<!--[if lt IE 9]>
+<script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+<script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+<![endif]-->
+<script>
+    layui.config({
+        base: '/js/'
+    }).use(['firm','map']);
+</script>
+</body>
+</html>

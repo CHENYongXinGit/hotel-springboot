@@ -17,4 +17,8 @@ public interface CustomerMapper {
     int updateByPrimaryKey(Customer record);
 
     Customer checkCName(@Param("cName") String cName);
+
+    Customer checkByPhone(@Param("cPhone") String phone);
+
+    Customer login(@Param("cPhone") String phone, @Param("cPassword") String password);
 }

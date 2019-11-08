@@ -27,4 +27,6 @@ public interface CustomerOrderMapper {
     List<CustomerOrder> queryOrderCompleted(CustomerOrder customerOrder);
 
     CustomerOrder viewCustomerRoom(@Param("roomNumber") Long roomNumber, @Param("state") String state);
+
+    List<CustomerOrder> selectByCPhone(@Param("phone") String phone);
 }

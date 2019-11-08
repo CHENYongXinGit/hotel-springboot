@@ -18,7 +18,7 @@
         .fanbg1{background-color: #F581B1;}
         .fanbg2{background-color: #FF5722;}
         .fanbg3{background-color: #009F95;}
-        #newsPage{margin-left: 5%;}
+        #statePage{margin-left: 5%;}
     </style>
 </head>
 <body>
@@ -43,7 +43,7 @@
             <span>会员价：<strong th:text="'¥'+${room.memberPrice}"></strong></span>
         </div>
     </div>
-    <div id="newsPage"></div>
+    <div id="statePage"></div>
 </div>
 <script src="/layui/layui.js" type="text/javascript" charset="utf-8"></script>
 <script type="text/javascript">
@@ -54,7 +54,7 @@ layui.use(['layer', 'laypage'], function() {
 
     //分页
     laypage.render({
-        elem: 'newsPage'
+        elem: 'statePage'
         ,count: [[${total}]]
         ,limit: [[${limit}]]
         ,curr: [[${page}]]
@@ -82,7 +82,7 @@ function cha(e){
         layer.open({
             type: 2,
             id:'edit1',
-            area: ['480px', '590px'],
+            area: ['480px', '625px'],
             anim: 2,
             resize:false,
             title: ['<i class="layui-icon layui-icon-survey"></i>查看', 'font-size:18px;'],

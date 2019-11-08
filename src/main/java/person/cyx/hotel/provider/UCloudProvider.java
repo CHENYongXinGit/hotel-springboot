@@ -5,6 +5,7 @@ import cn.ucloud.ufile.api.object.ObjectConfig;
 import cn.ucloud.ufile.auth.ObjectAuthorization;
 import cn.ucloud.ufile.auth.UfileObjectLocalAuthorization;
 import cn.ucloud.ufile.bean.PutObjectResultBean;
+import cn.ucloud.ufile.bean.base.BaseResponseBean;
 import cn.ucloud.ufile.exception.UfileClientException;
 import cn.ucloud.ufile.exception.UfileServerException;
 import org.springframework.beans.factory.annotation.Value;
@@ -90,6 +91,21 @@ public class UCloudProvider {
         } catch (UfileServerException e) {
             e.printStackTrace();
             throw new CustomizeException(CustomizeErrorCode.FILE_UPLOAD_FAIL);
+        }
+    }
+
+    public void delete(String keyName){
+
+        try {
+            ObjectAuthorization objectAuthorization = new UfileObjectLocalAuthorization(publicKey, privateKey);
+            ObjectConfig config = new ObjectConfig(region,suffix);
+            BaseResponseBean execute = UfileClient.object(objectAuthorization, config)
+                    .deleteObject(keyName, bucketName).execute();
+            System.out.println("删除code:"+execute.getRetCode());
+        } catch (UfileClientException e) {
+            e.printStackTrace();
+        } catch (UfileServerException e) {
+            e.printStackTrace();
         }
     }
 

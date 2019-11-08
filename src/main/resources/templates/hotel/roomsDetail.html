@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,user-scalable=no,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0">
+    <title>糖果酒店-分类</title>
+    <link rel="stylesheet" href="/layui/css/layui.css">
+    <link rel="stylesheet" href="/css/tangguo-hotel-index.css">
+</head>
+<body>
+<!-- nav部分 -->
+<div th:insert="~{hotel/navigation :: nav}"></div>
+<!-- banner部分 -->
+<div class="banner news">
+    <div class="title">
+        <p>实时房间信息</p>
+        <p class="en">Real-time Rooms</p>
+    </div>
+</div>
+<!-- main部分 -->
+<div class="main-news" style="background: rgb(242,242,242);">
+    <div class="roomList">
+        <div class="room-mulu">
+            <p><a href="/hotel/roomSort">分类展示</a>&nbsp; > &nbsp;<a href="/hotel/rooms">更多房间</a>&nbsp; > &nbsp;房间详情</p>
+        </div>
+        <div class="room-left">
+            <img th:src="${room.photo}" alt="房间详情图"/>
+        </div>
+        <div class="room-right">
+            <p class="room-title" th:text="${room.roomName}"></p>
+            <div class="room-body">
+                <p>房间号：<span th:text="${room.roomNumber}"></span></p>
+                <p>床　型：<span th:text="${room.bedType}"></span></p>
+                <p>宽　带：<span th:text="${room.broadband}"></span></p>
+                <p>窗　户：<span th:text="${room.roomWindow==0?'无':'有'}"></span></p>
+                <p>面　积：<span th:text="${room.roomArea}"></span></p>
+                <p>标准价：<span th:text="${'￥'+room.standardPrice}"></span></p>
+                <p>会员价：<span style="color:#ee0000">￥<strong th:text="${room.memberPrice}" class="room-price"></strong></span></p>
+                <p>状　态：<span class="room-status" th:text="${room.roomStatus=='空闲'?'可预订':'已被预订'}"></span></p>
+            </div>
+            <p class="room-btn"><a href="javascript:;" id="bookNow"><i class="layui-icon layui-icon-dollar"></i>立即预定</a></p>
+        </div>
+    </div>
+    <div class="room-announcement">
+        <div class="room-quote"> 每天14：00后入住，12：00之前退房。</div>
+    </div>
+</div>
+<!-- footer部分 -->
+<div th:insert="~{hotel/footer :: foot}"></div>
+
+<script src="/layui/layui.js"></script>
+<!--[if lt IE 9]>
+<script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+<script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+<![endif]-->
+<script>
+layui.config({
+    base: '/js/'
+}).use('firm');
+layui.use(['layer','jquery'],function () {
+    var layer = layui.layer,
+        $ = layui.jquery;
+
+    $("#bookNow").on('click',function () {
+        var roomNumber = [[${room.roomNumber}]];
+        var unitPrice = [[${room.standardPrice}]];
+        if ([[${session.customer.cMember==1}]]) {
+            unitPrice = [[${room.memberPrice}]];
+        }
+        if ([[${session.customer==null}]]) {
+            layer.msg('请先登录');
+            return;
+        }
+        if ('[[${room.roomStatus}]]' != '空闲'){
+            layer.msg('该房间已被预订了', {icon: 5,anim: 6});
+            return;
+        }else{
+            layer.open({
+                type: 2,
+                id:'edit1',
+                area: ['560px', '330px'],
+                anim: 2,
+                resize:false,
+                title: ['<i class="layui-icon layui-icon-survey"></i>预订房间', 'font-size:18px;'],
+                skin:'layui-layer-molv',
+                content: ['/hotel/reservation', 'no'],
+                success: function (layero, index) {
+                    var body = layer.getChildFrame('body', index);
+                    var iframeWin = window[layero.find('iframe')[0]['name']]; //得到iframe页的窗口对象，执行iframe页的方法：iframeWin.method();
+                    //初始化表单数据的值
+                    body.find("#roomNumber").val(roomNumber); //要修改的每个td的值存为变量传进去
+                    body.find("#unitPrice").val(unitPrice);
+                    layer.msg("欢迎预约！");
+                }
+            });
+            return;
+        }
+    });
+});
+</script>
+</body>
+</html>

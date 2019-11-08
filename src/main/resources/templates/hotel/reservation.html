@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>reservation</title>
+    <link rel="stylesheet" type="text/css" href="/layui/css/layui.css"/>
+    <style type="text/css">
+        .cent{width: 90%;margin: 20px auto;padding-bottom:10px;}
+    </style>
+    <script src="/js/moment.js"></script>
+</head>
+<body>
+<div class="cent">
+    <form class="layui-form layui-form-pane">
+        <input type="text" id="unitPrice" hidden/>
+        <input type="text" id="startTime" name="startTime" hidden/>
+        <div class="layui-form-item">
+            <label class="layui-form-label">房间号：</label>
+            <div class="layui-input-block">
+                <input type="text" name="roomNumber" id="roomNumber" readonly class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-block">
+                <label class="layui-form-label">预约时间：</label>
+                <div class="layui-input-block">
+                    <input type="text" class="layui-input" id="oTime" lay-verify="oTime" readonly placeholder="选择日期">
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">入住天数：</label>
+            <div class="layui-input-block">
+                <input type="number" class="layui-input" readonly id="days" name="days" lay-verify="required" />
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">总共/元：</label>
+            <div class="layui-input-block">
+                <input type="text" id="price" readonly autocomplete="off" name="price" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn layui-btn-lg" style="width: 280px" lay-submit lay-filter="formDemo">确认预约</button>
+            </div>
+        </div>
+    </form>
+</div>
+<script src="/layui/layui.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript">
+    layui.use(['layer','form','laydate'], function() {
+        var form = layui.form,
+            laydate = layui.laydate,
+            $ = layui.jquery;
+
+        form.verify({
+            oTime: function (value, item) {
+                if ($("#oTime").val() == "") {
+                    return '请选择时间';
+                }
+            }
+        });
+
+        //日期
+        laydate.render({
+            elem: '#oTime'
+            ,calendar: true
+            ,trigger: 'click'
+            ,theme: 'molv'
+            ,range: '~'
+            ,min: 0
+            ,done: function(value, date, endDate){
+                //点击日期、清空、现在、确定均会触发。回调返回三个参数，分别代表：生成的值、日期时间对象、结束的日期时间对象
+                strArr = value.split('~');
+                var start = Date.parse(strArr[0]);
+                var end = Date.parse(strArr[1]);
+                var days = Math.abs(parseInt((end - start)/1000/3600/24));
+                $("#days").val(days);
+                $("#startTime").val(moment(start).format('YYYY-MM-DD HH:mm:SS'));
+                var price = $("#unitPrice").val();
+                $("#price").val(days*price);
+                $("#price").css({"color":"red","font-size":"18px"});
+            }
+        });
+
+        //监听提交
+        form.on('submit(formDemo)', function(data) {
+            console.log(JSON.stringify(data.field));
+            var layIndex = layer.load(2, {
+                shade: [0.1, '#393D49']
+            });
+            $.ajax({
+                url:"/hotel/reservation",
+                type:'post',//method请求方式，get或者post
+                dataType:'json',//预期服务器返回的数据类型
+                data:JSON.stringify(data.field),//表格数据序列化
+                contentType: "application/json; charset=utf-8",
+                success:function(res){//res为相应体,function为回调函数
+                    if(res.code==200){
+                        layer.close(layIndex);
+                        layer.msg('预约房间成功！', {
+                            time: 1000 //1秒关闭（如果不配置，默认是3秒）
+                        }, function(){
+                            parent.window.location.reload();
+                        });
+                        return false;
+                    }else{
+                        layer.close(layIndex);
+                        layer.msg(res.message, {icon: 5,anim: 6});
+                        return false;
+                    }
+                },
+                error:function(){
+                    layer.close(layIndex);
+                    layer.alert('操作失败！！！',{icon:5});
+                    return false;
+                }
+            });
+            return false;
+        });
+    });
+</script>
+</body>
+</html>

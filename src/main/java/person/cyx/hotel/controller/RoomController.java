@@ -118,20 +118,38 @@ public class RoomController {
      */
     @ResponseBody
     @PostMapping("/roomTypeOperate")
-    public ResultDTO roomType(@RequestBody RoomType roomType){
+    public ResultDTO roomType(@RequestParam("file") MultipartFile file, RoomType roomType){
+        if (file.isEmpty() && roomType.getId()==null){
+            return ResultDTO.errorOf(CustomizeErrorCode.CHOOSE_FILE_UPLOAD);
+        }
+        String fileName = null;
+        if (!file.isEmpty()){
+            try {
+                fileName = uCloudProvider.upload(file.getInputStream(), file.getContentType(), file.getOriginalFilename());
+            } catch (Exception e) {
+                e.printStackTrace();
+                return ResultDTO.errorOf(CustomizeErrorCode.FILE_UPLOAD_FAIL);
+            }
+        }
         if (roomType.getId()!=null){
+            if (fileName != null){
+                roomType.setPhoto(fileName);
+            }
             int update = roomTypeMapper.updateByPrimaryKeySelective(roomType);
             if (update >= 1){
                 return ResultDTO.okOf();
             } else {
+                delPhoto(fileName);
                 return ResultDTO.errorOf(CustomizeErrorCode.UPDATE_FAIL);
             }
         } else {
+            roomType.setPhoto(fileName);
             roomType.setCreated(System.currentTimeMillis());
             int insert = roomTypeMapper.insertSelective(roomType);
             if (insert >= 1){
                 return ResultDTO.okOf();
             } else {
+                delPhoto(fileName);
                 return ResultDTO.errorOf(CustomizeErrorCode.ADD_FAIL);
             }
         }
@@ -204,12 +222,12 @@ public class RoomController {
 
         try {
             String fileName = uCloudProvider.upload(file.getInputStream(), file.getContentType(), file.getOriginalFilename());
-            System.out.println(fileName);
             room.setPhoto(fileName);
             int insert = roomService.insert(room);
             if (insert >= 1){
                 return ResultDTO.okOf();
             } else {
+                delPhoto(fileName);
                 return ResultDTO.errorOf(CustomizeErrorCode.ADD_FAIL);
             }
         } catch (Exception e) {
@@ -265,7 +283,6 @@ public class RoomController {
         MultipartFile file = multipartRequest.getFile("file");
         try {
             String fileName = uCloudProvider.upload(file.getInputStream(), file.getContentType(), file.getOriginalFilename());
-            System.out.println(fileName);
             Room room = new Room();
             room.setId(id);
             room.setPhoto(fileName);
@@ -273,6 +290,7 @@ public class RoomController {
             if (update >= 1){
                 return ResultDTO.okOf();
             } else {
+                delPhoto(fileName);
                 return ResultDTO.errorOf(CustomizeErrorCode.FILE_UPLOAD_FAIL);
             }
         } catch (Exception e) {
@@ -348,6 +366,17 @@ public class RoomController {
         String orderBy = hump+" "+order;
         LayuiResult<RoomDTO> roomDTOLayuiResult = roomService.roomList(page, limit, orderBy);
         return roomDTOLayuiResult;
+    }
+
+
+    /**
+     * 删除云端图片
+     * @param fileName
+     */
+    private void delPhoto(String fileName) {
+        String[] filePaths = fileName.split("\\?")[0].split("/");
+        fileName = filePaths[filePaths.length - 1];
+        uCloudProvider.delete(fileName);
     }
 
 }

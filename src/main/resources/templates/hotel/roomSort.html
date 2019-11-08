@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,user-scalable=no,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0">
+    <title>糖果酒店-分类</title>
+    <link rel="stylesheet" href="/layui/css/layui.css">
+    <link rel="stylesheet" href="/css/tangguo-hotel-index.css">
+</head>
+<body>
+<!-- nav部分 -->
+<div th:insert="~{hotel/navigation :: nav}"></div>
+<!-- banner部分 -->
+<div class="banner product">
+    <div class="title">
+        <p>分类展示</p>
+        <p class="en">Sort Display</p>
+    </div>
+</div>
+<!-- main部分 -->
+<div class="main product">
+    <div class="layui-container">
+        <div class="content layui-row" th:each="roomType : ${roomTypes}">
+            <div class="layui-col-xs12 layui-col-sm6 layui-col-md7 layui-col-lg6 content-img"><img th:src="${roomType.photo}"></div>
+            <div class="layui-col-xs12 layui-col-sm6 layui-col-md5 layui-col-lg6 right">
+                <p class="label" th:text="${roomType.name}"></p>
+                <p class="detail" th:text="${roomType.remarks}"></p>
+                <div><a th:href="@{'/hotel/rooms'(roomType=${roomType.id})}">查看类别 ></a></div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- footer部分 -->
+<div th:insert="~{hotel/footer :: foot}"></div>
+
+<script src="/layui/layui.js"></script>
+<!--[if lt IE 9]>
+<script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+<script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+<![endif]-->
+<script>
+    layui.config({
+        base: '/js/'
+    }).use('firm');
+    layui.use(['layer','jquery'],function () {
+        var layer = layui.layer,
+            $ = layui.jquery;
+        /*if ("<%=session.getAttribute("uName")%>"!="null"){
+            $("#na").text("<%=session.getAttribute("uName")%>");
+            $("#na").parent().attr("href","/NetHotel/reserve");
+        }*/
+    });
+</script>
+</body>
+</html>

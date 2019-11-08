@@ -25,4 +25,6 @@ public interface RoomMapper {
     List<Room> queryRoom(Room record);
 
     int updateRoomStatus(@Param("roomStatus") String roomStatus, @Param("roomNumber") Long roomNumber);
+
+    List<Room> selectByRoomType(@Param("roomType") Long roomType);
 }

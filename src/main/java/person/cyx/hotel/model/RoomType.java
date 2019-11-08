@@ -9,6 +9,8 @@ public class RoomType {
 
     private String remarks;
 
+    private String photo;
+
     public Long getId() {
         return id;
     }
@@ -39,5 +41,13 @@ public class RoomType {
 
     public void setRemarks(String remarks) {
         this.remarks = remarks == null ? null : remarks.trim();
+    }
+
+    public String getPhoto() {
+        return photo;
+    }
+
+    public void setPhoto(String photo) {
+        this.photo = photo == null ? null : photo.trim();
     }
 }

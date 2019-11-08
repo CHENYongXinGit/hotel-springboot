@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<div class="nav index" th:fragment="nav">
+    <div class="layui-container">
+        <!-- 公司logo -->
+        <div class="nav-logo">
+            <a href="/hotel/home">
+                <img src="/images/hotelLogo.png" alt="糖果酒店">
+            </a>
+        </div>
+        <div class="nav-list">
+            <button>
+                <span></span><span></span><span></span>
+            </button>
+            <ul class="layui-nav" lay-filter="">
+                <li th:class="${#httpServletRequest.getServletPath()=='/hotel/home'?'layui-nav-item layui-this':'layui-nav-item'}"><a href="/hotel/home">首页</a></li>
+                <li th:class="${#httpServletRequest.getServletPath()=='/hotel/roomSort'?'layui-nav-item layui-this':'layui-nav-item'}"><a href="/hotel/roomSort">分类</a></li>
+                <li th:class="${#httpServletRequest.getServletPath()=='/hotel/rooms'?'layui-nav-item layui-this':'layui-nav-item'}"><a href="/hotel/rooms">房间</a></li>
+                <li th:class="${#httpServletRequest.getServletPath()=='/hotel/about'?'layui-nav-item layui-this':'layui-nav-item'}"><a href="/hotel/about">关于我们</a></li>
+                <li th:class="${#httpServletRequest.getServletPath()=='/hotel/myPosition'?'layui-nav-item layui-this':'layui-nav-item'}"><a href="/hotel/myPosition">我的位置</a></li>
+                <li th:if="${session.customer==null}" th:class="${#httpServletRequest.getServletPath()=='/hotel/toLoginRegister'?'layui-nav-item layui-this':'layui-nav-item'}">
+                    <a href="/hotel/toLoginRegister"><span>登录</span></a>
+                </li>
+                <li th:if="${session.customer!=null}" th:class="${#httpServletRequest.getServletPath()=='/hotel/reserve'?'layui-nav-item layui-this':'layui-nav-item'}">
+                    <a href="/hotel/reserve"><span th:text="${session.customer.cName}"></span><span class="vip" th:if="${session.customer.cMember==1}">会员</span></a>
+                </li>
+            </ul>
+        </div>
+        <div class="nav-name">
+            <a href="/hotel/customerOut" th:if="${session.customer!=null}"><span id="na">退出</span><i class="layui-icon layui-icon-unlink"></i></a>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -63,16 +63,16 @@ public class CustomerController {
 
     /**
      * 查询顾客是否存在，存在返回顾客信息
-     * @param cName
+     * @param cPhone
      * @return
      */
     @ResponseBody
-    @GetMapping("/inquireCName")
-    public ResultDTO inquireCName(@RequestParam("cName") String cName){
-        if (StringUtils.isBlank(cName)){
+    @GetMapping("/inquireCPhone")
+    public ResultDTO inquireCPhone(@RequestParam("cPhone") String cPhone){
+        if (StringUtils.isBlank(cPhone)){
             return ResultDTO.errorOf(CustomizeErrorCode.USER_IS_EMPTY);
         }
-        Customer customer = customerService.checkCName(cName);
+        Customer customer = customerService.checkByPhone(cPhone);
         if (customer != null) {
             return ResultDTO.okOf(customer);
         }

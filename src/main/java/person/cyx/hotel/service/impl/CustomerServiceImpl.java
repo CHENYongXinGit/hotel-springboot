@@ -146,6 +146,43 @@ public class CustomerServiceImpl implements CustomerService {
         return del;
     }
 
+    @Override
+    public Customer checkByPhone(String phone) {
+        return customerMapper.checkByPhone(phone);
+    }
+
+    @Override
+    public int insert(Customer customer) {
+        customer.setcMember(0);
+        customer.setcCreated(System.currentTimeMillis());
+        customer.setcUpdated(System.currentTimeMillis());
+        return customerMapper.insertSelective(customer);
+    }
+
+    @Override
+    public Customer login(String phone, String password) {
+        return customerMapper.login(phone, password);
+    }
+
+    @Override
+    public List<CustomerOrder> selectByCPhone(String phone) {
+        return customerOrderMapper.selectByCPhone(phone);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public int customerBooking(Customer customer, CustomerOrder customerOrder) {
+        customerOrder.setName(customer.getcName());
+        customerOrder.setSex(customer.getcSex());
+        customerOrder.setMember(customer.getcMember());
+        customerOrder.setIdentity(customer.getcIdentity());
+        customerOrder.setPhone(customer.getcPhone());
+        customerOrder.setState("已预订");
+        int updateRoomStatus = roomMapper.updateRoomStatus("预订", customerOrder.getRoomNumber());
+        int insert = customerOrderMapper.insertSelective(customerOrder);
+        return insert + updateRoomStatus;
+    }
+
     /**
      * 顾客退订、退房操作
      * @param id
@@ -155,24 +192,20 @@ public class CustomerServiceImpl implements CustomerService {
      */
     @Transactional(rollbackFor = Exception.class)
     public int updateCustomerOperation(Long id, Long roomNumber, String state) {
-        int updateRoomStatus = roomMapper.updateRoomStatus("空闲", roomNumber);
-        if (id == null || id == 0) {
+        if (id == null || id == 0 || roomNumber == null || roomNumber == 0) {
             throw new CustomizeException(CustomizeErrorCode.ORDER_NOT_FOUND);
-        } else {
-            Date dt = new Date();
-            //最后的aa表示“上午”或“下午”    HH表示24小时制    如果换成hh表示12小时制
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            String endTime = sdf.format(dt);
-            CustomerOrder customerOrder = new CustomerOrder();
-            customerOrder.setId(id);
-            customerOrder.setState(state);
-            customerOrder.setEndTime(endTime);
-            int update = customerOrderMapper.updateByPrimaryKeySelective(customerOrder);
-            if (update == 0) {
-                throw new CustomizeException(CustomizeErrorCode.ORDER_NOT_FOUND);
-            }
-            return update + updateRoomStatus;
         }
+        int updateRoomStatus = roomMapper.updateRoomStatus("空闲", roomNumber);
+        Date dt = new Date();
+        //最后的aa表示“上午”或“下午”    HH表示24小时制    如果换成hh表示12小时制
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String endTime = sdf.format(dt);
+        CustomerOrder customerOrder = new CustomerOrder();
+        customerOrder.setId(id);
+        customerOrder.setState(state);
+        customerOrder.setEndTime(endTime);
+        int update = customerOrderMapper.updateByPrimaryKeySelective(customerOrder);
+        return update + updateRoomStatus;
     }
 
     /**

@@ -29,4 +29,8 @@ public interface RoomService {
     int updateById(Room room);
 
     LayuiResult<RoomDTO> queryRoom(Integer page, Integer limit, Room room);
+
+    List<Room> selectByRoomType(Long roomType);
+
+    Room selectByRoomId(Long id);
 }

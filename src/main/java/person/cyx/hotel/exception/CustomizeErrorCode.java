@@ -31,6 +31,10 @@ public enum CustomizeErrorCode implements ICustomizeErrorCode {
     CHECKIN_FAIL(2021,"入住失败"),
     UNSUBSCRIBE_FAIL(2022,"退订失败"),
     CHECKOUT_FAIL(2023,"退房失败"),
+    CHOOSE_FILE_UPLOAD(2024,"请选择图片上传"),
+    PHONE_PASSWORD_WRONG(2025,"手机号或密码不正确"),
+    ROOM_ALREADY_BOOKED(2026,"该房间已被预订"),
+    BOOKED_FAIL(2027,"预订失败"),
     ;
 
     private Integer code;

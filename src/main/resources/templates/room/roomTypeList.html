@@ -5,7 +5,7 @@
     <title>房间类型</title>
     <link rel="stylesheet" type="text/css" href="/layui/css/layui.css"/>
     <style type="text/css">
-        .layui-table-cell{height:40px;line-height: 40px;}
+        .layui-table-cell{height:60px;line-height: 60px;}
     </style>
     <script src="/js/moment.js"></script>
 </head>
@@ -34,6 +34,9 @@
         <a class="layui-btn layui-btn-xs" lay-event="edit"><i class="layui-icon layui-icon-edit"></i>编辑</a>
         <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del"><i class="layui-icon layui-icon-delete"></i>删除</a>
     </script>
+    <script type="text/html" id="photoTpl">
+        <img src="{{ d.photo }}" width="90" height="60" alt="类型图片" />
+    </script>
 </div>
 <script src="/layui/layui.js" type="text/javascript" charset="utf-8"></script>
 <script type="text/javascript">
@@ -54,10 +57,11 @@
                 [ //表头
                     {title: '序号', width:100, type:'numbers', fixed: 'left'}
                     ,{field: 'id', title: 'ID', hide: true}
-                    ,{field: 'name', title: '房间类型名称', align:'center'}
-                    ,{field: 'created', title: '创建时间', align:'center', sort: true, templet:function (d) {
-                        return moment(d.created).format('YYYY-MM-DD HH:mm:SS');}}
+                    ,{field: 'name', title: '房间类型名称', width: 200, align:'center'}
                     ,{field: 'remarks', title: '备注', align:'center'}
+                    ,{field: 'photo', title: '图片', width: 150, align:'center', templet:"#photoTpl"}
+                    ,{field: 'created', title: '创建时间', width: 220, align:'center', sort: true, templet:function (d) {
+                        return moment(d.created).format('YYYY-MM-DD HH:mm:SS');}}
                     ,{fixed: 'right', title: '操作', width: 230, align:'center', toolbar: '#barDemo'}
                 ]
             ]
@@ -72,7 +76,7 @@
                 layer.open({
                     type: 2,
                     id:'edit1',
-                    area: ['430px', '335px'],
+                    area: ['448px', '378px'],
                     anim: 2,
                     resize:false,
                     title: ['<i class="layui-icon layui-icon-edit"></i>编辑', 'font-size:18px;'],
@@ -131,7 +135,7 @@
                     layer.open({
                         type: 2,
                         id:'edit1',
-                        area: ['430px', '335px'],
+                        area: ['448px', '378px'],
                         anim: 2,
                         resize:false,
                         title: ['<i class="layui-icon layui-icon-add-1"></i>添加', 'font-size:18px;'],

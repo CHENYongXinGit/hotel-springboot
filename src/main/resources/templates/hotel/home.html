@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,user-scalable=no,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0">
+    <title>糖果酒店-首页</title>
+    <link rel="stylesheet" href="/layui/css/layui.css">
+    <link rel="stylesheet" href="/css/tangguo-hotel-index.css">
+</head>
+<body>
+<!-- nav部分 -->
+<div th:insert="~{hotel/navigation :: nav}"></div>
+<!-- banner部分 -->
+<div>
+    <div class="layui-carousel" id="banner">
+        <div carousel-item>
+            <div>
+                <img src="/images/banner1.jpg">
+                <div class="panel">
+                    <p class="title">糖果酒店</p>
+                    <p>糖果酒店集团，是一个高效、简单、温情的酒店预订平台</p>
+                </div>
+            </div>
+            <div>
+                <img src="/images/banner2.jpg">
+                <div class="panel">
+                    <p class="title">糖果酒店</p>
+                    <p>糖果酒店集团，是一个高效、简单、温情的酒店预订平台</p>
+                </div>
+            </div>
+            <div>
+                <img src="/images/banner3.jpg">
+                <div class="panel">
+                    <p class="title">糖果</p>
+                    <p>糖果酒店集团</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- main部分 -->
+<div class="main-product">
+    <div class="layui-container">
+        <p class="title">专为青年而推出的<span>温情酒店</span></p>
+        <div class="layui-row layui-col-space25">
+            <div class="layui-col-sm6 layui-col-md3">
+                <div class="content">
+                    <div><img src="/images/Big_icon1.png"></div>
+                    <div>
+                        <p class="label">美丽大楼</p>
+                        <p>拥有汉庭、海友、全季、宜必思、桔子、漫心、美居、禧玥、美爵等知名酒店品牌。</p>
+                    </div>
+                    <a href="javascript:;">查看酒店 ></a>
+                </div>
+            </div>
+            <div class="layui-col-sm6 layui-col-md3 ">
+                <div class="content">
+                    <div><img src="/images/Big_icon2.png"></div>
+                    <div>
+                        <p class="label">GG设计</p>
+                        <p>满足从高端到平价、商务与休闲、温暖与长情的多元化需求，适应移动互联预约酒店的潮流。</p>
+                    </div>
+                    <a href="javascript:;">查看酒店 ></a>
+                </div>
+            </div>
+            <div class="layui-col-sm6 layui-col-md3 ">
+                <div class="content">
+                    <div><img src="/images/Big_icon3.png"></div>
+                    <div>
+                        <p class="label">全球游客</p>
+                        <p>为全球超过1亿会员提供住宿、出行、购物等服务，是您聪明、温暖、长情的出行伴侣。</p>
+                    </div>
+                    <a href="javascript:;">查看酒店 ></a>
+                </div>
+            </div>
+            <div class="layui-col-sm6 layui-col-md3 ">
+                <div class="content">
+                    <div><img src="/images/Big_icon4.png"></div>
+                    <div>
+                        <p class="label">满意度100%</p>
+                        <p>糖果酒店集团是世界领先的酒店，在92个国家运营3,900家酒店，满足全球商务和休闲旅行者的不同需求。</p>
+                    </div>
+                    <a href="javascript:;">查看酒店 ></a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="main-service">
+    <div class="layui-container">
+        <p class="title">为顾客打造完美的<span>专业服务</span></p>
+        <div class="layui-row layui-col-space25 layui-col-space80">
+            <div class="layui-col-sm6">
+                <div class="content">
+                    <div class="content-left"><img src="/images/home_img1.jpg"></div>
+                    <div class="content-right">
+                        <p class="label">1 对 1 雅高乐雅</p>
+                        <span></span>
+                        <p>Le Club AccorHotels雅高乐雅会是当下业界领先的客户忠诚计划。完全免费并提供100%的在线服务。</p>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-col-sm6">
+                <div class="content">
+                    <div class="content-left"><img src="/images/home_img2.jpg"></div>
+                    <div class="content-right">
+                        <p class="label">1 对 多 果果会</p>
+                        <span></span>
+                        <p>果果会，是糖果酒店集团会员俱乐部，也是一个高效、简单、温情的酒店预订平台，拥有汉庭、海友、全季、宜必思、桔子、漫心、美居、禧玥、美爵等知名酒店品牌，为全球超过1亿会员提供住宿、出行、购物等服务，是您聪明、温暖、长情的出行伴侣。</p>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-col-sm6">
+                <div class="content">
+                    <div class="content-left"><img src="/images/home_img3.jpg"></div>
+                    <div class="content-right">
+                        <p class="label">1 加 1 华住会</p>
+                        <span></span>
+                        <p>加入华住会，享受我们的卓越礼遇</p>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-col-sm6">
+                <div class="content">
+                    <div class="content-left"><img src="/images/home_img4.jpg"></div>
+                    <div class="content-right">
+                        <p class="label">0 对 0 无需比价</p>
+                        <span></span>
+                        <p>官渠价格保证，会员价更低旅行更优惠</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="service-more"><a href="">查看更多</a></div>
+    </div>
+</div>
+<!-- footer部分 -->
+<div th:insert="~{hotel/footer :: foot}"></div>
+
+<script src="/layui/layui.js"></script>
+<!--[if lt IE 9]>
+<script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+<script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+<![endif]-->
+<script>
+    layui.config({
+        base: '/js/'
+    }).use('firm');
+    layui.use(['layer','jquery'],function () {
+        var layer = layui.layer,
+            $ = layui.jquery;
+        /*if ("<%=session.getAttribute("uName")%>"!="null"){
+            $("#na").text("<%=session.getAttribute("uName")%>");
+            $("#na").parent().attr("href","/NetHotel/reserve");
+        }*/
+    });
+</script>
+</body>
+</html>

@@ -96,6 +96,7 @@ public class ShiroConfig {
         filterChainDefinitionMap.put("/images/**","anon");
         filterChainDefinitionMap.put("/layui/**","anon");
         filterChainDefinitionMap.put("/favicon.ico","anon");
+        filterChainDefinitionMap.put("/hotel/**","anon");
         filterChainDefinitionMap.put("/Login/login", "anon");
         filterChainDefinitionMap.put("/Safety/changePwd", "anon");
         filterChainDefinitionMap.put("/Safety/doChangePwd", "anon");

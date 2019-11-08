@@ -23,6 +23,8 @@ public class CustomerOrder {
 
     private String endTime;
 
+    private String phone;
+
     public Long getId() {
         return id;
     }
@@ -109,5 +111,13 @@ public class CustomerOrder {
 
     public void setEndTime(String endTime) {
         this.endTime = endTime == null ? null : endTime.trim();
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone == null ? null : phone.trim();
     }
 }

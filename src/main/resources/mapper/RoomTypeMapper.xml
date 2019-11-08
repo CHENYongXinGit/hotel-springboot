@@ -6,9 +6,10 @@
     <result column="name" jdbcType="VARCHAR" property="name" />
     <result column="created" jdbcType="BIGINT" property="created" />
     <result column="remarks" jdbcType="VARCHAR" property="remarks" />
+    <result column="photo" jdbcType="VARCHAR" property="photo" />
   </resultMap>
   <sql id="Base_Column_List">
-    id, name, created, remarks
+    id, name, created, remarks, photo
   </sql>
 
   <select id="roomTypeList" resultMap="BaseResultMap">
@@ -36,9 +37,9 @@
   </delete>
   <insert id="insert" parameterType="person.cyx.hotel.model.RoomType">
     insert into hotel_room_type (id, name, created, 
-      remarks)
+      remarks, photo)
     values (#{id,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{created,jdbcType=BIGINT}, 
-      #{remarks,jdbcType=VARCHAR})
+      #{remarks,jdbcType=VARCHAR}), #{photo,jdbcType=VARCHAR}
   </insert>
   <insert id="insertSelective" parameterType="person.cyx.hotel.model.RoomType">
     insert into hotel_room_type
@@ -55,6 +56,9 @@
       <if test="remarks != null">
         remarks,
       </if>
+      <if test="photo != null">
+        photo,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="id != null">
@@ -68,6 +72,9 @@
       </if>
       <if test="remarks != null">
         #{remarks,jdbcType=VARCHAR},
+      </if>
+      <if test="photo != null">
+        #{photo,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
@@ -83,6 +90,9 @@
       <if test="remarks != null">
         remarks = #{remarks,jdbcType=VARCHAR},
       </if>
+      <if test="photo != null">
+        photo = #{photo,jdbcType=VARCHAR},
+      </if>
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>
@@ -90,7 +100,8 @@
     update hotel_room_type
     set name = #{name,jdbcType=VARCHAR},
       created = #{created,jdbcType=BIGINT},
-      remarks = #{remarks,jdbcType=VARCHAR}
+      remarks = #{remarks,jdbcType=VARCHAR},
+      photo = #{photo,jdbcType=VARCHAR}
     where id = #{id,jdbcType=BIGINT}
   </update>
 </mapper>

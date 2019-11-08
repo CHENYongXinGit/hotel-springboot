@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,user-scalable=no,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0">
+    <title>糖果酒店-产品详情</title>
+    <link rel="stylesheet" href="/layui/css/layui.css">
+    <link rel="stylesheet" href="/css/tangguo-hotel-index.css">
+</head>
+<body>
+<!-- nav部分 -->
+<div th:insert="~{hotel/navigation :: nav}"></div>
+<!-- main部分 -->
+<div class="main-newsdate"></div>
+<div class="main-news" style="background: rgb(242,242,242);">
+    <div class="roomTypeList">
+        <div class="room-mulu">
+            <p><a href="/hotel/roomSort">分类展示</a>&nbsp; > &nbsp;更多房间</p>
+        </div>
+        <div class="room-type">
+            <span><i class="layui-icon layui-icon-note"></i>&nbsp;&nbsp;类别：</span>
+            <ul>
+                <li><a th:class="${type==null?'room-active':''}" href="/hotel/rooms">全部</a></li>
+                <li th:each="roomType : ${roomTypes}">
+                    <a th:class="${#httpServletRequest.getQueryString()=='roomType='+roomType.id+''?'room-active':''}"
+                       th:href="@{'/hotel/rooms'(roomType=${roomType.id})}" th:text="${roomType.name}"></a>
+                </li>
+            </ul>
+        </div>
+        <p class="room-filter">筛选出 <span th:text="${total}"></span> 个</p>
+    </div>
+    <div class="layui-container">
+        <div class="layui-row layui-col-space20">
+            <div class="layui-col-lg6 layui-col-md6 content" th:each="room : ${rooms}">
+                <div>
+                    <div class="news-img"><a th:href="@{'/hotel/roomsDetail'(id=${room.id})}"><img th:src="${room.photo}"></a></div><div class="news-panel">
+                    <strong><a th:href="@{'/hotel/roomsDetail'(id=${room.id})}" th:text="${room.roomNumber}"></a>
+                    </strong>
+                    <p class="detail" th:text="${room.roomName}"></p>
+                    <a href="#" class="price" th:text="${'￥'+room.standardPrice}"></a>
+                    <p class="read-push">
+                        <a th:href="@{'/hotel/roomsDetail'(id=${room.id})}" class="layui-btn layui-btn-sm" th:text="${room.roomStatus}"></a>
+                        &nbsp;&nbsp;&nbsp;&nbsp;更新时间：<span class="sj" th:text="${#dates.format(room.updated,'yyyy-MM-dd HH:mm:ss')}"></span></p>
+                </div>
+                </div>
+            </div>
+        </div>
+        <div id="newsPage"></div>
+    </div>
+</div>
+<!-- footer部分 -->
+<div th:insert="~{hotel/footer :: foot}"></div>
+
+<script src="/layui/layui.js"></script>
+<!--[if lt IE 9]>
+<script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+<script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+<![endif]-->
+<script>
+layui.config({
+    base: '/js/'
+}).use('firm');
+layui.use(['layer','jquery','laypage'],function () {
+    var laypage = layui.laypage;
+
+    var type = [[${type}]]+'';
+    //分页
+    laypage.render({
+        elem: 'newsPage'
+        ,count: [[${total}]]
+        ,limit: [[${limit}]]
+        ,curr: [[${page}]]
+        ,theme: '#2db5a3'
+        ,first: '首页'
+        ,last: '尾页'
+        ,layout: ['prev','page', 'next']
+        ,jump: function (obj, first) {
+            //首次不执行
+            if (!first) {
+                //do something
+                var href = '/hotel/rooms';
+                if (type != null && type != '') {
+                    href = '/hotel/rooms?roomType=' + type + '&page=' + obj.curr + '&limit=' + obj.limit;
+                } else {
+                    href = '/hotel/rooms?&page=' + obj.curr + '&limit=' + obj.limit;
+                }
+                location.href = href;
+            }
+        }
+    });
+});
+</script>
+</body>
+</html>

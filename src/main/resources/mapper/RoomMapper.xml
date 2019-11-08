@@ -35,6 +35,13 @@
     from hotel_room
   </select>
 
+  <select id="selectByRoomType" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from hotel_room
+    where room_type = #{roomType,jdbcType=BIGINT}
+  </select>
+
   <select id="queryRoom" parameterType="person.cyx.hotel.model.Room" resultMap="BaseResultMap">
     select
     <include refid="Base_Column_List" />
