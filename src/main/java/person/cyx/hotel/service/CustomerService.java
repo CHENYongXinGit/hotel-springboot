@@ -1,6 +1,7 @@
 package person.cyx.hotel.service;
 
 import person.cyx.hotel.dto.LayuiResult;
+import person.cyx.hotel.dto.TotalDaysDTO;
 import person.cyx.hotel.model.Customer;
 import person.cyx.hotel.model.CustomerOrder;
 
@@ -24,6 +25,12 @@ public interface CustomerService {
 
     LayuiResult<CustomerOrder> queryOrder(Integer page, Integer limit, CustomerOrder customerOrder);
 
+    LayuiResult<Customer> memberList(Integer page, Integer limit);
+
+    LayuiResult<Customer> memberList(Integer page, Integer limit, String orderBy);
+
+    LayuiResult<Customer> queryCustomer(Integer page, Integer limit, Customer customer);
+
     int customerUnsubscribe(Long id, Long roomNumber);
 
     int customerCheckout(Long id, Long roomNumber);
@@ -32,11 +39,19 @@ public interface CustomerService {
 
     int changeCustomerCheckin(CustomerOrder customerOrder);
 
+    LayuiResult<CustomerOrder> checkinList(Integer page, Integer limit);
+
+    LayuiResult<CustomerOrder> checkinList(Integer page, Integer limit, String orderBy);
+
+    LayuiResult<CustomerOrder> queryOrderCheckin(Integer page, Integer limit, CustomerOrder customerOrder);
+
     LayuiResult<CustomerOrder> orderCompletedList(Integer page, Integer limit);
 
     LayuiResult<CustomerOrder> orderCompletedList(Integer page, Integer limit, String orderBy);
 
     LayuiResult<CustomerOrder> queryOrderCompleted(Integer page, Integer limit, CustomerOrder customerOrder);
+
+    int delCustomer(Long cId);
 
     int delOrder(Long id);
 
@@ -51,4 +66,14 @@ public interface CustomerService {
     List<CustomerOrder> selectByCPhone(String phone);
 
     int customerBooking(Customer customer, CustomerOrder customerOrder);
+
+    int countByCustomer();
+
+    List<Double> selectByPrice();
+
+    Double countPriceByStartTime(String s);
+
+    TotalDaysDTO dayPriceByStartTime();
+
+    int customerMember(Long cId, Integer cMember);
 }

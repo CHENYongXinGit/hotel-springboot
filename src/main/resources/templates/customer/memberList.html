@@ -14,31 +14,20 @@
 <body>
 <div style="padding: 15px;">
     <fieldset class="layui-elem-field">
-        <legend>预订检索</legend>
+        <legend>会员检索</legend>
         <div class="layui-field-box">
             <form class="layui-form">
                 <div class="layui-form-item">
                     <div class="layui-inline">
-                        <label class="layui-form-label">房间号：</label>
+                        <label class="layui-form-label">会员名：</label>
                         <div class="layui-input-inline">
-                            <input class="layui-input" name="roomNumber" id="roomNumber" autocomplete="off">
+                            <input class="layui-input" name="cName" id="cName" autocomplete="off">
                         </div>
                     </div>
                     <div class="layui-inline">
-                        <label class="layui-form-label">顾客名：</label>
+                        <label class="layui-form-label">手机号：</label>
                         <div class="layui-input-inline">
-                            <input class="layui-input" name="name" id="name" autocomplete="off">
-                        </div>
-                    </div>
-                    <div class="layui-inline">
-                        <label class="layui-form-label">订单状态：</label>
-                        <div class="layui-input-inline">
-                            <select name="state" id="state">
-                                <option value="">选择订单状态</option>
-                                <option value="已入住">已入住</option>
-                                <option value="已预订">已预订</option>
-                                <option value="已退订">已退订</option>
-                            </select>
+                            <input class="layui-input" name="cPhone" id="cPhone" autocomplete="off">
                         </div>
                     </div>
                     <div class="layui-inline">
@@ -58,18 +47,8 @@
         </div>
     </script>
     <script type="text/html" id="barDemo">
-        <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="edit">退订</a>
-        <a class="layui-btn layui-btn-xs" lay-event="detail">入住</a>
-        <a class="layui-btn layui-btn-warm layui-btn-xs" lay-event="del">退房</a>
-    </script>
-    <script type="text/html" id="stateTpl">
-        {{#  if(d.state === '已预订'){ }}
-        <span style="color: #F581B1;">{{ d.state }}</span>
-        {{#  } else if(d.state === '已入住') { }}
-        <span style="color: #FF5722;">{{ d.state }}</span>
-        {{#  } else { }}
-        <span style="color: #009F95;">{{ d.state }}</span>
-        {{#  } }}
+        <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="edit">编辑会员</a>
+        <a class="layui-btn layui-btn-warm layui-btn-xs" lay-event="del">删除</a>
     </script>
 </div>
 <script src="/layui/layui.js" type="text/javascript" charset="utf-8"></script>
@@ -83,25 +62,27 @@
         table.render({
             elem: '#demo'
             // ,even: true //开启隔行背景
-            ,id: 'orderList'
+            ,id: 'memberList'
             ,title: '用户表'
-            ,url: '/Customer/orderList' //数据接口
+            ,url: '/Customer/memberList' //数据接口
             ,toolbar: '#toolbarDemo'
             ,height : 'full-150'
             ,autoSort: false //禁用前端自动排序。
             ,cols: [
                 [ //表头
                     {title: '序号', width:75, fixed: 'left', type:'numbers'}
-                    ,{field: 'id', title: 'ID', hide: true}
-                    ,{field: 'roomNumber', title: '房间号', width:100, sort: true, align:'center'}
-                    ,{field: 'name', title: '顾客名', align:'center'}
-                    ,{field: 'member', title: '会员', width:80, align:'center', sort: true, templet:function (d) {
-                        return d.member==1?'是':'否';}}
-                    ,{field: 'days', title: '天数', width:100, sort: true, align:'center'}
-                    ,{field: 'price', title: '总价钱', width:100, sort: true, align:'center'}
-                    ,{field: 'state', title: '订单状态', width:120, sort: true, align:'center', templet:'#stateTpl'}
-                    ,{field: 'startTime', title: '开始时间', align:'center', sort: true}
-                    ,{field: 'endTime', title: '退订时间', align:'center', sort: true}
+                    ,{field: 'cId', title: 'ID', hide: true}
+                    ,{field: 'cName', title: '会员名', align:'center'}
+                    ,{field: 'cSex', title: '性别', width:80, align:'center', sort: true, templet:function (d) {
+                        return d.cSex===1?'男':'女';}}
+                    ,{field: 'cPhone', title: '手机号', align:'center'}
+                    ,{field: 'cIdentity', title: '身份证', align:'center'}
+                    ,{field: 'cMember', title: '会员', width:120, sort: true, align:'center', templet:function (d) {
+                        return d.cMember===1?'是':'否';}}
+                    ,{field: 'cCreated', title: '创建时间', align:'center', sort: true, templet:function (d) {
+                        return moment(d.cCreated).format('YYYY-MM-DD HH:mm:SS');}}
+                    ,{field: 'cUpdated', title: '修改时间', align:'center', sort: true, templet:function (d) {
+                        return moment(d.cUpdated).format('YYYY-MM-DD HH:mm:SS');}}
                     ,{title: '操作', width: 210, align:'center', toolbar: '#barDemo', fixed: 'right'}
                 ]
             ]
@@ -116,13 +97,13 @@
 
             //尽管我们的 table 自带排序功能，但并没有请求服务端。
             //有些时候，你可能需要根据当前排序的字段，重新向服务端发送请求，从而实现服务端排序，如：
-            table.reload('orderList', {
+            table.reload('memberList', {
                 initSort: obj //记录初始排序，如果不设的话，将无法标记表头的排序状态。
                 ,where: { //请求参数（注意：这里面的参数可任意定义，并非下面固定的格式）
                     field: obj.field //排序字段
                     ,order: obj.type //排序方式
                 }
-                ,url: '/Customer/sortOrderList' //数据接口
+                ,url: '/Customer/sortMemberList' //数据接口
             });
             return false;
         });
@@ -132,35 +113,28 @@
             var data = obj.data //获得当前行数据
                 ,layEvent = obj.event; //获得 lay-event 对应的值
             if(layEvent === 'edit'){
-                var state = data.state;
-                if (state == '已入住'){
-                    layer.msg("该房间已有顾客入住", {icon: 5,anim: 6});
-                    return;
+                var cMember = data.cMember;
+                var vlaue = "是否要成为会员？";
+                if (cMember === 1){
+                    vlaue = "是否要取消会员？"
                 }
-                if (state == '已退订'){
-                    layer.msg("该房间已被顾客退订", {icon: 5,anim: 6});
-                    return;
-                }
-                layer.confirm('真的要退订么', function(index){
-                    var id = data.id;
-                    var roomNumber = data.roomNumber;
+                layer.confirm(vlaue, function(index){
+                    var cId = data.cId;
                     //向服务端发送删除指令
                     $.ajax({
                         type:"GET",
-                        url:"/Customer/customerUnsubscribe",
-                        data:{id:id,roomNumber:roomNumber},
+                        url:"/Customer/customerMember",
+                        data:{cId:cId,cMember:cMember},
                         dataType:"json",
                         contentType: "application/json",
                         success:function(res){
                             if(res.code == 200){
-                                var date = new Date();
-                                //同步更新表格和缓存对应的值
-                                obj.update({
-                                    state: '已退订',
-                                    endTime: moment(date).format('YYYY-MM-DD HH:mm:SS')
-                                });
                                 layer.close(index);
-                                layer.msg('退订成功！', {icon: 1,anim: 5});
+                                layer.msg('编辑成功！', {
+                                    time: 500 //0.5秒关闭（如果不配置，默认是3秒）
+                                }, function(){
+                                    window.location.reload();
+                                });
                                 return false;
                             }else{
                                 layer.close(index);
@@ -175,30 +149,20 @@
                     });
                 });
             } else if(layEvent === 'del'){
-                var state = data.state;
-                if (state == '已预订'){
-                    layer.msg("该房间顾客还没入住", {icon: 5,anim: 6});
-                    return;
-                }
-                if (state == '已退订'){
-                    layer.msg("该房间已被顾客退订", {icon: 5,anim: 6});
-                    return;
-                }
-                layer.confirm('真的退房么', function(index){
-                    var id = data.id;
-                    var roomNumber = data.roomNumber;
+                layer.confirm('真的删除么', function(index){
+                    var cId = data.cId;
                     //向服务端发送删除指令
                     $.ajax({
                         type:"GET",
                         url:"/Customer/customerCheckout",
-                        data:{id:id,roomNumber:roomNumber},
+                        data:{cId:cId},
                         dataType:"json",
                         contentType: "application/json",
                         success:function(res){
                             if(res.code == 200){
                                 obj.del(); //删除对应行（tr）的DOM结构
                                 layer.close(index);
-                                layer.msg('退房成功！', {icon: 1,anim: 5});
+                                layer.msg('删除成功！', {icon: 1,anim: 5});
                                 return false;
                             }else{
                                 layer.close(index);
@@ -212,39 +176,6 @@
                         }
                     });
                 });
-            }else if(layEvent === 'detail'){
-                var state = data.state;
-                if (state == '已入住'){
-                    layer.msg("该房间已有顾客入住", {icon: 5,anim: 6});
-                    return;
-                }
-                if (state == '已退订'){
-                    layer.msg("该房间已被顾客退订", {icon: 5,anim: 6});
-                    return;
-                }
-                var id = data.id;
-                var roomNumber = data.roomNumber;
-                var name = data.name;
-                var identity = data.identity;
-                layer.open({
-                    type: 2,
-                    id:'edit1',
-                    area: ['480px', '330px'],
-                    anim: 2,
-                    resize:false,
-                    title: ['<i class="layui-icon layui-icon-survey"></i>入住房间', 'font-size:18px;'],
-                    skin:'layui-layer-molv',
-                    content: ['/Customer/toCustomerCheckin?id='+id,'no'],
-                    success: function (layero, index) {
-                        var body = layer.getChildFrame('body', index);
-                        var iframeWin = window[layero.find('iframe')[0]['name']]; //得到iframe页的窗口对象，执行iframe页的方法：iframeWin.method();
-                        //初始化表单数据的值
-                        body.find("#roomNumber").val(roomNumber); //要修改的每个td的值存为变量传进去
-                        body.find("#id").val(id);
-                        body.find("#name").val(name);
-                        body.find("#identity").val(identity);
-                    }
-                });
             }
         });
 
@@ -253,8 +184,8 @@
             switch(obj.event){
                 case 'reloadTabel1':
                     //执行重载
-                    table.reload('orderList', {
-                        url: '/Customer/orderList' //数据接口
+                    table.reload('memberList', {
+                        url: '/Customer/memberList' //数据接口
                     });
                     break;
             };
@@ -262,21 +193,16 @@
 
         form.on('submit(searchForm)', function(data) {
             var value = data.field;
-            if (isNaN(value.roomNumber)) {
-                layer.msg("请输入数字", {icon: 5,anim: 6});
-                return false;
-            }
             //执行重载
-            table.reload('orderList', {
+            table.reload('memberList', {
                 page: {
                     curr: 1 //重新从第 1 页开始
                 }
                 ,where: {
-                    roomNumber: value.roomNumber,
-                    name: value.name,
-                    state: value.state
+                    cName: value.cName,
+                    cPhone: value.cPhone
                 }
-                ,url: '/Customer/queryOrder' //数据接口
+                ,url: '/Customer/queryCustomer' //数据接口
             });
             return false;
         });

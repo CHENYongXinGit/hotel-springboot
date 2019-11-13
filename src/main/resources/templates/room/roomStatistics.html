@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>roomStatistics</title>
+    <link rel="stylesheet" type="text/css" href="/layui/css/layui.css"/>
+    <style>
+        .cent{width:90%;margin: 58px auto 0px;}
+        .countup{cursor: pointer;margin-top: 20px;}
+        .layui-card-body>div {display: inline-block;vertical-align: top;}
+        .main-tu{position: relative; overflow: hidden; width: 90%; height: 550px; padding: 28px 0px 15px 30px; margin: 0px; border-width: 0px; cursor: pointer;}
+    </style>
+</head>
+<body style="background: #EEEEEE;">
+<div class="layui-row layui-col-space30 cent">
+    <div class="layui-col-lg6 layui-col-xs12 layui-col-md6 layui-col-sm6">
+        <section class="layui-card">
+            <div class="layui-card-body countup">
+                <!-- 为 ECharts 准备一个具备大小（宽高）的 DOM -->
+                <div id="main1" class="main-tu"></div>
+            </div>
+        </section>
+    </div>
+    <div class="layui-col-lg6 layui-col-xs12 layui-col-md6 layui-col-sm6">
+        <section class="layui-card">
+            <div class="layui-card-body countup">
+                <!-- 为 ECharts 准备一个具备大小（宽高）的 DOM -->
+                <div id="main2" class="main-tu"></div>
+            </div>
+        </section>
+    </div>
+</div>
+<script src="/js/echarts.min.js"></script>
+<script src="/layui/layui.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript">
+layui.use(['layer','jquery'], function() {
+    var layer = layui.layer,
+        $ = layui.jquery;
+
+    // 基于准备好的dom，初始化echarts实例
+    var myChart1 = echarts.init(document.getElementById('main1'));
+    // 显示标题，图例和空的坐标轴
+    myChart1.setOption({
+        title : {
+            text: '房间状态统计表',
+            x:'center'
+        },
+        tooltip : {
+            trigger: 'item',
+            formatter: "{a} <br/>{b} : {c}间 ({d}%)"
+        },
+        legend: {
+            orient: 'vertical',
+            left: 'left',
+            data: []
+        },
+        series : [
+            {
+                name: '状态',
+                type: 'pie',
+                radius : '55%',
+                center: ['50%', '60%'],
+                data:[],
+                itemStyle: {
+                    emphasis: {
+                        shadowBlur: 10,
+                        shadowOffsetX: 0,
+                        shadowColor: 'rgba(0, 0, 0, 0.5)'
+                    }
+                }
+            }
+        ]
+    });
+
+    myChart1.showLoading();
+
+    // 异步加载数据
+    $.get("/status").done(function (res) {
+        myChart1.hideLoading();
+        // 填入数据
+        myChart1.setOption({
+            legend: {
+                data: res.name
+            },
+            series: [
+                {data: res.data}
+            ]
+        });
+    });
+
+    // 基于准备好的dom，初始化echarts实例
+    var myChart2 = echarts.init(document.getElementById('main2'));
+    // 显示标题，图例和空的坐标轴
+    myChart2.setOption({
+        title : {
+            text: '房间类型统计表',
+            x:'center'
+        },
+        tooltip : {
+            trigger: 'item',
+            formatter: "{a} <br/>{b} : {c} ({d}%)"
+        },
+        legend: {
+            orient: 'vertical',
+            right: 'right',
+            data: []
+        },
+        series : [
+            {
+                name: '类型',
+                type: 'pie',
+                radius : '55%',
+                center: ['50%', '60%'],
+                data:[],
+                itemStyle: {
+                    emphasis: {
+                        shadowBlur: 10,
+                        shadowOffsetX: 0,
+                        shadowColor: 'rgba(0, 0, 0, 0.5)'
+                    }
+                }
+            }
+        ]
+    });
+
+    myChart2.showLoading();
+
+    // 异步加载数据
+    $.get("/type").done(function (res) {
+        myChart2.hideLoading();
+        // 填入数据
+        myChart2.setOption({
+            legend: {
+                data: res.name
+            },
+            series: [
+                {data: res.data}
+            ]
+        });
+    });
+
+});
+</script>
+</body>
+</html>

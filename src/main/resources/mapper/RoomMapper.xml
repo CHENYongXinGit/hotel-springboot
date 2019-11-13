@@ -22,6 +22,14 @@
     room_area, room_status, room_type, photo, created, updated
   </sql>
 
+  <select id="countByRoomType" parameterType="java.lang.Long" resultType="integer">
+    select COUNT(*) from hotel_room where room_type = #{roomType,jdbcType=BIGINT}
+  </select>
+
+  <select id="countByRoomStatus" parameterType="java.lang.String" resultType="integer">
+    select COUNT(*) from hotel_room where room_status = #{roomStatus,jdbcType=VARCHAR}
+  </select>
+
   <select id="checkRoomNumber" parameterType="java.lang.Long" resultMap="BaseResultMap">
     select 
     <include refid="Base_Column_List" />

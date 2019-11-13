@@ -101,6 +101,16 @@ public class RoomServiceImpl implements RoomService {
         return roomMapper.selectByPrimaryKey(id);
     }
 
+    @Override
+    public Integer countByRoomType(Long id) {
+        return roomMapper.countByRoomType(id);
+    }
+
+    @Override
+    public Integer countByRoomStatus(String roomStatus) {
+        return roomMapper.countByRoomStatus(roomStatus);
+    }
+
     /**
      * 添加房间类型字段
      * @param rooms

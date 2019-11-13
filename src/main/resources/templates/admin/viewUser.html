@@ -82,6 +82,7 @@
                 url:"/Admin/offline",
                 data:{username:username},
                 dataType:"json",
+                contentType: "application/json",
                 success:function(res){
                     if(res.code == 200){
                         layer.msg('成功下线', {

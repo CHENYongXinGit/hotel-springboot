@@ -1,5 +1,6 @@
 package person.cyx.hotel.config;
 
+import at.pollux.thymeleaf.shiro.dialect.ShiroDialect;
 import org.apache.shiro.authc.credential.HashedCredentialsMatcher;
 import org.apache.shiro.codec.Base64;
 import org.apache.shiro.mgt.SecurityManager;
@@ -48,6 +49,15 @@ public class ShiroConfig {
     private int timeout;
     @Value("${spring.redis.password}")
     private String password;
+
+    /**
+     * thymeleaf-extras-shiro
+     * @return
+     */
+    @Bean(name = "shiroDialect")
+    public ShiroDialect shiroDialect(){
+        return new ShiroDialect();
+    }
 
     @Bean
     public MyRealm myRealm() {

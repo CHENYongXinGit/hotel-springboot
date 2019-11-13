@@ -18,4 +18,18 @@
         select sn from role where id in (select role_id from admin_role where admin_id = #{admin_id,jdbcType=BIGINT});
     </select>
 
+    <select id="getRoleIdByUserId" resultType="Long" parameterType="java.lang.Long">
+        select role_id from admin_role where admin_id = #{userId}
+    </select>
+
+    <delete id="delAdminRole" parameterType="java.lang.Long">
+        delete from admin_role
+        where admin_id = #{adminId,jdbcType=BIGINT}
+    </delete>
+
+    <insert id="insertAdminRole" parameterType="java.lang.Long">
+        insert into admin_role (admin_id,role_id)
+        values (#{adminId,jdbcType=BIGINT}, #{role,jdbcType=BIGINT})
+    </insert>
+
 </mapper>

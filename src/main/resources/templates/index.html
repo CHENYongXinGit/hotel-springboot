@@ -1,6 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
     <title>糖果管理系统-主页</title>
@@ -73,40 +72,41 @@
                 <!-- 侧边导航: <ul class="layui-nav layui-nav-tree layui-nav-side"> -->
                 <img th:src="${session.currentUser.photo != null ? session.currentUser.photo : '/images/default-admin.png'}" class="img">
                 <div class="welcome-font"><em>欢迎：</em><a href="#" th:text="${session.currentUser.username}"></a></div>
-                <li class="layui-nav-item">
-                    <a href="/Admin/lun" target="demoAdmin"><i class="layui-icon layui-icon-home"></i>首页</a>
+                <li class="layui-nav-item layui-this">
+                    <a href="/home" target="demoAdmin"><i class="layui-icon layui-icon-home"></i>首页</a>
                 </li>
                 <li class="layui-nav-item">
-                    <a href="/Room/del" target="demoAdmin"><i class="layui-icon layui-icon-chart-screen"></i>房间统计</a>
+                    <a href="/roomStatistics" target="demoAdmin"><i class="layui-icon layui-icon-chart-screen"></i>房间统计</a>
                 </li>
-                <li class="layui-nav-item layui-nav-itemed">
-                    <a href="javascript:;"><i class="layui-icon layui-icon-chat"></i>预订管理</a>
+                <li class="layui-nav-item" shiro:hasRole="customerMgr">
+                    <a href="javascript:;"><i class="layui-icon layui-icon-chat"></i>顾客管理</a>
                     <dl class="layui-nav-child">
-                        <dd><a href="/Customer/toOrderList" target="demoAdmin">&nbsp;&nbsp;<i class="layui-icon layui-icon-table"></i>预订列表</a></dd>
-                        <dd><a href="/Customer/toOrderCompletedList" target="demoAdmin">&nbsp;&nbsp;<i class="layui-icon layui-icon-table"></i>完成列表</a></dd>
+                        <dd shiro:hasPermission="order:list"><a href="/Customer/toOrderList" target="demoAdmin">&nbsp;&nbsp;<i class="layui-icon layui-icon-table"></i>预订列表</a></dd>
+                        <dd shiro:hasPermission="checkin:list"><a href="/Customer/toCheckinList" target="demoAdmin">&nbsp;&nbsp;<i class="layui-icon layui-icon-table"></i>入住列表</a></dd>
+                        <dd shiro:hasPermission="completed:list"><a href="/Customer/toOrderCompletedList" target="demoAdmin">&nbsp;&nbsp;<i class="layui-icon layui-icon-table"></i>完成列表</a></dd>
                     </dl>
                 </li>
-                <li class="layui-nav-item">
+                <li class="layui-nav-item" shiro:hasRole="memberMgr">
+                    <a href="javascript:;"><i class="layui-icon layui-icon-template-1"></i>会员管理</a>
+                    <dl class="layui-nav-child">
+                        <dd shiro:hasPermission="member:list"><a href="/Customer/toMemberList" target="demoAdmin">&nbsp;&nbsp;<i class="layui-icon layui-icon-table"></i>会员列表</a></dd>
+                    </dl>
+                </li>
+                <li class="layui-nav-item" shiro:hasRole="roomMgr">
                     <a href="javascript:;"><i class="layui-icon layui-icon-app"></i>房间管理</a>
                     <dl class="layui-nav-child">
-                        <dd><a href="/Room/roomState" target="demoAdmin">&nbsp;&nbsp;<i class="layui-icon layui-icon-chart"></i>房间状态</a></dd>
-                        <dd><a href="/Room/toRoomList" target="demoAdmin">&nbsp;&nbsp;<i class="layui-icon layui-icon-table"></i>房间列表</a></dd>
-                        <dd><a href="/Room/toAddRoom" target="demoAdmin">&nbsp;&nbsp;<i class="layui-icon layui-icon-add-circle-fine"></i>添加房间</a></dd>
-                        <dd><a href="/Room/toRoomTypeList" target="demoAdmin">&nbsp;&nbsp;<i class="layui-icon layui-icon-table"></i>房间类型</a></dd>
+                        <dd shiro:hasPermission="room:list"><a href="/Room/roomState" target="demoAdmin">&nbsp;&nbsp;<i class="layui-icon layui-icon-chart"></i>房间状态</a></dd>
+                        <dd shiro:hasPermission="room:list"><a href="/Room/toRoomList" target="demoAdmin">&nbsp;&nbsp;<i class="layui-icon layui-icon-table"></i>房间列表</a></dd>
+                        <dd shiro:hasPermission="room:add"><a href="/Room/toAddRoom" target="demoAdmin">&nbsp;&nbsp;<i class="layui-icon layui-icon-add-circle-fine"></i>添加房间</a></dd>
+                        <dd shiro:hasPermission="room:list"><a href="/Room/toRoomTypeList" target="demoAdmin">&nbsp;&nbsp;<i class="layui-icon layui-icon-table"></i>房间类型</a></dd>
                     </dl>
                 </li>
-                <li class="layui-nav-item">
-                    <a href="javascript:;"><i class="layui-icon layui-icon-template-1"></i>顾客管理</a>
+                <li class="layui-nav-item" shiro:hasRole="staffMgr">
+                    <a href="javascript:;"><i class="layui-icon layui-icon-user"></i>员工管理</a>
                     <dl class="layui-nav-child">
-                        <dd><a href="/Tenant/tolistTenants2" target="demoAdmin">&nbsp;&nbsp;<i class="layui-icon layui-icon-table"></i>入住列表</a></dd>
-                        <dd><a href="/Tenant/tolistTenants1" target="demoAdmin">&nbsp;&nbsp;<i class="layui-icon layui-icon-table"></i>顾客历史信息</a></dd>
-                    </dl>
-                </li>
-                <li class="layui-nav-item">
-                    <a href="javascript:;"><i class="layui-icon layui-icon-set"></i>设置管理</a>
-                    <dl class="layui-nav-child">
-                        <dd><a href="/Admin/toList" target="demoAdmin">&nbsp;&nbsp;<i class="layui-icon layui-icon-set-sm"></i>员工信息</a></dd>
-                        <dd><a href="/Admin/register" target="demoAdmin" id="res">&nbsp;&nbsp;<i class="layui-icon layui-icon-friends"></i>员工注册</a></dd>
+                        <dd shiro:hasPermission="user:list"><a href="/Admin/toList" target="demoAdmin">&nbsp;&nbsp;<i class="layui-icon layui-icon-table"></i>员工信息</a></dd>
+                        <dd shiro:hasPermission="user:add"><a href="/Admin/register" target="demoAdmin" id="res">&nbsp;&nbsp;<i class="layui-icon layui-icon-friends"></i>员工注册</a></dd>
+                        <dd shiro:hasPermission="user:list"><a href="/Admin/permission" target="demoAdmin">&nbsp;&nbsp;<i class="layui-icon layui-icon-auz"></i>员工权限</a></dd>
                     </dl>
                 </li>
             </ul>
@@ -114,7 +114,7 @@
     </div>
     <!-- 内容主体区域 -->
     <div class="layui-body">
-        <iframe src="/Safety/ModifyInformation" frameborder="0" name="demoAdmin" id="demoAdmin" style="width: 100%;"></iframe>
+        <iframe src="/home" frameborder="0" name="demoAdmin" id="demoAdmin" style="width: 100%;"></iframe>
     </div>
     <!-- 底部固定区域 -->
     <div class="layui-footer">

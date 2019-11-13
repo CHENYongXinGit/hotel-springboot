@@ -2,6 +2,7 @@ package person.cyx.hotel.controller;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -42,11 +43,13 @@ public class RoomController {
     private LayuiResult<RoomType> resultRoomType = new LayuiResult<RoomType>();
 
     @GetMapping("/toRoomTypeList")
+    @RequiresPermissions("room:list")
     public String toRoomTypeList(){
         return "room/roomTypeList";
     }
 
     @GetMapping("/toRoomList")
+    @RequiresPermissions("room:list")
     public String toRoomList(Model model){
         List<RoomType> roomTypes = roomTypeMapper.roomTypeList();
         model.addAttribute("roomTypes",roomTypes);
@@ -54,11 +57,13 @@ public class RoomController {
     }
 
     @GetMapping("/toRoomType")
+    @RequiresPermissions("room:list")
     public String toRoomType(){
         return "room/roomType";
     }
 
     @GetMapping("/toAddRoom")
+    @RequiresPermissions("room:add")
     public String toAddRoom(Model model){
         List<RoomType> roomTypes = roomTypeMapper.roomTypeList();
         model.addAttribute("roomTypes",roomTypes);
@@ -66,6 +71,7 @@ public class RoomController {
     }
 
     @GetMapping("/toEditRoom")
+    @RequiresPermissions("room:edit")
     public String toEditRoom(Model model){
         List<RoomType> roomTypes = roomTypeMapper.roomTypeList();
         model.addAttribute("roomTypes",roomTypes);
@@ -80,6 +86,7 @@ public class RoomController {
      * @return
      */
     @GetMapping("/roomState")
+    @RequiresPermissions("room:list")
     public String toRoomState(@RequestParam(value = "page", defaultValue = "1") Integer page,
                               @RequestParam(value = "limit", defaultValue = "12") Integer limit,
                               Model model){
@@ -101,6 +108,7 @@ public class RoomController {
      */
     @ResponseBody
     @GetMapping("/roomTypeList")
+    @RequiresPermissions("room:list")
     public LayuiResult<RoomType> roomTypeList(@RequestParam(value = "page", defaultValue = "1")Integer page,
                                    @RequestParam(value = "limit", defaultValue = "10")Integer limit){
         PageHelper.startPage(page, limit);
@@ -118,6 +126,7 @@ public class RoomController {
      */
     @ResponseBody
     @PostMapping("/roomTypeOperate")
+    @RequiresPermissions({"room:add","room:edit"})
     public ResultDTO roomType(@RequestParam("file") MultipartFile file, RoomType roomType){
         if (file.isEmpty() && roomType.getId()==null){
             return ResultDTO.errorOf(CustomizeErrorCode.CHOOSE_FILE_UPLOAD);
@@ -182,6 +191,7 @@ public class RoomController {
      */
     @ResponseBody
     @GetMapping("/delRoomType")
+    @RequiresPermissions("room:del")
     public ResultDTO delRoomType(@RequestParam("id") Long id){
         int delete = roomTypeMapper.deleteByPrimaryKey(id);
         if (delete >= 1){
@@ -218,6 +228,7 @@ public class RoomController {
      */
     @ResponseBody
     @PostMapping("/addRoom")
+    @RequiresPermissions("room:add")
     public ResultDTO addRoom(@RequestParam("file") MultipartFile file, Room room){
 
         try {
@@ -244,6 +255,7 @@ public class RoomController {
      */
     @ResponseBody
     @GetMapping("/roomList")
+    @RequiresPermissions("room:list")
     public LayuiResult<RoomDTO> roomList(@RequestParam(value = "page", defaultValue = "1")Integer page,
                                           @RequestParam(value = "limit", defaultValue = "10")Integer limit){
 
@@ -258,6 +270,7 @@ public class RoomController {
      */
     @ResponseBody
     @GetMapping("/delRoom")
+    @RequiresPermissions("room:del")
     public ResultDTO delRoom(@RequestParam("id") Long id){
         int delete = roomService.delete(id);
         if (delete >= 1){
@@ -274,6 +287,7 @@ public class RoomController {
      */
     @ResponseBody
     @PostMapping("/updatePhoto")
+    @RequiresPermissions("room:edit")
     public ResultDTO upload(HttpServletRequest request, @RequestParam("id") Long id){
         if (id==null){
             return ResultDTO.errorOf(CustomizeErrorCode.USER_IS_EMPTY);
@@ -306,6 +320,7 @@ public class RoomController {
      */
     @ResponseBody
     @PostMapping("/editRoom")
+    @RequiresPermissions("room:edit")
     public ResultDTO editRoom(@RequestBody Room room){
         if (room==null){
             return ResultDTO.errorOf(CustomizeErrorCode.USER_IS_EMPTY);
@@ -357,6 +372,7 @@ public class RoomController {
      */
     @ResponseBody
     @GetMapping("/sortRoom")
+    @RequiresPermissions("room:list")
     public LayuiResult<RoomDTO> sortRoom(@RequestParam(value = "page", defaultValue = "1")Integer page,
                                          @RequestParam(value = "limit", defaultValue = "10")Integer limit,
                                          @RequestParam("field") String field,

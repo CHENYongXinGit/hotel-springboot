@@ -106,6 +106,7 @@
                     url:"/Customer/inquireCPhone",
                     data:{cPhone:phone},
                     dataType:"json",
+                    contentType: "application/json",
                     success:function(res){
                         if(res.code == 200){
                             // console.log(res.data);
@@ -214,7 +215,7 @@
                 type:'post',//method请求方式，get或者post
                 dataType:'json',//预期服务器返回的数据类型
                 data:JSON.stringify(data.field),//表格数据序列化
-                contentType: "application/json; charset=utf-8",
+                contentType: "application/json",
                 success:function(res){//res为相应体,function为回调函数
                     if(res){
                         layer.close(layIndex);

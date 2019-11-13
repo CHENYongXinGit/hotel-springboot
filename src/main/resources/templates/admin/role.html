@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>viewUser</title>
+    <link rel="stylesheet" type="text/css" href="/layui/css/layui.css"/>
+    <style type="text/css">
+        .cent{width: 90%;margin: 20px auto;padding-bottom:10px;}
+        .none{display: none;}
+        .sys{padding: 12px;font-size: 20px;margin: 42px 0px 42px 33px;}
+    </style>
+</head>
+<body>
+<div class="cent">
+    <form class="layui-form layui-form-pane">
+        <input type="text" id="id" name="id" hidden>
+        <div class="layui-form-item">
+            <label class="layui-form-label">用户名：</label>
+            <div class="layui-input-block">
+                <input type="text" id="username" readonly class="layui-input">
+            </div>
+        </div>
+        <div id="sys" class="layui-form-item none" pane>
+            <div class="sys">
+                系统管理员，拥有全部角色权限。
+            </div>
+        </div>
+        <div id="role" class="layui-form-item" pane>
+            <div class="layui-input-block">
+                <input type="checkbox" name="role1" value="1" lay-skin="primary" title="顾客管理" th:checked="${roles.contains(1L)}">
+            </div>
+            <div class="layui-input-block">
+                <input type="checkbox" name="role2" value="2" lay-skin="primary" title="会员管理" th:checked="${roles.contains(2L)}">
+            </div>
+            <div class="layui-input-block">
+                <input type="checkbox" name="role3" value="3" lay-skin="primary" title="房间管理" th:checked="${roles.contains(3L)}">
+            </div>
+            <div class="layui-input-block">
+                <input type="checkbox" name="role4" value="4" lay-skin="primary" title="员工管理" th:checked="${roles.contains(4L)}">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn layui-btn-lg" id="role-btn" style="width: 175px" lay-submit lay-filter="formDemo">确定更改</button>
+            </div>
+        </div>
+    </form>
+</div>
+<script src="/layui/layui.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript">
+    layui.use(['layer','form'], function() {
+        var form = layui.form,
+            $ = layui.jquery;
+
+        if ($("#username").val() === "糖果"){
+            $("#role").addClass("none");
+            $("#sys").removeClass("none");
+            $("#role-btn").addClass("layui-btn-disabled");
+            $("#role-btn").attr('disabled',true);
+        }
+
+        //监听提交
+        form.on('submit(formDemo)', function(data) {
+            console.log(JSON.stringify(data.field));
+            $.ajax({
+                type:"post",
+                url:"/Admin/role",
+                data:JSON.stringify(data.field),
+                dataType:"json",
+                contentType: "application/json; charset=utf-8",
+                success:function(res){
+                    if(res.code==200){
+                        layer.msg('修改成功！');
+                        return false;
+                    }else{
+                        layer.msg(res.message, {icon: 5,anim: 6});
+                        return false;
+                    }
+                },
+                error:function(data){//当访问时候，404，500 等非200的错误状态码
+                    layer.msg('请求错误！', {icon: 5,anim: 6});
+                    return false;
+                }
+            });
+            return false;
+        });
+    });
+</script>
+</body>
+</html>

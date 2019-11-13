@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import person.cyx.hotel.dto.LayuiResult;
+import person.cyx.hotel.dto.TotalDaysDTO;
+import person.cyx.hotel.dto.ViewDTO;
 import person.cyx.hotel.exception.CustomizeErrorCode;
 import person.cyx.hotel.exception.CustomizeException;
 import person.cyx.hotel.mapper.CustomerMapper;
@@ -16,8 +18,7 @@ import person.cyx.hotel.model.CustomerOrder;
 import person.cyx.hotel.service.CustomerService;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * @program: hotel-springboot
@@ -36,6 +37,7 @@ public class CustomerServiceImpl implements CustomerService {
     private RoomMapper roomMapper;
 
     private LayuiResult<CustomerOrder> customerOrderLayuiResult = new LayuiResult();
+    private LayuiResult<Customer> customerLayuiResult = new LayuiResult();
 
     @Override
     public Customer checkCName(String cName) {
@@ -81,6 +83,27 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
+    public LayuiResult<Customer> memberList(Integer page, Integer limit) {
+        PageHelper.startPage(page, limit, "c_created desc");
+        List<Customer> customers = customerMapper.memberList();
+        return getCustomerLayuiResult(customers);
+    }
+
+    @Override
+    public LayuiResult<Customer> memberList(Integer page, Integer limit, String orderBy) {
+        PageHelper.startPage(page, limit, orderBy);
+        List<Customer> customers = customerMapper.memberList();
+        return getCustomerLayuiResult(customers);
+    }
+
+    @Override
+    public LayuiResult<Customer> queryCustomer(Integer page, Integer limit, Customer customer) {
+        PageHelper.startPage(page, limit, "c_created desc");
+        List<Customer> customers = customerMapper.queryCustomer(customer);
+        return getCustomerLayuiResult(customers);
+    }
+
+    @Override
     public int customerUnsubscribe(Long id, Long roomNumber) {
         String state = "已退订";
         return updateCustomerOperation(id, roomNumber, state);
@@ -108,6 +131,27 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
+    public LayuiResult<CustomerOrder> checkinList(Integer page, Integer limit) {
+        PageHelper.startPage(page, limit, "room_number asc");
+        List<CustomerOrder> customerOrders = customerOrderMapper.checkinList();
+        return getCustomerOrderLayuiResult(customerOrders);
+    }
+
+    @Override
+    public LayuiResult<CustomerOrder> checkinList(Integer page, Integer limit, String orderBy) {
+        PageHelper.startPage(page, limit, orderBy);
+        List<CustomerOrder> customerOrders = customerOrderMapper.checkinList();
+        return getCustomerOrderLayuiResult(customerOrders);
+    }
+
+    @Override
+    public LayuiResult<CustomerOrder> queryOrderCheckin(Integer page, Integer limit, CustomerOrder customerOrder) {
+        PageHelper.startPage(page, limit, "room_number asc");
+        List<CustomerOrder> customerOrders = customerOrderMapper.queryOrderCheckin(customerOrder);
+        return getCustomerOrderLayuiResult(customerOrders);
+    }
+
+    @Override
     public LayuiResult<CustomerOrder> orderCompletedList(Integer page, Integer limit) {
         PageHelper.startPage(page, limit, "end_time desc");
         List<CustomerOrder> customerOrders = customerOrderMapper.orderCompletedList();
@@ -126,6 +170,14 @@ public class CustomerServiceImpl implements CustomerService {
         PageHelper.startPage(page, limit, "end_time desc");
         List<CustomerOrder> customerOrders = customerOrderMapper.queryOrderCompleted(customerOrder);
         return getCustomerOrderLayuiResult(customerOrders);
+    }
+
+    @Override
+    public int delCustomer(Long cId) {
+        if (cId == null || cId == 0) {
+            throw new CustomizeException(CustomizeErrorCode.ORDER_NOT_FOUND);
+        }
+        return customerMapper.deleteByPrimaryKey(cId);
     }
 
     @Override
@@ -183,6 +235,63 @@ public class CustomerServiceImpl implements CustomerService {
         return insert + updateRoomStatus;
     }
 
+    @Override
+    public int countByCustomer() {
+        return customerMapper.countByCustomer();
+    }
+
+    @Override
+    public List<Double> selectByPrice() {
+        List<Double> list = new ArrayList<>();
+        List<Double> countPrice = customerOrderMapper.countPrice();
+        Double size = Double.valueOf(countPrice.size());
+        list.add(size);
+        double sum = countPrice.stream().mapToDouble(Double::doubleValue).sum();
+        list.add(sum);
+        return list;
+    }
+
+    @Override
+    public Double countPriceByStartTime(String s) {
+        return customerOrderMapper.countPriceByStartTime(s);
+    }
+
+    @Override
+    public TotalDaysDTO dayPriceByStartTime() {
+        List<String> names = new ArrayList<>();
+        List<Integer> orders = new ArrayList<>();
+        List<Double> prices = new ArrayList<>();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        Calendar c = Calendar.getInstance();
+        Date date = c.getTime();
+        c.setTime(date);
+        for (int i = 0; i <= 6; i++) {
+            ViewDTO viewDTO = customerOrderMapper.dayPriceByStartTime(sdf.format(c.getTime()));
+            names.add(sdf.format(c.getTime()));
+            orders.add(viewDTO.getOrders());
+            prices.add(viewDTO.getTotalPrice());
+            c.add(Calendar.DATE, -1);
+        }
+        Collections.reverse(names);
+        Collections.reverse(orders);
+        Collections.reverse(prices);
+        TotalDaysDTO totalDaysDTO = new TotalDaysDTO();
+        totalDaysDTO.setNames(names);
+        totalDaysDTO.setOrders(orders);
+        totalDaysDTO.setPrices(prices);
+        return totalDaysDTO;
+    }
+
+    @Override
+    public int customerMember(Long cId, Integer cMember) {
+        if (cMember == 0){
+            return customerMapper.updateMember(cId, 1);
+        } else {
+            return customerMapper.updateMember(cId, 0);
+        }
+    }
+
+
     /**
      * 顾客退订、退房操作
      * @param id
@@ -209,7 +318,7 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     /**
-     * 分页返回数据
+     * 订单分页返回数据
      * @param customerOrders
      * @return
      */
@@ -218,5 +327,17 @@ public class CustomerServiceImpl implements CustomerService {
         customerOrderLayuiResult.setData(customerOrders);
         customerOrderLayuiResult.setCount(pageInfo.getTotal());
         return customerOrderLayuiResult;
+    }
+
+    /**
+     * 会员分页返回数据
+     * @param customers
+     * @return
+     */
+    private LayuiResult<Customer> getCustomerLayuiResult(List<Customer> customers) {
+        PageInfo pageInfo = new PageInfo(customers, 5);
+        customerLayuiResult.setData(customers);
+        customerLayuiResult.setCount(pageInfo.getTotal());
+        return customerLayuiResult;
     }
 }

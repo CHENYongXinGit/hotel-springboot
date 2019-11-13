@@ -21,10 +21,12 @@ import person.cyx.hotel.dto.ResultDTO;
 import person.cyx.hotel.exception.CustomizeErrorCode;
 import person.cyx.hotel.model.Admin;
 import person.cyx.hotel.service.impl.AdminServiceImpl;
+import person.cyx.hotel.service.impl.PermissionServiceImpl;
 
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @program: hotel-springboot
@@ -40,6 +42,8 @@ public class AdminController {
     private RedisSessionDAO redisSessionDAO;
     @Autowired
     private AdminServiceImpl adminService;
+    @Autowired
+    private PermissionServiceImpl permissionService;
 
     private LayuiResult<Admin> result = new LayuiResult<Admin>();
 
@@ -53,6 +57,59 @@ public class AdminController {
     @RequiresPermissions("user:list")
     public String toList(){
         return "admin/adminList";
+    }
+
+    /**
+     * 权限列表
+     * @param model
+     * @return
+     */
+    @GetMapping("/permission")
+    @RequiresPermissions("user:list")
+    public String permission(Model model){
+        List<Long> customerMgr = permissionService.getPermissionIdByRoleId(1L);
+        List<Long> memberMgr = permissionService.getPermissionIdByRoleId(2L);
+        List<Long> roomMgr = permissionService.getPermissionIdByRoleId(3L);
+        List<Long> staffMgr = permissionService.getPermissionIdByRoleId(4L);
+        model.addAttribute("customerMgr",customerMgr);
+        model.addAttribute("memberMgr",memberMgr);
+        model.addAttribute("roomMgr",roomMgr);
+        model.addAttribute("staffMgr",staffMgr);
+        return "admin/permission";
+    }
+
+    /**
+     * 更改权限
+     * @param permissions
+     * @return
+     */
+    @ResponseBody
+    @PostMapping("/permission")
+    @RequiresPermissions("user:edit")
+    public ResultDTO permission(@RequestBody Map<String,Long> permissions){
+        int update = permissionService.updatePermission(permissions);
+        if (update >= permissions.size()-1){
+            reauthorization();
+            return ResultDTO.okOf();
+        }
+        return ResultDTO.errorOf(CustomizeErrorCode.USER_PERMISSION_FAIL);
+    }
+
+    /**
+     * 更改角色
+     * @param roles
+     * @return
+     */
+    @ResponseBody
+    @PostMapping("/role")
+    @RequiresPermissions("user:edit")
+    public ResultDTO role(@RequestBody Map<String,Long> roles){
+        int update = permissionService.updateRole(roles);
+        Long id = roles.get("id");
+        if (update >= roles.size()-1 && reauthorization(id)){
+            return ResultDTO.okOf();
+        }
+        return ResultDTO.errorOf(CustomizeErrorCode.USER_ROLE_FAIL);
     }
 
     /**
@@ -166,6 +223,7 @@ public class AdminController {
      */
     @ResponseBody
     @GetMapping("/delete")
+    @RequiresPermissions("user:del")
     public ResultDTO delete(@RequestParam("id") Long id){
         int delete = adminService.delete(id);
         if (delete>=1){
@@ -176,6 +234,21 @@ public class AdminController {
     }
 
     /**
+     * 用户角色信息
+     * @param id
+     * @param model
+     * @return
+     */
+    @GetMapping("/role")
+    @RequiresPermissions("user:list")
+    public String role(@RequestParam("id") Long id, Model model){
+        List<Long> roles = permissionService.getRoleIdByUserId(id);
+        model.addAttribute("roles",roles);
+        return "admin/role";
+    }
+
+
+    /**
      * 查看用户登录信息
      * @param username
      * @param model
@@ -183,9 +256,9 @@ public class AdminController {
      * @throws Exception
      */
     @GetMapping("/view")
+    @RequiresPermissions("user:edit")
     public String view(@RequestParam("username") String username, Model model) throws Exception{
 
-        System.out.println(username);
         Collection<Session> sessions = redisSessionDAO.getActiveSessions();
         SimpleDateFormat dateFormat = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss");
 
@@ -200,10 +273,10 @@ public class AdminController {
                 model.addAttribute("getHost",session.getHost());
                 model.addAttribute("getStartTimestamp",startTimestamp);
                 model.addAttribute("getLastAccessTime",lastAccessTime);
-                System.out.println("登录ip:"+session.getHost());
-                System.out.println("登录用户"+currentUser.getUsername());
-                System.out.println("登录日期:"+ startTimestamp);
-                System.out.println("最后操作日期:"+lastAccessTime);
+                System.out.println("登录ip："+session.getHost());
+                System.out.println("登录用户："+currentUser.getUsername());
+                System.out.println("登录日期："+ startTimestamp);
+                System.out.println("最后操作日期："+lastAccessTime);
                 break;
             }
         }
@@ -217,6 +290,7 @@ public class AdminController {
      */
     @ResponseBody
     @GetMapping("/offline")
+    @RequiresPermissions("user:edit")
     public ResultDTO offline(@RequestParam("username") String username){
         if (doOffline(username)){
             return ResultDTO.okOf();
@@ -224,8 +298,14 @@ public class AdminController {
         return ResultDTO.errorOf(CustomizeErrorCode.OFFLINE_FAIL);
     }
 
+    /**
+     * 修改信息
+     * @param admin
+     * @return
+     */
     @ResponseBody
     @PostMapping("/updateUser")
+    @RequiresPermissions("user:edit")
     public ResultDTO updateUser(@RequestBody Admin admin){
         if (admin.getStatus()==1 && admin.getUsername()!=null){
             if (!doOffline(admin.getUsername())){
@@ -260,5 +340,37 @@ public class AdminController {
             }
         }
         return false;
+    }
+
+    private boolean reauthorization(Long id) {
+        Collection<Session> sessions = redisSessionDAO.getActiveSessions();
+        Object attribute = null;
+
+        for(Session session:sessions) {
+            if (session.getAttribute("currentUser") == null){
+                continue;
+            }
+            Admin currentUser = (Admin) session.getAttribute("currentUser");
+            if (id.equals(currentUser.getId())) {
+                attribute = session.getAttribute(DefaultSubjectContext.PRINCIPALS_SESSION_KEY);
+                //删除Cache，再访问受限接口时会重新授权
+                DefaultWebSecurityManager securityManager = (DefaultWebSecurityManager) SecurityUtils.getSecurityManager();
+                Authenticator authc = securityManager.getAuthenticator();
+                ((LogoutAware) authc).onLogout((SimplePrincipalCollection) attribute);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void reauthorization(){
+        Collection<Session> sessions = redisSessionDAO.getActiveSessions();
+        for(Session session:sessions) {
+                Object attribute = session.getAttribute(DefaultSubjectContext.PRINCIPALS_SESSION_KEY);
+                //删除Cache，再访问受限接口时会重新授权
+                DefaultWebSecurityManager securityManager = (DefaultWebSecurityManager) SecurityUtils.getSecurityManager();
+                Authenticator authc = securityManager.getAuthenticator();
+                ((LogoutAware) authc).onLogout((SimplePrincipalCollection) attribute);
+        }
     }
 }

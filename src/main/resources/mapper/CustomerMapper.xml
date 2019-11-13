@@ -16,6 +16,14 @@
     c_id, c_name, c_sex, c_phone, c_identity, c_member, c_password, c_created, c_updated
   </sql>
 
+  <select id="countByCustomer" resultType="int">
+    select count(*) from customer
+  </select>
+
+  <select id="memberList" resultMap="BaseResultMap">
+    select * from customer
+  </select>
+
   <select id="checkCName" parameterType="java.lang.String" resultMap="BaseResultMap">
     select 
     <include refid="Base_Column_List" />
@@ -38,12 +46,32 @@
     and c_password = #{cPassword,jdbcType=VARCHAR}
   </select>
 
+  <select id="queryCustomer" parameterType="person.cyx.hotel.model.Customer" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from customer
+    <where>
+      <if test="cName != null and cName != ''">
+        and c_name like '%${cName}%'
+      </if>
+      <if test="cPhone != null and cPhone != ''">
+        and c_phone like '%${cPhone}%'
+      </if>
+    </where>
+  </select>
+
   <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
     select
     <include refid="Base_Column_List" />
     from customer
     where c_id = #{cId,jdbcType=BIGINT}
   </select>
+
+  <update id="updateMember">
+    update customer
+    set c_member = #{cMember,jdbcType=INTEGER}
+    where c_id = #{cId,jdbcType=BIGINT}
+  </update>
 
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
     delete from customer

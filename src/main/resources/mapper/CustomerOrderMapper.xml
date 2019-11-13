@@ -15,9 +15,25 @@
     <result column="end_time" jdbcType="VARCHAR" property="endTime" />
     <result column="phone" jdbcType="VARCHAR" property="phone" />
   </resultMap>
+  <resultMap id="ViewResultMap" type="person.cyx.hotel.dto.ViewDTO">
+    <result column="orders" jdbcType="INTEGER" property="orders" />
+    <result column="totalPrice" jdbcType="DOUBLE" property="totalPrice" />
+  </resultMap>
   <sql id="Base_Column_List">
     id, room_number, name, sex, member, identity, days, price, state, start_time, end_time, phone
   </sql>
+
+  <select id="countPrice" resultType="double">
+    select price from customer_order
+  </select>
+
+  <select id="countPriceByStartTime" parameterType="string" resultType="double">
+    select COALESCE(SUM(price),0) from customer_order where start_time like '${s}%'
+  </select>
+
+  <select id="dayPriceByStartTime" parameterType="string" resultMap="ViewResultMap">
+    select COUNT(price) as orders,COALESCE(SUM(price),0) as totalPrice from customer_order where start_time LIKE '${s}%'
+  </select>
 
   <select id="orderList" resultMap="BaseResultMap">
     select 
@@ -32,6 +48,13 @@
     from customer_order
     where state = '已完成'
     or state = '已退订'
+  </select>
+
+  <select id="checkinList" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from customer_order
+    where state = '已入住'
   </select>
 
   <select id="queryOrder" parameterType="person.cyx.hotel.model.CustomerOrder" resultMap="BaseResultMap">
@@ -68,6 +91,21 @@
       </if>
         and state != '已入住'
         and state != '已预订'
+    </where>
+  </select>
+
+  <select id="queryOrderCheckin" parameterType="person.cyx.hotel.model.CustomerOrder" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from customer_order
+    <where>
+      <if test="name != null and name != ''">
+        and name like '%${name}%'
+      </if>
+      <if test="roomNumber != null and roomNumber != ''">
+        and room_number like '%${roomNumber}%'
+      </if>
+        and state = '已入住'
     </where>
   </select>
 

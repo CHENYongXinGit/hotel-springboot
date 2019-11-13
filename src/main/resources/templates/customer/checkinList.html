@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>完成列表</title>
+    <title>预订列表</title>
     <link rel="stylesheet" type="text/css" href="/layui/css/layui.css"/>
     <style type="text/css">
         .layui-table-cell{height:40px;line-height: 40px;}
@@ -14,7 +14,7 @@
 <body>
 <div style="padding: 15px;">
     <fieldset class="layui-elem-field">
-        <legend>完成检索</legend>
+        <legend>入住检索</legend>
         <div class="layui-field-box">
             <form class="layui-form">
                 <div class="layui-form-item">
@@ -31,16 +31,6 @@
                         </div>
                     </div>
                     <div class="layui-inline">
-                        <label class="layui-form-label">订单状态：</label>
-                        <div class="layui-input-inline">
-                            <select name="state" id="state">
-                                <option value="">选择订单状态</option>
-                                <option value="已完成">已完成</option>
-                                <option value="已退订">已退订</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="layui-inline">
                         <div class="layui-input-inline">
                             <button class="layui-btn" lay-submit lay-filter="searchForm">查询</button>
                             <button type="reset" class="layui-btn layui-btn-primary">重置</button>
@@ -53,19 +43,11 @@
     <table id="demo" lay-filter="test"></table>
     <script type="text/html" id="toolbarDemo">
         <div class="layui-btn-container">
-            <button class="layui-btn layui-btn-sm layui-btn-radius" lay-event="getCheckData" id="batchDel"><i class="layui-icon layui-icon-delete"></i>选中删除</button>
             <button class="layui-btn layui-btn-sm layui-btn-radius" lay-event="reloadTabel1"><i class="layui-icon layui-icon-refresh-3"></i>刷新</button>
         </div>
     </script>
     <script type="text/html" id="barDemo">
-        <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del"><i class="layui-icon layui-icon-delete"></i>删除</a>
-    </script>
-    <script type="text/html" id="stateTpl">
-        {{#  if(d.state === '已退订'){ }}
-        <span style="color: #FF5722;">{{ d.state }}</span>
-        {{#  } else { }}
-        <span style="color: #009F95;">{{ d.state }}</span>
-        {{#  } }}
+        <a class="layui-btn layui-btn-warm layui-btn-xs" lay-event="del">退房</a>
     </script>
 </div>
 <script src="/layui/layui.js" type="text/javascript" charset="utf-8"></script>
@@ -79,27 +61,24 @@
         table.render({
             elem: '#demo'
             // ,even: true //开启隔行背景
-            ,id: 'orderCompletedList'
+            ,id: 'checkinList'
             ,title: '用户表'
-            ,url: '/Customer/orderCompletedList' //数据接口
+            ,url: '/Customer/checkinList' //数据接口
             ,toolbar: '#toolbarDemo'
             ,height : 'full-150'
             ,autoSort: false //禁用前端自动排序。
             ,cols: [
                 [ //表头
-                    {type: 'checkbox', fixed: 'left'}
-                    ,{title: '序号', width:75, fixed: 'left', type:'numbers'}
+                    {title: '序号', width:75, fixed: 'left', type:'numbers'}
                     ,{field: 'id', title: 'ID', hide: true}
                     ,{field: 'roomNumber', title: '房间号', width:100, sort: true, align:'center'}
                     ,{field: 'name', title: '顾客名', align:'center'}
-                    ,{field: 'member', title: '会员', width:80, align:'center', sort: true, templet:function (d) {
+                    ,{field: 'member', title: '会员', width:100, align:'center', sort: true, templet:function (d) {
                         return d.member==1?'是':'否';}}
-                    ,{field: 'days', title: '天数', width:100, sort: true, align:'center'}
-                    ,{field: 'price', title: '总价钱', width:100, sort: true, align:'center'}
-                    ,{field: 'state', title: '订单状态', width:120, sort: true, align:'center', templet:'#stateTpl'}
-                    ,{field: 'startTime', title: '开始时间', align:'center', sort: true}
-                    ,{field: 'endTime', title: '完成时间', align:'center', sort: true}
-                    ,{title: '操作', width: 150, align:'center', toolbar: '#barDemo', fixed: 'right'}
+                    ,{field: 'days', title: '天数', width:120, sort: true, align:'center'}
+                    ,{field: 'price', title: '总价钱', width:120, sort: true, align:'center'}
+                    ,{field: 'startTime', title: '入住时间', align:'center', sort: true}
+                    ,{title: '操作', width: 130, align:'center', toolbar: '#barDemo', fixed: 'right'}
                 ]
             ]
             ,page: true //开启分页
@@ -113,13 +92,13 @@
 
             //尽管我们的 table 自带排序功能，但并没有请求服务端。
             //有些时候，你可能需要根据当前排序的字段，重新向服务端发送请求，从而实现服务端排序，如：
-            table.reload('orderCompletedList', {
+            table.reload('checkinList', {
                 initSort: obj //记录初始排序，如果不设的话，将无法标记表头的排序状态。
                 ,where: { //请求参数（注意：这里面的参数可任意定义，并非下面固定的格式）
                     field: obj.field //排序字段
                     ,order: obj.type //排序方式
                 }
-                ,url: '/Customer/sortOrderCompletedList' //数据接口
+                ,url: '/Customer/sortCheckinList' //数据接口
             });
             return false;
         });
@@ -129,20 +108,21 @@
             var data = obj.data //获得当前行数据
                 ,layEvent = obj.event; //获得 lay-event 对应的值
             if(layEvent === 'del'){
-                layer.confirm('真的删除么', function(index){
+                layer.confirm('真的退房么', function(index){
                     var id = data.id;
+                    var roomNumber = data.roomNumber;
                     //向服务端发送删除指令
                     $.ajax({
                         type:"GET",
-                        url:"/Customer/delOrder",
-                        data:{id:id},
+                        url:"/Customer/customerCheckout",
+                        data:{id:id,roomNumber:roomNumber},
                         dataType:"json",
                         contentType: "application/json",
                         success:function(res){
                             if(res.code == 200){
                                 obj.del(); //删除对应行（tr）的DOM结构
                                 layer.close(index);
-                                layer.msg('删除成功！', {icon: 1,anim: 5});
+                                layer.msg('退房成功！', {icon: 1,anim: 5});
                                 return false;
                             }else{
                                 layer.close(index);
@@ -150,7 +130,7 @@
                                 return false;
                             }
                         },
-                        error:function(res){//当访问时候，404，500 等非200的错误状态码
+                        error:function(data){//当访问时候，404，500 等非200的错误状态码
                             layer.msg('请求错误！', {icon: 5,anim: 6});
                             return false;
                         }
@@ -161,49 +141,12 @@
 
         //头工具栏事件
         table.on('toolbar(test)', function(obj){
-            var checkStatus = table.checkStatus(obj.config.id);
             switch(obj.event){
                 case 'reloadTabel1':
                     //执行重载
-                    table.reload('orderCompletedList', {
-                        url: '/Customer/orderCompletedList' //数据接口
+                    table.reload('checkinList', {
+                        url: '/Customer/checkinList' //数据接口
                     });
-                    break;
-                case 'getCheckData':
-                    var data = checkStatus.data;
-                    var delList = [];
-                    data.forEach(function(n,i){
-                        delList.push(n.id);
-                    });
-                    if(delList != ''){
-                        layer.confirm('确定删除所选项吗？',function (index) {
-                            $.ajax({
-                                url: '/Customer/batchDel',
-                                type:'post',
-                                dataType:'json',
-                                data:"ids="+delList,
-                                contentType: "application/json",
-                                success:function (res) {
-                                    if(res.code==200){
-                                        layer.msg('删除成功！', {
-                                            time: 500 //0.5秒关闭（如果不配置，默认是3秒）
-                                        }, function(){
-                                            window.location.reload();
-                                        });
-                                    }else{
-                                        layer.msg(res.message);
-                                    }
-                                },
-                                'error':function () {
-                                    layer.msg('系统错误');
-                                }
-                            })
-                        })
-                    }else{
-                        layer.tips('请选择需要删除的行',$('#batchDel'),{
-                            tips:[3,'#5fb878']
-                        })
-                    }
                     break;
             };
         });
@@ -215,16 +158,15 @@
                 return false;
             }
             //执行重载
-            table.reload('orderCompletedList', {
+            table.reload('checkinList', {
                 page: {
                     curr: 1 //重新从第 1 页开始
                 }
                 ,where: {
                     roomNumber: value.roomNumber,
-                    name: value.name,
-                    state: value.state
+                    name: value.name
                 }
-                ,url: '/Customer/queryOrderCompleted' //数据接口
+                ,url: '/Customer/queryOrderCheckin' //数据接口
             });
             return false;
         });

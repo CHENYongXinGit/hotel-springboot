@@ -1,5 +1,7 @@
 package person.cyx.hotel.mapper;
 
+import org.apache.ibatis.annotations.Param;
+
 import java.util.List;
 
 /**
@@ -13,4 +15,10 @@ public interface RoleMapper {
     List<String> getAllRoleSn();
 
     List<String> getRoleSnByUserId(Long adminId);
+
+    List<Long> getRoleIdByUserId(Long userId);
+
+    int delAdminRole(@Param("adminId") Long id);
+
+    int insertAdminRole(@Param("adminId") Long id, @Param("role") Long role);
 }

@@ -33,4 +33,8 @@ public interface RoomService {
     List<Room> selectByRoomType(Long roomType);
 
     Room selectByRoomId(Long id);
+
+    Integer countByRoomType(Long id);
+
+    Integer countByRoomStatus(String roomStatus);
 }

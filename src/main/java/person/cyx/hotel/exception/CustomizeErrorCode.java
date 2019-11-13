@@ -16,7 +16,7 @@ public enum CustomizeErrorCode implements ICustomizeErrorCode {
     ORDER_NOT_FOUND(2006,"你操作的订单不存在了，要不换个试试？"),
     USER_IS_EMPTY(2007,"输入的内容不能为空"),
     USER_NOT_PERMISSION(2008,"你没有权限访问"),
-    USER_PERMISSION_REFRESH(2009,"权限刷新，请重新登录"),
+    USER_PERMISSION_FAIL(2009,"权限更改失败"),
     FILE_UPLOAD_FAIL(2010,"图片上传失败"),
     UPDATE_FAIL(2011,"修改失败"),
     PASSWORD_WRONG(2012,"当前密码不正确"),
@@ -35,6 +35,7 @@ public enum CustomizeErrorCode implements ICustomizeErrorCode {
     PHONE_PASSWORD_WRONG(2025,"手机号或密码不正确"),
     ROOM_ALREADY_BOOKED(2026,"该房间已被预订"),
     BOOKED_FAIL(2027,"预订失败"),
+    USER_ROLE_FAIL(2028,"角色更改失败"),
     ;
 
     private Integer code;

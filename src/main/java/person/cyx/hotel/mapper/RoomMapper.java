@@ -27,4 +27,8 @@ public interface RoomMapper {
     int updateRoomStatus(@Param("roomStatus") String roomStatus, @Param("roomNumber") Long roomNumber);
 
     List<Room> selectByRoomType(@Param("roomType") Long roomType);
+
+    Integer countByRoomType(@Param("roomType") Long roomType);
+
+    Integer countByRoomStatus(@Param("roomStatus") String roomStatus);
 }

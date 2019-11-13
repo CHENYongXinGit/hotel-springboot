@@ -12,7 +12,8 @@
 <body>
 <div class="cent">
     <form class="layui-form layui-form-pane">
-        <input type="text" id="unitPrice" hidden/>
+        <input type="text" id="standardPrice" hidden/>
+        <input type="text" id="memberPrice" hidden/>
         <input type="text" id="startTime" name="startTime" hidden/>
         <div class="layui-form-item">
             <label class="layui-form-label">房间号：</label>
@@ -78,7 +79,10 @@
                 var days = Math.abs(parseInt((end - start)/1000/3600/24));
                 $("#days").val(days);
                 $("#startTime").val(moment(start).format('YYYY-MM-DD HH:mm:SS'));
-                var price = $("#unitPrice").val();
+                var price = $("#standardPrice").val();
+                if ([[${session.customer.cMember==1}]]) {
+                    price = $("#memberPrice").val();
+                }
                 $("#price").val(days*price);
                 $("#price").css({"color":"red","font-size":"18px"});
             }

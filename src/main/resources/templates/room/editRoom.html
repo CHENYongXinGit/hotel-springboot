@@ -129,7 +129,7 @@
                     data:{roomNumber:roomNumber,defaultRoom:defaultRoom},
                     dataType:"json",
                     async:false,
-                    contentType: "application/json; charset=utf-8",
+                    contentType: "application/json",
                     success:function(res){
                         if(res.code == 200){//可用
                             return true;
@@ -189,7 +189,7 @@
                 url:"/Room/editRoom",
                 data:JSON.stringify(data.field),
                 dataType:"json",
-                contentType: "application/json; charset=utf-8",
+                contentType: "application/json",
                 success:function(res){
                     if(res.code==200){
                         layer.msg('编辑成功！', {

@@ -38,9 +38,9 @@ public class MyRealm extends AuthorizingRealm {
      */
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
-        System.out.println("权限管理。。。");
-
         Admin admin = (Admin) principals.getPrimaryPrincipal();
+
+        System.out.println(admin.getUsername()+"加载权限管理");
 
         List<String> permissions = new ArrayList<String>();
         List<String> roles = new ArrayList<String>();

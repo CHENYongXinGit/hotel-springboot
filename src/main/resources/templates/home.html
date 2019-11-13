@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>后台首页</title>
+    <link rel="stylesheet" type="text/css" href="/layui/css/layui.css"/>
+    <style>
+        .cent{width:90%;margin: 20px auto;}
+        .countup{cursor: pointer;margin-top: 20px;}
+        .left{text-align: center;padding-top: 15px;margin: 0px 8% 10px 25%;}
+        .layui-card-body>div {display: inline-block;vertical-align: top;}
+        .left i.layui-icon{display: block;width: 50px;height: 50px;margin: 0px auto 8px;border-radius: 100%;line-height: 52px;color: #fff;font-size: 24px;}
+        .right{padding-top: 39px;font-size: 19px;text-align: right!important;}
+        .right span{font-size: 35px;}
+        .main-tu{position: relative; overflow: hidden; width: 90%; height: 450px; padding: 28px 0px 15px 30px; margin: 0px; border-width: 0px; cursor: pointer;}
+    </style>
+</head>
+<body style="background: #EEEEEE;">
+<div class="layui-row layui-col-space30 cent">
+    <div class="layui-col-lg4 layui-col-xs12 layui-col-md4 layui-col-sm4">
+        <section class="layui-card">
+            <div class="layui-card-body countup">
+                <div class="left">
+                    <i class="layui-icon layui-icon-cart" style="background: #007DDB"></i>
+                    <p>订单</p>
+                </div>
+                <div class="right">
+                    <p>共 <span style="color: #007DDB" th:text="${countOrder}"></span> 单</p>
+                </div>
+            </div>
+        </section>
+    </div>
+    <div class="layui-col-lg4 layui-col-xs12 layui-col-md4 layui-col-sm4">
+        <section class="layui-card">
+            <div class="layui-card-body countup">
+                <div class="left">
+                    <i class="layui-icon layui-icon-rmb" style="background: #FA6332"></i>
+                    <p>收入</p>
+                </div>
+                <div class="right">
+                    <p>共 <span style="color: #FA6332" th:text="${sum}"></span> 元</p>
+                </div>
+            </div>
+        </section>
+    </div>
+    <div class="layui-col-lg4 layui-col-xs12 layui-col-md4 layui-col-sm4">
+        <section class="layui-card">
+            <div class="layui-card-body countup">
+                <div class="left">
+                    <i class="layui-icon layui-icon-user" style="background: #FFB800"></i>
+                    <p>会员</p>
+                </div>
+                <div class="right">
+                    <p>共 <span style="color: #FFB800" th:text="${countCustomers}"></span> 人</p>
+                </div>
+            </div>
+        </section>
+    </div>
+    <div class="layui-col-lg7 layui-col-xs12 layui-col-md7 layui-col-sm7">
+        <section class="layui-card">
+            <div class="layui-card-body countup">
+                <!-- 为 ECharts 准备一个具备大小（宽高）的 DOM -->
+                <div id="main1" class="main-tu"></div>
+            </div>
+        </section>
+    </div>
+    <div class="layui-col-lg5 layui-col-xs12 layui-col-md5 layui-col-sm5">
+        <section class="layui-card">
+            <div class="layui-card-body countup">
+                <!-- 为 ECharts 准备一个具备大小（宽高）的 DOM -->
+                <div id="main2" class="main-tu"></div>
+            </div>
+        </section>
+    </div>
+</div>
+<script src="/js/echarts.min.js"></script>
+<script src="/layui/layui.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript">
+layui.use(['layer','jquery'], function() {
+    var layer = layui.layer,
+        $ = layui.jquery;
+
+    // 基于准备好的dom，初始化echarts实例
+    var myChart1 = echarts.init(document.getElementById('main1'));
+    // 显示标题，图例和空的坐标轴
+    myChart1.setOption({
+        title: {
+            text: '日销量完成情况（元）'
+        },
+        tooltip: {
+            trigger: 'axis',
+            axisPointer: {
+                type: 'cross',
+                crossStyle: {
+                    color: '#999'
+                }
+            }
+        },
+        toolbox: {
+            feature: {
+                dataView: {show: true, readOnly: false},
+                magicType: {show: true, type: ['line', 'bar']},
+                restore: {show: true},
+                saveAsImage: {show: true}
+            }
+        },
+        legend: {
+            data:['销售量','收入']
+        },
+        xAxis: [
+            {
+                type: 'category',
+                data: [],
+                axisPointer: {
+                    type: 'shadow'
+                }
+            }
+        ],
+        yAxis: [
+            {
+                type: 'value',
+                name: '销售量',
+                axisLabel: {
+                    formatter: '{value} 单'
+                }
+            },
+            {
+                type: 'value',
+                name: '收入',
+                axisLabel: {
+                    formatter: '{value} 元'
+                }
+            }
+        ],
+        series: [
+            {
+                name:'销售量',
+                type:'bar',
+                data:[]
+            },
+            {
+                name:'收入',
+                type:'line',
+                yAxisIndex: 1,
+                data:[]
+            }
+        ]
+    });
+
+    myChart1.showLoading();
+
+    // 异步加载数据
+    $.get("/days").done(function (res) {
+        console.log(res);
+        myChart1.hideLoading();
+        // 填入数据
+        myChart1.setOption({
+            xAxis: {
+                data: res.names
+            },
+            series: [
+                {data: res.orders},
+                {data: res.prices}
+            ]
+        });
+    });
+
+    // 基于准备好的dom，初始化echarts实例
+    var myChart2 = echarts.init(document.getElementById('main2'));
+    // 显示标题，图例和空的坐标轴
+    myChart2.setOption({
+        title: {
+            text: '月销售总收入/元'
+        },
+        tooltip: {},
+        legend: {
+            data:['总收入']
+        },
+        xAxis: {
+            data: []
+        },
+        yAxis: {},
+        series: [{
+            name: '总收入',
+            type: 'bar',
+            data: []
+        }]
+    });
+
+    myChart2.showLoading();
+
+    // 异步加载数据
+    $.get("/totalRevenue").done(function (res) {
+        console.log(res);
+        myChart2.hideLoading();
+        // 填入数据
+        myChart2.setOption({
+            xAxis: {
+                data: res.name
+            },
+            series: [{
+                data: res.price
+            }]
+        });
+    });
+});
+</script>
+</body>
+</html>

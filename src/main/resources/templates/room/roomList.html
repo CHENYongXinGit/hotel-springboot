@@ -196,6 +196,7 @@
                         url:"/Room/delRoom",
                         data:{id:id},
                         dataType:"json",
+                        contentType: "application/json",
                         success:function(res){
                             if(res.code == 200){
                                 obj.del(); //删除对应行（tr）的DOM结构

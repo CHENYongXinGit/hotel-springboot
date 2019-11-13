@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>员工权限</title>
+    <link rel="stylesheet" type="text/css" href="/layui/css/layui.css"/>
+    <style>
+        .cent{width: 80%;margin: 60px auto;}
+    </style>
+</head>
+<body>
+<div class="cent">
+    <fieldset class="layui-elem-field layui-field-title" style="margin-top: 50px;">
+        <legend>权限分配</legend>
+    </fieldset>
+
+    <div class="layui-tab layui-tab-card">
+        <ul class="layui-tab-title">
+            <li class="layui-this">顾客管理</li>
+            <li>会员管理</li>
+            <li>房间管理</li>
+            <li>员工管理</li>
+        </ul>
+        <div class="layui-tab-content" style="height: 300px;">
+            <div class="layui-tab-item layui-show">
+                <form class="layui-form">
+                    <div class="layui-form-item">
+                        <div class="layui-input-block">
+                            <input type="checkbox" name="permission5" value="5" lay-skin="primary" title="预订列表" th:checked="${customerMgr.contains(5L)}">
+                        </div>
+                        <div class="layui-input-block">
+                            <input type="checkbox" name="permission6" value="6" lay-skin="primary" title="入住列表" th:checked="${customerMgr.contains(6L)}">
+                        </div>
+                        <div class="layui-input-block">
+                            <input type="checkbox" name="permission7" value="7" lay-skin="primary" title="完成列表" th:checked="${customerMgr.contains(7L)}">
+                        </div>
+                        <div class="layui-input-block">
+                            <input type="checkbox" name="permission8" value="8" lay-skin="primary" title="入住" th:checked="${customerMgr.contains(8L)}">
+                        </div>
+                        <div class="layui-input-block">
+                            <input type="checkbox" name="permission9" value="9" lay-skin="primary" title="退房" th:checked="${customerMgr.contains(9L)}">
+                        </div>
+                        <div class="layui-input-block">
+                            <input type="checkbox" name="permission10" value="10" lay-skin="primary" title="退订" th:checked="${customerMgr.contains(10L)}">
+                        </div>
+                        <div class="layui-input-block">
+                            <input type="checkbox" name="permission11" value="11" lay-skin="primary" title="删除订单" th:checked="${customerMgr.contains(11L)}">
+                        </div>
+                    </div>
+                    <input type="text" name="role" value="1" hidden>
+                    <div class="layui-form-item">
+                        <div class="layui-input-block">
+                            <button type="submit" class="layui-btn" lay-submit lay-filter="customerMgr">确定</button>
+                            <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="layui-tab-item">
+                <form class="layui-form">
+                    <div class="layui-form-item">
+                        <div class="layui-input-block">
+                            <input type="checkbox" name="permission16" value="16" lay-skin="primary" title="会员列表" th:checked="${memberMgr.contains(16L)}">
+                        </div>
+                        <div class="layui-input-block">
+                            <input type="checkbox" name="permission17" value="17" lay-skin="primary" title="会员编辑" th:checked="${memberMgr.contains(17L)}">
+                        </div>
+                        <div class="layui-input-block">
+                            <input type="checkbox" name="permission18" value="18" lay-skin="primary" title="会员删除" th:checked="${memberMgr.contains(18L)}">
+                        </div>
+                    </div>
+                    <input type="text" name="role" value="2" hidden>
+                    <div class="layui-form-item">
+                        <div class="layui-input-block">
+                            <button type="submit" class="layui-btn" lay-submit lay-filter="memberMgr">确定</button>
+                            <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="layui-tab-item">
+                <form class="layui-form">
+                    <div class="layui-form-item">
+                        <div class="layui-input-block">
+                            <input type="checkbox" name="permission1" value="1" lay-skin="primary" title="房间列表" th:checked="${roomMgr.contains(1L)}">
+                        </div>
+                        <div class="layui-input-block">
+                            <input type="checkbox" name="permission2" value="2" lay-skin="primary" title="房间添加" th:checked="${roomMgr.contains(2L)}">
+                        </div>
+                        <div class="layui-input-block">
+                            <input type="checkbox" name="permission3" value="3" lay-skin="primary" title="房间编辑" th:checked="${roomMgr.contains(3L)}">
+                        </div>
+                        <div class="layui-input-block">
+                            <input type="checkbox" name="permission4" value="4" lay-skin="primary" title="房间删除" th:checked="${roomMgr.contains(4L)}">
+                        </div>
+                    </div>
+                    <input type="text" name="role" value="3" hidden>
+                    <div class="layui-form-item">
+                        <div class="layui-input-block">
+                            <button type="submit" class="layui-btn" lay-submit lay-filter="roomMgr">确定</button>
+                            <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="layui-tab-item">
+                <form class="layui-form">
+                    <div class="layui-form-item">
+                        <div class="layui-input-block">
+                            <input type="checkbox" name="permission12" value="12" lay-skin="primary" title="员工列表" th:checked="${staffMgr.contains(12L)}">
+                        </div>
+                        <div class="layui-input-block">
+                            <input type="checkbox" name="permission13" value="13" lay-skin="primary" title="员工添加" th:checked="${staffMgr.contains(13L)}">
+                        </div>
+                        <div class="layui-input-block">
+                            <input type="checkbox" name="permission14" value="14" lay-skin="primary" title="员工删除" th:checked="${staffMgr.contains(14L)}">
+                        </div>
+                        <div class="layui-input-block">
+                            <input type="checkbox" name="permission15" value="15" lay-skin="primary" title="员工编辑" th:checked="${staffMgr.contains(15L)}">
+                        </div>
+                    </div>
+                    <input type="text" name="role" value="4" hidden>
+                    <div class="layui-form-item">
+                        <div class="layui-input-block">
+                            <button type="submit" class="layui-btn" lay-submit lay-filter="staffMgr">确定</button>
+                            <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="/layui/layui.js" type="text/javascript" charset="utf-8"></script>
+<!-- 注意：如果你直接复制所有代码到本地，上述js路径需要改成你本地的 -->
+<script>
+layui.use(['element','form'], function() {
+    var $ = layui.jquery
+        ,form = layui.form
+        , element = layui.element; //Tab的切换功能，切换事件监听等，需要依赖element模块
+
+    //监听提交
+    form.on('submit(customerMgr)', function(data){
+        console.log(JSON.stringify(data.field));
+        $.ajax({
+            type:"post",
+            url:"/Admin/permission",
+            data:JSON.stringify(data.field),
+            dataType:"json",
+            contentType: "application/json",
+            success:function(res){
+                if(res.code==200){
+                    layer.msg('更改成功！', {
+                        time: 500 //0.5秒关闭（如果不配置，默认是3秒）
+                    }, function(){
+                        parent.window.location.reload();
+                    });
+                    return false;
+                }else{
+                    layer.msg(res.message, {icon: 5,anim: 6});
+                    return false;
+                }
+            },
+            error:function(data){//当访问时候，404，500 等非200的错误状态码
+                layer.msg('请求错误！', {icon: 5,anim: 6});
+                return false;
+            }
+        });
+        return false;
+    });
+
+    form.on('submit(memberMgr)', function(data){
+        console.log(JSON.stringify(data.field));
+        $.ajax({
+            type:"post",
+            url:"/Admin/permission",
+            data:JSON.stringify(data.field),
+            dataType:"json",
+            contentType: "application/json",
+            success:function(res){
+                if(res.code==200){
+                    layer.msg('更改成功！', {
+                        time: 500 //0.5秒关闭（如果不配置，默认是3秒）
+                    }, function(){
+                        parent.window.location.reload();
+                    });
+                    return false;
+                }else{
+                    layer.msg(res.message, {icon: 5,anim: 6});
+                    return false;
+                }
+            },
+            error:function(data){//当访问时候，404，500 等非200的错误状态码
+                layer.msg('请求错误！', {icon: 5,anim: 6});
+                return false;
+            }
+        });
+        return false;
+    });
+
+    form.on('submit(roomMgr)', function(data){
+        console.log(JSON.stringify(data.field));
+        $.ajax({
+            type:"post",
+            url:"/Admin/permission",
+            data:JSON.stringify(data.field),
+            dataType:"json",
+            contentType: "application/json",
+            success:function(res){
+                if(res.code==200){
+                    layer.msg('更改成功！', {
+                        time: 500 //0.5秒关闭（如果不配置，默认是3秒）
+                    }, function(){
+                        parent.window.location.reload();
+                    });
+                    return false;
+                }else{
+                    layer.msg(res.message, {icon: 5,anim: 6});
+                    return false;
+                }
+            },
+            error:function(data){//当访问时候，404，500 等非200的错误状态码
+                layer.msg('请求错误！', {icon: 5,anim: 6});
+                return false;
+            }
+        });
+        return false;
+    });
+
+    form.on('submit(staffMgr)', function(data){
+        console.log(JSON.stringify(data.field));
+        $.ajax({
+            type:"post",
+            url:"/Admin/permission",
+            data:JSON.stringify(data.field),
+            dataType:"json",
+            contentType: "application/json",
+            success:function(res){
+                if(res.code==200){
+                    layer.msg('更改成功！', {
+                        time: 500 //0.5秒关闭（如果不配置，默认是3秒）
+                    }, function(){
+                        parent.window.location.reload();
+                    });
+                    return false;
+                }else{
+                    layer.msg(res.message, {icon: 5,anim: 6});
+                    return false;
+                }
+            },
+            error:function(data){//当访问时候，404，500 等非200的错误状态码
+                layer.msg('请求错误！', {icon: 5,anim: 6});
+                return false;
+            }
+        });
+        return false;
+    });
+});
+</script>
+</body>
+</html>
